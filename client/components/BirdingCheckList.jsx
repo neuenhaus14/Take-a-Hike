@@ -2,6 +2,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import NavBar from "./NavBar.jsx";
 
 // Import Components
 import BirdProfile from "./BirdProfile.jsx";
@@ -49,6 +50,7 @@ const BirdingCheckList = () => {
   // Return Component Template
   return (
     <div className="section is-large">
+      <NavBar />
       <h1 className="title" alignment="center">
         {userName}'s Birding Checklist
       </h1>

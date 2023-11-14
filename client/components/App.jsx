@@ -64,7 +64,6 @@ const App = () => {
 
   return (
     <div className='app'>
-      <RouterProvider router={router} />
       <div className='app__header'>
         <img
           className='app__logo'
@@ -74,7 +73,7 @@ const App = () => {
           Trail Feathers
         </h1>
       </div>
-      <Outlet />
+      <RouterProvider router={router} />
     </div>
   );
 };
