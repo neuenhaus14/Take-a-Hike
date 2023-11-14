@@ -17,6 +17,7 @@ const session = require('express-session');
 require('./middleware/auth.js');
 const { cloudinary } = require('./utils/coudinary');
 const { Users } = require('./database/models/users');
+const { joinFriends } = require('./database/models/joinFriends');
 
 // // Import DB
 // const { db } = require('./database/index.js')
@@ -130,7 +131,7 @@ app.post("/api/images", async (req, res) => {
 });
 
 /**
- * Routes for packing list
+ * Routes saving for packing list
  */
 app.post("/api/packingLists", (req, res) => {
   console.log(req.body, "Server index.js LINE 55");
