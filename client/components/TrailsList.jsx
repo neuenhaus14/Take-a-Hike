@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import TrailsListEntry from "./TrailsListEntry.jsx";
+import NavBar from './NavBar.jsx';
 
 const TrailsList = ({ handleGetTrails, trailList }) => {
   const [location, setLocation] = useState({ lat: "", lon: "" });
@@ -18,6 +19,7 @@ const TrailsList = ({ handleGetTrails, trailList }) => {
 
   return (
     <div className="trails-list">
+      <NavBar />
       <h1 className="Header" alignment="center">
         Find a Trail!
       </h1>

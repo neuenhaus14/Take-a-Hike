@@ -1,8 +1,7 @@
 // Import Dependencies
 import React, { useState, useEffect } from 'react';
-import { Link, Outlet } from 'react-router-dom';
 import axios from 'axios';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route, createHashRouter, createRoutesFromChildren, Link, Outlet, RouterProvider } from 'react-router-dom';
 
 // import './styles/main.css';
 import TrailsList from './TrailsList.jsx';
@@ -39,33 +38,9 @@ const App = () => {
       });
   };
 
-  return (
-    <div className='app'>
-      <div className='app__header'>
-        <img
-          className='app__logo'
-          src='https://res.cloudinary.com/dbwbxubwi/image/upload/v1649015216/Parc%20des%20Familles%20Trail%20by%20NOMAMBO/qoej8fkfe2og2gkdkpmn.png'
-        />
-        <h1 className='Header app__header' alignment='center'>
-          Trail Feathers
-        </h1>
-      </div>
-      <nav
-        style={{
-          borderBottom: 'solid 1px',
-          paddingBottom: '1rem',
-        }}
-      >
-        <Link to='/login'>Login</Link> |{' '}
-        <Link to='/trailslist'>Trails List</Link> |{' '}
-        {/* <Link to="/trailprofile/1">Trail Profile</Link> |{' '} */}
-        <Link to='/quartermaster'>Quartermaster</Link> |{' '}
-        {/* <Link to="/packinglist">Packing List</Link> |{" "} */}
-        <Link to='/birdingchecklist'>Birding Checklist</Link> |{' '}
-        <Link to='/profile'>User Profile</Link> |{' '}
-      </nav>
-      {/* <Route path="login" element={<Login />} /> */}
-      <Routes>
+  const router = createHashRouter(
+    createRoutesFromChildren(
+      <Route>
         <Route
           path='trailslist'
           element={
@@ -75,16 +50,30 @@ const App = () => {
             />
           }
         />
-        <Route path='login' element={<Login />} />
+        <Route path='/' element={<Login />} />
         <Route
           path='trailprofile/:id'
           element={<TrailProfile trailList={trailList} />}
         />
         <Route path='quartermaster' element={<Quartermaster />} />
-        {/* <Route path="packinglist/:id" element={<PackingList />} /> */}
         <Route path='birdingchecklist' element={<BirdingCheckList />} />
         <Route path='profile' element={<UserProfile />} />
-      </Routes>
+      </Route>
+    )
+  )
+
+  return (
+    <div className='app'>
+      <RouterProvider router={router} />
+      <div className='app__header'>
+        <img
+          className='app__logo'
+          src='https://res.cloudinary.com/dbwbxubwi/image/upload/v1649015216/Parc%20des%20Familles%20Trail%20by%20NOMAMBO/qoej8fkfe2og2gkdkpmn.png'
+        />
+        <h1 className='Header app__header' alignment='center'>
+          Trail Feathers
+        </h1>
+      </div>
       <Outlet />
     </div>
   );
