@@ -16,27 +16,31 @@ passport.use(new GoogleStrategy({
   callbackURL: "http://localhost:5555/auth/google/callback",
   passReqToCallback: true
 },
-  async (req, accessToken, refreshToken, profile, done) => {
-  // console.log(20, "profile\n", profile)
+async (req, accessToken, refreshToken, profile, done) => {
   const defaultUser = {
     fullName: `${profile.name.givenName} ${profile.name.familyName}`,
     email: profile.emails[0].value,
     picture: profile.photos[0].value,
     googleId: profile.id,
-  }
+  };
+Users.findOrCreate({
+      where: { googleId: profile.id },
+      defaults: defaultUser
+    })
+    .then(([user, created]) =>{
+      if (!created && !user) {
+        console.log('User not found');
+        return done(null, false);
+      }
+      console.log('User added to database');
+      return done(null, user);
+    })
+   .catch ((err) => {
+    console.error("Error logging on", err);
+    return done(err);
+  })
+}));
 
-  const user = await Users.findOrCreate({ where: { googleId: profile.id }, defaults: defaultUser})
-    .then(() => console.log('User added to database'))
-    .catch((err) => {
-      console.log("Error logging on", err)
-      done(err, null)
-  });
-
-  if(user && user[0]){
-    return done(null, user && user[0])
-  }
-}
-));
 
 passport.serializeUser((user, done) => {
   // console.log("Serializing User:", user)
