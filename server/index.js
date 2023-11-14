@@ -15,6 +15,7 @@ const { PackingListItems } = require("./database/models/packingListItems");
 const router = express.Router();
 const session = require('express-session');
 require('./middleware/auth.js');
+
 const { cloudinary } = require('./utils/coudinary');
 const { Users } = require('./database/models/users');
 const { joinFriends } = require('./database/models/joinFriends');
@@ -71,9 +72,10 @@ app.get(
 );
 
 app.get("/profile",(req, res) => {
+  // console.log('req.user', req.user)
   Users.findOne()
     .then((data) => {
-      console.log('data', data);
+      // console.log('data', data);
       res.send(data).status(200);
     })
     .catch((err) => {
@@ -81,6 +83,7 @@ app.get("/profile",(req, res) => {
       res.sendStatus(500);
     });
 });
+
 
 ////////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
 
@@ -270,6 +273,22 @@ app.delete('/api/birdsightings', (req, res) => {
       res.sendStatus(500);
     });
 });
+
+app.post("/search-friends", (req, res) => {
+  const {fullName} = req.body.options
+
+  Users.findAll({ where: {fullName: fullName} })
+  .then((users) => {
+    console.log('data', users);
+    res.status(200).send(users)
+  })
+  .catch((err) => {
+    console.error(err)
+    res.sendStatus(500);
+  })
+})
+
+
 
 // launches the server from localhost on port 5555
 app.listen(PORT, () => {
