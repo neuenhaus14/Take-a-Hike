@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import NavBar from "./NavBar.jsx";
 
 const UserProfile = () => {
   const [profileName, setProfileName] = useState("");
@@ -19,6 +20,7 @@ const UserProfile = () => {
 
   return (
     <div className="profile-card">
+      <NavBar />
       <h1>Welcome {profileName}</h1>
       <a href={picture}></a>
       <p>{email}</p>

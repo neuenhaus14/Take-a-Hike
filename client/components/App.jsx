@@ -1,8 +1,7 @@
 // Import Dependencies
 import React, { useState, useEffect } from 'react';
-import { Link, Outlet } from 'react-router-dom';
 import axios from 'axios';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route, createHashRouter, createRoutesFromChildren, Link, Outlet, RouterProvider } from 'react-router-dom';
 
 // import './styles/main.css';
 import TrailsList from './TrailsList.jsx';
@@ -39,6 +38,30 @@ const App = () => {
       });
   };
 
+  const router = createHashRouter(
+    createRoutesFromChildren(
+      <Route>
+        <Route
+          path='trailslist'
+          element={
+            <TrailsList
+              handleGetTrails={handleGetTrails}
+              trailList={trailList}
+            />
+          }
+        />
+        <Route path='/' element={<Login />} />
+        <Route
+          path='trailprofile/:id'
+          element={<TrailProfile trailList={trailList} />}
+        />
+        <Route path='quartermaster' element={<Quartermaster />} />
+        <Route path='birdingchecklist' element={<BirdingCheckList />} />
+        <Route path='profile' element={<UserProfile />} />
+      </Route>
+    )
+  )
+
   return (
     <div className='app'>
       <div className='app__header'>
@@ -50,42 +73,7 @@ const App = () => {
           Trail Feathers
         </h1>
       </div>
-      <nav
-        style={{
-          borderBottom: 'solid 1px',
-          paddingBottom: '1rem',
-        }}
-      >
-        <Link to='/login'>Login</Link> |{' '}
-        <Link to='/trailslist'>Trails List</Link> |{' '}
-        {/* <Link to="/trailprofile/1">Trail Profile</Link> |{' '} */}
-        <Link to='/quartermaster'>Quartermaster</Link> |{' '}
-        {/* <Link to="/packinglist">Packing List</Link> |{" "} */}
-        <Link to='/birdingchecklist'>Birding Checklist</Link> |{' '}
-        <Link to='/profile'>User Profile</Link> |{' '}
-      </nav>
-      {/* <Route path="login" element={<Login />} /> */}
-      <Routes>
-        <Route
-          path='trailslist'
-          element={
-            <TrailsList
-              handleGetTrails={handleGetTrails}
-              trailList={trailList}
-            />
-          }
-        />
-        <Route path='login' element={<Login />} />
-        <Route
-          path='trailprofile/:id'
-          element={<TrailProfile trailList={trailList} />}
-        />
-        <Route path='quartermaster' element={<Quartermaster />} />
-        {/* <Route path="packinglist/:id" element={<PackingList />} /> */}
-        <Route path='birdingchecklist' element={<BirdingCheckList />} />
-        <Route path='profile' element={<UserProfile />} />
-      </Routes>
-      <Outlet />
+      <RouterProvider router={router} />
     </div>
   );
 };

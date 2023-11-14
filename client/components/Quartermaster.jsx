@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, Outlet } from "react-router-dom";
 import PackingList from "./PackingList.jsx";
+import NavBar from './NavBar.jsx';
 //mport UserProfile from "./UserProfile.jsx";
 
 const Quartermaster = () => {
@@ -80,6 +81,7 @@ const Quartermaster = () => {
 
   return (
     <>
+      <NavBar />
       <h3
         className="content has-text-centered"
         padding="20px 40px"
