@@ -3,6 +3,7 @@ const { db } = require("./index.js");
 const { Trails } = require("./models/trails.js");
 const { dummyParkData } = require("../../copyAPIparkData/dummyDataCopy.js");
 const { dummyUserData } = require("../../copyAPIparkData/dummyUserData.js");
+const { dummyFriendData } = require("../../copyAPIparkData/dummyFriendData.js");
 const { PackingLists } = require("./models/packingLists.js");
 const { PackingListItems } = require("./models/packingListItems.js");
 const { Users } = require("./models/users.js");
@@ -77,7 +78,23 @@ const seedSqlize = () => {
         "\x1b[36m",
         "\nDatabase (MySQL): 'joinFriends' table successfully created!"
       )
-    )    
+    )   
+    .then(() => Promise.all(dummyUserData.map((txn) => Users.create(txn))))
+    .then((arr) =>
+      console.log(
+        "\x1b[32m",
+        `\nDatabase (MySQL): Successfully seeded users with ${arr.length} entries!\n`,
+        "\x1b[37m"
+      )
+    ) 
+    .then(() => Promise.all(dummyFriendData.map((txn) => joinFriends.create(txn))))
+    .then((arr) =>
+      console.log(
+        "\x1b[32m",
+        `\nDatabase (MySQL): Successfully seeded joinFriends with ${arr.length} entries!\n`,
+        "\x1b[37m"
+      )
+    ) 
     .then(() => Promise.all(dummyParkData.map((txn) => Trails.create(txn))))
     .then((arr) =>
       console.log(
