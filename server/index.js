@@ -1,4 +1,3 @@
-// Import Dependencies
 const axios = require("axios");
 const sequelize = require("sequelize");
 const { query } = require("express");
@@ -18,12 +17,6 @@ require("./middleware/auth.js");
 const { cloudinary } = require("./utils/coudinary");
 const { Users } = require("./database/models/users");
 
-// // Import DB
-// const { db } = require('./database/index.js')
-
-// // Import Routes
-// const birdListRouter = require('./database/routes/birdListRouter.js')
-
 // Set Distribution Path
 const PORT = 5555;
 const distPath = path.resolve(__dirname, "..", "dist"); //serves the hmtl file of the application as default on load
@@ -40,13 +33,15 @@ app.use(
     secret: "keyboard cat",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: true },
+    cookie: { secure: false },
   })
 );
+
+// Reorder passport.session() to come after session()
 app.use(passport.initialize());
-// Create API Routes
 app.use(passport.session());
 
+// Create API Routes
 const successLoginUrl = "http://localhost:5555/#/trailslist";
 const errorLoginUrl = "http://localhost:5555/login/error";
 
@@ -59,7 +54,7 @@ app.get(
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", {
-    failureMessage: "cannot login to Google",
+    failureMessage: "cannot log in to Google",
     failureRedirect: errorLoginUrl,
     successRedirect: successLoginUrl,
   }),
@@ -70,15 +65,16 @@ app.get(
 );
 
 app.get("/profile", (req, res) => {
-  Users.findOne()
-    .then((data) => {
-      console.log("data", data);
-      res.send(data).status(200);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
+  console.log("Request user profile", req.user);
+  // Users.findOne()
+  //   .then((data) => {
+  //     console.log("profile data", data);
+  //     res.send(data).status(200);
+  //   })
+  //   .catch((err) => {
+  //     console.error(err);
+  //     res.sendStatus(500);
+  //   });
 });
 
 ////////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
@@ -133,13 +129,13 @@ app.post("/api/images", async (req, res) => {
  * Routes for packing list
  */
 app.post("/api/packingLists", (req, res) => {
-  console.log(req.body, "Server index.js LINE 55");
+  // console.log(req.body, "Server index.js LINE 55");
   PackingLists.create({
     listName: req.body.listName,
     packingListDescription: req.body.packingListDescription,
   })
     .then((data) => {
-      console.log("LINE 63", data.dataValues);
+      // console.log("LINE 63", data.dataValues);
       res.sendStatus(201);
     })
     .catch((err) => {
@@ -151,10 +147,10 @@ app.post("/api/packingLists", (req, res) => {
  * Routes for packing list GET ALL LISTS
  */
 app.get("/api/packingLists", (req, res) => {
-  console.log("Server index.js LINE 166", req.body);
+  // console.log("Server index.js LINE 166", req.body);
   PackingLists.findAll()
     .then((data) => {
-      console.log("LINE 169", data);
+      // console.log("LINE 169", data);
       res.status(200).send(data);
     })
     .catch((err) => {
@@ -167,13 +163,13 @@ app.get("/api/packingLists", (req, res) => {
  * post request to the packingListItems
  */
 app.post("/api/packingListItems", (req, res) => {
-  console.log(
-    "Is this being reached? LINE 103 SERVER.index.js || REQ.BODY \n",
-    req.body
-  );
+  // console.log(
+  //   "Is this being reached? LINE 103 SERVER.index.js || REQ.BODY \n",
+  //   req.body
+  // );
   PackingListItems.create(listItem)
     .then((data) => {
-      console.log("from lINE 106 INDEX.js || DATA \n", data);
+      // console.log("from lINE 106 INDEX.js || DATA \n", data);
       res.sendStatus(200);
     })
     .catch((err) => {
@@ -190,6 +186,7 @@ app.post("/api/packingListItems", (req, res) => {
 
 //GET req for all birdList data
 app.get("/api/birdList", async (req, res) => {
+  console.log("Request user bird:", req.user);
   try {
     const stateCode = req.query.state || "LA";
     const apiUrl = `https://api.ebird.org/v2/data/obs/US-${stateCode}/recent`;
@@ -206,6 +203,7 @@ app.get("/api/birdList", async (req, res) => {
       location: observation.locName,
       totalObserved: observation.howMany,
     }));
+    //add obvs date
 
     res.json(birdList);
   } catch (err) {
@@ -257,7 +255,7 @@ app.post("/api/birdsightings", (req, res) => {
     user_id: req.body.user_id,
   })
     .then((data) => {
-      console.log("LINE 220", data);
+      // console.log("LINE 220", data);
       res.sendStatus(201);
     })
     .catch((err) => {
@@ -274,7 +272,7 @@ app.delete("/api/birdsightings", (req, res) => {
     user_id: req.body.user_id,
   })
     .then((data) => {
-      console.log("LINE 220", data);
+      // console.log("LINE 220", data);
       res.sendStatus(201);
     })
     .catch((err) => {
