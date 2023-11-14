@@ -2,6 +2,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { KeyboardReturn } from "@mui/icons-material";
 
 // Create Functional Component
 const Friends = () => {
@@ -42,6 +43,9 @@ console.log(resUsers)
       <h5>Search for Friends</h5>
       <input type="text" placeholder="Find Friends" value={friendSearch} onChange={(e) => setFriendSearch(e.target.value)}  />
       <button onClick = {() => {searchFriends(); console.log('clicked')}}>Search</button>
+      </div>
+      <div id='friend-search-results'>
+        { resUsers.map((result) => <p>{result.fullName}</p>) }
       </div>
 
     </div>
