@@ -51,6 +51,7 @@ app.get(
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
+
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", {
@@ -64,32 +65,51 @@ app.get(
   }
 );
 
-app.get("/profile", (req, res) => {
-  console.log("Request user profile", req.user);
-  // Users.findOne()
-  //   .then((data) => {
-  //     console.log("profile data", data);
-  //     res.send(data).status(200);
-  //   })
-  //   .catch((err) => {
-  //     console.error(err);
-  //     res.sendStatus(500);
-  //   });
+
+
+
+//ADDING LOGOUT REQUEST HANDLER
+app.get('/logout', (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      console.error('Error logging out', err)
+    }
+    req.session.destroy((error) => {
+      if (error) {
+        console.error('Error destroying session', error)
+      }
+      console.log('session user', req.user);
+      res.sendStatus(200);
+    });
+  });
+});
+
+app.get("/profile",(req, res) => {
+    console.log('User profile request:', req.user);
+    if(req.isAuthenticated()){
+      res.send(req.user);
+    } else{
+      res.send({});
+    }
+
 });
 
 ////////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
 
+app.get('/api/googlemapskey', (req, res) => {
+  res.json({mapsApiKey: process.env.GOOGLE_MAPS_API_KEY });
+});
 //GET req for trail data by latitude/longitude
 app.get("/api/trailslist", (req, res) => {
   axios
-    .get(
-      `https://trailapi-trailapi.p.rapidapi.com/trails/explore/?lat=${req.query.lat}&lon=${req.query.lon}&radius=100`,
-      {
-        headers: {
-          "X-RapidAPI-Host": "trailapi-trailapi.p.rapidapi.com",
-          "X-RapidAPI-Key": process.env.TRAILS_API_KEY,
-        },
-      }
+  .get(
+    `https://trailapi-trailapi.p.rapidapi.com/trails/explore/?lat=${req.query.lat}&lon=${req.query.lon}&radius=100`,
+    {
+      headers: {
+        "X-RapidAPI-Host": "trailapi-trailapi.p.rapidapi.com",
+        "X-RapidAPI-Key": process.env.TRAILS_API_KEY,
+      },
+    }
     )
     .then((response) => {
       // console.log(response.data); - returns array of objects of trail data
@@ -99,29 +119,29 @@ app.get("/api/trailslist", (req, res) => {
       console.error("ERROR: ", err);
       res.sendStatus(404);
     });
-});
+  });
+  
+  //////////////////////////////////////// Cloudinary routes //////////////////////////////////////
 
-//////////////////////////////////////// Cloudinary routes //////////////////////////////////////
-
-// get request to get all images (this will later be trail specific)
-app.post("/api/images", async (req, res) => {
-  console.log(`server index.js || LINE 70`, req.body);
-  // NEED TO CHANGE ENDPOINT TO INCLUDE TRAIL SPECIFIC PARAM SO PHOTOS CAN BE UPLOADED + RENDERED PROPERLY
-
-  // Can create new folder with upload from TrailProfile component. Need to modify get request to filter based on folder param (which will be equal to the trail name)
-  const resources = await cloudinary.search
+  // get request to get all images (this will later be trail specific)
+  app.post("/api/images", async (req, res) => {
+    console.log(`server index.js || LINE 70`, req.body);
+    // NEED TO CHANGE ENDPOINT TO INCLUDE TRAIL SPECIFIC PARAM SO PHOTOS CAN BE UPLOADED + RENDERED PROPERLY
+    
+    // Can create new folder with upload from TrailProfile component. Need to modify get request to filter based on folder param (which will be equal to the trail name)
+    const resources = await cloudinary.search
     .expression(`resource_type:image AND folder:${req.body.trailFolderName}/*`)
     .sort_by("created_at", "desc")
     .max_results(30)
     .execute();
-  // console.log(
-  //   'SERVER INDEX.JS || CLOUDINARY GET || LINE 38 || resources ==>',
-  //   resources
-  // ;
-  // try to filter before map
-  const secureImageUrls = resources.resources
-    .filter((imageObj) => imageObj.folder === req.body.trailFolderName)
-    .map((image) => image.secure_url);
+    // console.log(
+      //   'SERVER INDEX.JS || CLOUDINARY GET || LINE 38 || resources ==>',
+      //   resources
+      // ;
+      // try to filter before map
+      const secureImageUrls = resources.resources
+      .filter((imageObj) => imageObj.folder === req.body.trailFolderName)
+      .map((image) => image.secure_url);
   res.json(secureImageUrls);
 });
 

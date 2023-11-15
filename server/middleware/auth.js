@@ -2,6 +2,7 @@
 // first i need to create a new project in google developers console
 // then i will be given a client ID and client secret which must be provided to passport
 // then i will need to configure a redirect URI with matches the rout in our application.
+
 require("dotenv").config();
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
@@ -49,3 +50,4 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((user, done) => {
   done(null, user);
 });
+
