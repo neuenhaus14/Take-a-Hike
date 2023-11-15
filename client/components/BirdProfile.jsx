@@ -1,54 +1,49 @@
-// Import Dependencies
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-// Create Functional Component
-const BirdProfile = ({bird, userId, birdSightings}) => {
-  const [checked, setChecked] = useState(false);
+const BirdProfile = ({ bird, userId, birdSightings }) => {
+  const [wikiUrl, setWikiUrl] = useState(null);
 
   useEffect(() => {
-    // console.log("BirdSightings: ", birdSightings);
-    // console.log("Bird: ", bird._id);
-    // console.log("UserId: ", userId);
-    // setChecked(birdSightings.filter(sightingInstance => sightingInstance.bird_id === bird._id && sightingInstance.user_id === userId))
-  }, [])
+    const fetchBirdDetails = async () => {
+      try {
+        const searchTerm = encodeURIComponent(
+          bird.commonName.replace(/[^a-zA-Z0-9 ]/g, "")
+        );
+        const wikiApiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&prop=info&inprop=url&titles=${searchTerm}`;
+        const wikiResponse = await axios.get(wikiApiUrl);
 
-  // Create Checkbox Click Handler
-  const handelCheckboxClick = () => {
-    // console.log(bird._id, userId)
-    if (!checked === true) {
-      setChecked(true);
-      // console.log("bird._id: ", bird._id);
-      // console.log("user_id: ", userId);
-      // axios.post('api/birdsightings', { bird_id: bird._id, user_id: userId})
-      //   .then(() => console.log("Bird Sightings Post Successful"))
-      //   .catch((err) => console.error('Bird Sightings Post Error: ', err));
-    } else {
-      setChecked(false);
-      // axios.post('api/birdsightings', {params: { bird_id: bird._id, user_id: userId}})
-      //   .then(() => console.log("Bird Sightings Post Successful"))
-      //   .catch((err) => console.error('Bird Sightings Delete Error: ', err));
-    }
-  };
+        const pages = wikiResponse.data.query.pages;
+        const firstPageId = Object.keys(pages)[0];
+        const wikiUrl = pages[firstPageId].fullurl;
 
-  // Return Component Template
+        setWikiUrl(wikiUrl);
+      } catch (error) {
+        console.error("Error fetching bird details:", error.message);
+      }
+    };
+
+    fetchBirdDetails();
+  }, [bird.commonName]);
+
   return (
-    <div className="block">
-      <input type="checkbox" checked={checked} onChange={handelCheckboxClick}/>
-      {/* <div> BirdId:{bird._id} userId:{userId}</div> */}
-      <div className="message-header" >Common Name: {bird.commonName}</div>
-      <ul>
-        <li>Scientific Name: {bird.scientificName}</li>
-        <li>Common Family Name: {bird.commonFamilyName}</li>
-        <li>Scientific Family Name: {bird.scientificFamilyName}</li>
-        <li>Order: {bird.order}</li>
-        {/* <li>{birdSound}</li> */}
-        {/* <li>{birdImg}</li> */}
-      </ul>
+    <div className="card">
+      <div className="card-content">
+        <p className="title">{bird.commonName}</p>
+        <p className="subtitle">{bird.scientificName}</p>
+        <p>Location: {bird.location}</p>
+        <p>Total Observed: {bird.totalObserved}</p>
+        <p>Observation Date: {bird.observationDate}</p>
+      </div>
+      {wikiUrl && (
+        <div className="card-footer">
+          <a href={wikiUrl} target="_blank" rel="noopener noreferrer">
+            Learn more on Wikipedia
+          </a>
+        </div>
+      )}
     </div>
   );
 };
 
-// Export Component
 export default BirdProfile;
