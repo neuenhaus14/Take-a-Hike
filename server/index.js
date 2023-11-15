@@ -40,7 +40,7 @@ app.use(
     secret: "keyboard cat",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: true },
+    cookie: { secure: false },
   })
 );
 app.use(passport.initialize());
@@ -87,15 +87,12 @@ app.get('/logout', (req, res) => {
 });
 
 app.get("/profile",(req, res) => {
-  Users.findOne()
-  .then((data) => {
-    console.log('data', data);
-    res.send(data).status(200);
-  })
-  .catch((err) => {
-    console.error(err);
-    res.sendStatus(500);
-  });
+    console.log('potato', req.user);
+    if(req.isAuthenticated()){
+      res.send(req.user);
+    } else{
+      res.send({});
+    }
 });
 
 ////////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
