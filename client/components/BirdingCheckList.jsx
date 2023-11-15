@@ -55,7 +55,9 @@ const BirdingCheckList = () => {
         {userName}'s Birding Checklist
       </h1>
       <h2 className="subtitle">
-        Your one stop shop to keep track of all your Louisiana bird sightings. There is no better way to celebrate the great state of Louisiana than spotting all the wonderful birds that inhabit it. So get to hiking!
+        Your one stop shop to keep track of all your Louisiana bird sightings.
+        There is no better way to celebrate the great state of Louisiana than
+        spotting all the wonderful birds that inhabit it. So get to hiking!
       </h2>
       <form >
         <label>
