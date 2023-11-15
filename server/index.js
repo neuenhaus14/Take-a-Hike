@@ -69,6 +69,22 @@ app.get(
   }
 );
 
+//ADDING LOGOUT REQUEST HANDLER
+app.get('/logout', (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      console.error('Error logging out', err)
+    }
+    req.session.destroy((error) => {
+      if (error) {
+        console.error('Error destroying session', error)
+      }
+      console.log('session user', req.user);
+      res.sendStatus(200);
+    });
+  });
+});
+
 app.get("/profile",(req, res) => {
   Users.findOne()
     .then((data) => {

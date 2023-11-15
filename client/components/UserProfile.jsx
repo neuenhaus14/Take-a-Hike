@@ -26,18 +26,6 @@ const UserProfile = () => {
       <p>{email}</p>
     </div>
   );
-
-  // return (
-  //   <>
-  //     <h1 className="Header" alignment="center">
-  //       UserProfile
-  //     </h1>
-  //     <div>Username:</div>
-  //     {packingListNames.map((listName) => {
-  //       return <li>{listName}</li>;
-  //     })}
-  //   </>
-  // );
 };
 
 export default UserProfile;
