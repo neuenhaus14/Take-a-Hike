@@ -45,7 +45,7 @@ const TrailsList = ({ handleGetTrails, trailList }) => {
         Find a Trail!
       </h1>
       <form className="box" onSubmit={handleSubmitLocation}>
-        <div className="field">
+        <div className="field" key="places-autocomplete-wrapper">
         <label className="label">Address</label>
         <PlacesAutocomplete
   value={address}
@@ -66,16 +66,16 @@ const TrailsList = ({ handleGetTrails, trailList }) => {
           const className = suggestion.active
             ? 'suggestion-item--active'
             : 'suggestion-item';
-          // inline style for demonstration purpose
           const style = suggestion.active
             ? { backgroundColor: '#fafafa', cursor: 'pointer' }
             : { backgroundColor: '#ffffff', cursor: 'pointer' };
           return (
-            <div
-              {...getSuggestionItemProps(suggestion, {
-                className,
-                style,
-              })}
+            <div 
+            {...getSuggestionItemProps(suggestion, {
+              className,
+              style,
+            })}
+            key={suggestion.placeId}
             >
               <span>{suggestion.description}</span>
             </div>

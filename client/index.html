@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <script>
-fetch('/api/googlemapskey') 
+  <head> 
+    <!-- Script tag added by Rene -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<script>
+  fetch('/api/googlemapskey') 
   .then(response => response.json())
   .then(data => {
     const {mapsApiKey} = data;
-    console.log(mapsApiKey)
     loadMaps(mapsApiKey);
   })
   .catch(error => console.error('Error fetching API key:', error));
@@ -18,9 +20,8 @@ function loadMaps(mapsApiKey) {
   script.defer = true;
   document.head.appendChild(script);
 }
-    </script>
-    <!-- Script tag added by Rene -->
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+</script>
+
     <meta content="text/html; charset=utf-8" />
     <title>Trail Feathers</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
@@ -29,22 +30,6 @@ function loadMaps(mapsApiKey) {
     src="https://upload-widget.cloudinary.com/global/all.js"
     type="text/javascript"
   ></script>
-  <script>fetch('/api/googlemapskey') 
-    .then(response => response.json())
-    .then(data => {
-      const {mapsApiKey} = data;
-      console.log(mapsApiKey)
-      loadMaps(mapsApiKey);
-    })
-    .catch(error => console.error('Error fetching API key:', error));
-  
-  function loadMaps(mapsApiKey) {
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${mapsApiKey}&libraries=places`;
-    script.async = true;
-    script.defer = true;
-    document.head.appendChild(script);
-  }</script>
   <!-- <script data-main="scripts/app" src="scripts/require.js"></script> -->
   <body>
     <div id="app"></div>

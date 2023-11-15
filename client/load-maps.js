@@ -2,7 +2,6 @@ fetch('/api/googlemapskey')
   .then(response => response.json())
   .then(data => {
     const {mapsApiKey} = data;
-    console.log(mapsApiKey)
     loadMaps(mapsApiKey);
   })
   .catch(error => console.error('Error fetching API key:', error));
