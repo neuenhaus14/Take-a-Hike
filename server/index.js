@@ -5,6 +5,7 @@ const { query } = require('express');
 const express = require('express');
 const path = require('path');
 const passport = require('passport');
+const { getWeather } =require('./weatherHelper.js');
 
 const { BirdList } = require("./database/models/birdList.js")
 const { BirdSightings } = require("./database/models/birdSightings.js")
