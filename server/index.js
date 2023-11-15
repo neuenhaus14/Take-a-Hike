@@ -1,28 +1,21 @@
-// Import Dependencies
-const axios = require('axios');
-const sequelize = require('sequelize');
-const { query } = require('express');
-const express = require('express');
-const path = require('path');
-const passport = require('passport');
+const axios = require("axios");
+const sequelize = require("sequelize");
+const { query } = require("express");
+const express = require("express");
+const path = require("path");
+const passport = require("passport");
 
-const { BirdList } = require("./database/models/birdList.js")
-const { BirdSightings } = require("./database/models/birdSightings.js")
+const { BirdList } = require("./database/models/birdList.js");
+const { BirdSightings } = require("./database/models/birdSightings.js");
 const { PackingLists } = require("./database/models/packingLists");
 const { PackingListItems } = require("./database/models/packingListItems");
 
 // const { default: PackingList } = require("../client/components/PackingList");
 const router = express.Router();
-const session = require('express-session');
-require('./middleware/auth.js');
-const { cloudinary } = require('./utils/coudinary');
-const { Users } = require('./database/models/users');
-
-// // Import DB
-// const { db } = require('./database/index.js')
-
-// // Import Routes
-// const birdListRouter = require('./database/routes/birdListRouter.js')
+const session = require("express-session");
+require("./middleware/auth.js");
+const { cloudinary } = require("./utils/coudinary");
+const { Users } = require("./database/models/users");
 
 // Set Distribution Path
 const PORT = 5555;
@@ -43,32 +36,37 @@ app.use(
     cookie: { secure: false },
   })
 );
+
+// Reorder passport.session() to come after session()
 app.use(passport.initialize());
-// Create API Routes
 app.use(passport.session());
 
-const successLoginUrl = 'http://localhost:5555/#/trailslist';
-const errorLoginUrl = 'http://localhost:5555/login/error';
+// Create API Routes
+const successLoginUrl = "http://localhost:5555/#/trailslist";
+const errorLoginUrl = "http://localhost:5555/login/error";
 
 //Auth Routes
 app.get(
-  '/login/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
+  "/login/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
 
 app.get(
-  '/auth/google/callback',
-  passport.authenticate('google', {
-    failureMessage: 'cannot login to Google',
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    failureMessage: "cannot log in to Google",
     failureRedirect: errorLoginUrl,
     successRedirect: successLoginUrl,
   }),
   (req, res) => {
-    console.log('User: ', req.user);
-    res.send('thank you for signing in!');
+    console.log("User: ", req.user);
+    res.send("thank you for signing in!");
   }
 );
+
+
+
 
 //ADDING LOGOUT REQUEST HANDLER
 app.get('/logout', (req, res) => {
@@ -87,12 +85,13 @@ app.get('/logout', (req, res) => {
 });
 
 app.get("/profile",(req, res) => {
-    console.log('potato', req.user);
+    console.log('User profile request:', req.user);
     if(req.isAuthenticated()){
       res.send(req.user);
     } else{
       res.send({});
     }
+
 });
 
 ////////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
@@ -132,7 +131,7 @@ app.get("/api/trailslist", (req, res) => {
     // Can create new folder with upload from TrailProfile component. Need to modify get request to filter based on folder param (which will be equal to the trail name)
     const resources = await cloudinary.search
     .expression(`resource_type:image AND folder:${req.body.trailFolderName}/*`)
-    .sort_by('created_at', 'desc')
+    .sort_by("created_at", "desc")
     .max_results(30)
     .execute();
     // console.log(
@@ -150,13 +149,13 @@ app.get("/api/trailslist", (req, res) => {
  * Routes for packing list
  */
 app.post("/api/packingLists", (req, res) => {
-  console.log(req.body, "Server index.js LINE 55");
+  // console.log(req.body, "Server index.js LINE 55");
   PackingLists.create({
     listName: req.body.listName,
     packingListDescription: req.body.packingListDescription,
   })
     .then((data) => {
-      console.log("LINE 63", data.dataValues);
+      // console.log("LINE 63", data.dataValues);
       res.sendStatus(201);
     })
     .catch((err) => {
@@ -168,10 +167,10 @@ app.post("/api/packingLists", (req, res) => {
  * Routes for packing list GET ALL LISTS
  */
 app.get("/api/packingLists", (req, res) => {
-  console.log("Server index.js LINE 166", req.body);
+  // console.log("Server index.js LINE 166", req.body);
   PackingLists.findAll()
     .then((data) => {
-      console.log("LINE 169", data);
+      // console.log("LINE 169", data);
       res.status(200).send(data);
     })
     .catch((err) => {
@@ -183,18 +182,18 @@ app.get("/api/packingLists", (req, res) => {
 /**
  * post request to the packingListItems
  */
-app.post('/api/packingListItems', (req, res) => {
-  console.log(
-    'Is this being reached? LINE 103 SERVER.index.js || REQ.BODY \n',
-    req.body
-  );
+app.post("/api/packingListItems", (req, res) => {
+  // console.log(
+  //   "Is this being reached? LINE 103 SERVER.index.js || REQ.BODY \n",
+  //   req.body
+  // );
   PackingListItems.create(listItem)
     .then((data) => {
-      console.log('from lINE 106 INDEX.js || DATA \n', data);
+      // console.log("from lINE 106 INDEX.js || DATA \n", data);
       res.sendStatus(200);
     })
     .catch((err) => {
-      console.error('Failed to create FROM 113', err);
+      console.error("Failed to create FROM 113", err);
       res.sendStatus(500);
     });
 });
@@ -205,27 +204,42 @@ app.post('/api/packingListItems', (req, res) => {
 
 //////////////////////////////////////////////////////////////Bird List Routes
 
-
 //GET req for all birdList data
-app.get("/api/birdList/", (req, res) => {
-  BirdList.findAll()
-    .then((birds) => {
-      res.json(birds);
-    })
-    .catch((err) => {
-      console.error("ERROR: ", err);
-      res.sendStatus(404);
+app.get("/api/birdList", async (req, res) => {
+  console.log("Request user bird:", req.user);
+  try {
+    const stateCode = req.query.state || "LA";
+    const apiUrl = `https://api.ebird.org/v2/data/obs/US-${stateCode}/recent`;
+
+    const response = await axios.get(apiUrl, {
+      headers: {
+        "X-eBirdApiToken": process.env.X_EBIRD_API_KEY,
+      },
     });
+
+    const birdList = response.data.map((observation) => ({
+      scientificName: observation.sciName,
+      commonName: observation.comName,
+      location: observation.locName,
+      totalObserved: observation.howMany,
+    }));
+    //add obvs date
+
+    res.json(birdList);
+  } catch (err) {
+    console.error("ERROR:", err);
+    res.sendStatus(500);
+  }
 });
 
 //GET req for all select birdList data
-app.get('/api/birdList/birdSearch', (req, res) => {
+app.get("/api/birdList/birdSearch", (req, res) => {
   BirdList.findAll({
     where: {
       scientificName: sequelize.where(
-        sequelize.fn('LOWER', sequelize.col('scientificName')),
-        'LIKE',
-        '%' + req.query.search.toLowerCase() + '%'
+        sequelize.fn("LOWER", sequelize.col("scientificName")),
+        "LIKE",
+        "%" + req.query.search.toLowerCase() + "%"
       ),
     },
   })
@@ -239,50 +253,50 @@ app.get('/api/birdList/birdSearch', (req, res) => {
 });
 
 ///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////Bird Sightings Routes 
+///////////////////////////////////////////////////////Bird Sightings Routes
 
 //GET req for all birdSightings data
-app.get('/api/birdsightings', (req, res) => {
+app.get("/api/birdsightings", (req, res) => {
   BirdSightings.findAll()
     .then((birdSightings) => {
       res.json(birdSightings);
     })
     .catch((err) => {
-      console.error('ERROR: ', err);
+      console.error("ERROR: ", err);
       res.sendStatus(404);
     });
 });
 
 //POST req to birdSightings database
-app.post('/api/birdsightings', (req, res) => {
+app.post("/api/birdsightings", (req, res) => {
   // console.log('Line 231 - Back End Bird Sightings Post Request: ', req.body);
   BirdSightings.create({
     bird_id: req.body.bird_id,
     user_id: req.body.user_id,
   })
     .then((data) => {
-      console.log('LINE 220', data);
+      // console.log("LINE 220", data);
       res.sendStatus(201);
     })
     .catch((err) => {
-      console.error(err, 'Something went wrong');
+      console.error(err, "Something went wrong");
       res.sendStatus(500);
     });
 });
 
 //Delete req to birdSightings database
-app.delete('/api/birdsightings', (req, res) => {
+app.delete("/api/birdsightings", (req, res) => {
   // console.log('Line 231 - Back End Bird Sightings Delete Request: ', req.body);
   BirdSightings.delete({
     bird_id: req.body.bird_id,
     user_id: req.body.user_id,
   })
     .then((data) => {
-      console.log('LINE 220', data);
+      // console.log("LINE 220", data);
       res.sendStatus(201);
     })
     .catch((err) => {
-      console.error(err, 'Something went wrong');
+      console.error(err, "Something went wrong");
       res.sendStatus(500);
     });
 });
