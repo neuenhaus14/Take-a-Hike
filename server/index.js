@@ -18,6 +18,8 @@ require('./middleware/auth.js');
 const { cloudinary } = require('./utils/coudinary');
 const { Users } = require('./database/models/users');
 
+const { WEATHER_API_KEY } = process.env;
+
 // // Import DB
 // const { db } = require('./database/index.js')
 
