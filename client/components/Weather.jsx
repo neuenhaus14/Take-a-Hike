@@ -7,13 +7,16 @@ const Weather = () => {
   const [text, setText] = useState('');
   const [weather, setWeather] = useState(null);
 
-  useEffect(() => {
-    axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=Yellowstone National Park&days=2&aqi=no&alerts=no`)
-      .then(({ data }) =>  {
+  const getWeather = (location) => {
+    axios.get(`/api/weather/${location}`)
+      .then(({ data }) => {
         console.log(data);
-        setWeather(data);
-      });
-  })
+      })
+  }
+
+  const handleChange = (e) => {
+    setText(e.target.value);
+  }
 
   return (
     <div className='profile-card'>
@@ -23,11 +26,12 @@ const Weather = () => {
         <div className="field">
           <label className="label">Search by region</label>
           <div className="control">
-            <input 
+            <input
               type='text'
               value={text}
               className="card"
               name="region"
+              onChange={handleChange}
             />
           </div>
         </div>
@@ -35,6 +39,7 @@ const Weather = () => {
           type="submit"
           value="Check region"
           className="button is-info is-rounded"
+          onClick={() => getWeather(text)}
         />
       </form>
       <div>

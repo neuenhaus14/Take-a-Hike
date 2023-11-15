@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-// Import Dependencies
-const axios = require('axios');
-const sequelize = require('sequelize');
-const { query } = require('express');
-const express = require('express');
-const path = require('path');
-const passport = require('passport');
-const { getWeather } =require('./weatherHelper.js');
-=======
 const axios = require("axios");
 const sequelize = require("sequelize");
 const { query } = require("express");
 const express = require("express");
 const path = require("path");
 const passport = require("passport");
->>>>>>> b06c0b10f0241ce856fc94a118c7b1c00de3f582
 
 const { BirdList } = require("./database/models/birdList.js");
 const { BirdSightings } = require("./database/models/birdSightings.js");
@@ -23,25 +12,10 @@ const { PackingListItems } = require("./database/models/packingListItems");
 
 // const { default: PackingList } = require("../client/components/PackingList");
 const router = express.Router();
-<<<<<<< HEAD
-const session = require('express-session');
-require('./middleware/auth.js');
-const { cloudinary } = require('./utils/coudinary');
-const { Users } = require('./database/models/users');
-
-const { WEATHER_API_KEY } = process.env;
-
-// // Import DB
-// const { db } = require('./database/index.js')
-
-// // Import Routes
-// const birdListRouter = require('./database/routes/birdListRouter.js')
-=======
 const session = require("express-session");
 require("./middleware/auth.js");
 const { cloudinary } = require("./utils/coudinary");
 const { Users } = require("./database/models/users");
->>>>>>> b06c0b10f0241ce856fc94a118c7b1c00de3f582
 
 // Set Distribution Path
 const PORT = 5555;
@@ -117,7 +91,15 @@ app.get("/profile",(req, res) => {
     } else{
       res.send({});
     }
+});
 
+// request handler for weather api => FUNCTIONAL
+app.get('/api/weather/:region', (req, res) => {
+  const { region } = req.params;
+  axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${process.env.WEATHER_API_KEY}&q=${region}&days=2&aqi=no&alerts=no`)
+    .then(({ data }) => {
+      res.send(data);
+    });
 });
 
 ////////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
