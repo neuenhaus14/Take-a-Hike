@@ -94,9 +94,10 @@ app.get("/profile",(req, res) => {
 });
 
 // request handler for weather api => FUNCTIONAL
-app.get('/api/weather/:region', (req, res) => {
-  const { region } = req.params;
-  axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${process.env.WEATHER_API_KEY}&q=${region}&days=2&aqi=no&alerts=no`)
+app.get('/api/weather/:region/:selectDay', (req, res) => {
+  const { region, selectDay } = req.params;
+  console.log('DAYS', selectDay);
+  axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${process.env.WEATHER_API_KEY}&q=${region}&days=${selectDay}&aqi=no&alerts=no`)
     .then(({ data }) => {
       res.send(data);
     });

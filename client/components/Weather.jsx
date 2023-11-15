@@ -1,21 +1,30 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import NavBar from './NavBar.jsx';
-const { WEATHER_API_KEY} = process.env;
+import WeatherForecast from './WeatherForecast.jsx';
+
+const days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const Weather = () => {
   const [text, setText] = useState('');
-  const [weather, setWeather] = useState(null);
+  const [weather, setWeather] = useState({});
+  const [selectDay, setSelectDay] = useState(days[0]);
 
-  const getWeather = (location) => {
-    axios.get(`/api/weather/${location}`)
+
+  const getWeather = (location, days) => {
+    axios.get(`/api/weather/${location}/${days}`)
       .then(({ data }) => {
         console.log(data);
+        setWeather(data);
       })
   }
-
+  console.log('current weather', weather);
   const handleChange = (e) => {
     setText(e.target.value);
+  }
+
+  const handleValue = (event) => {
+    setSelectDay(event.target.value);
   }
 
   return (
@@ -33,17 +42,20 @@ const Weather = () => {
               name="region"
               onChange={handleChange}
             />
+            <select value={selectDay} onChange={handleValue}>
+              {days.map((day, index) => <option key={index}>{day}</option>)}
+            </select>
           </div>
         </div>
         <input
           type="submit"
           value="Check region"
           className="button is-info is-rounded"
-          onClick={() => getWeather(text)}
+          onClick={() => getWeather(text, selectDay)}
         />
       </form>
       <div>
-        {weather}
+        {/* need to render current weather first then map through forecast */}
       </div>
     </div>
   );
