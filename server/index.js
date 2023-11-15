@@ -17,6 +17,7 @@ const session = require('express-session');
 require('./middleware/auth.js');
 const { cloudinary } = require('./utils/coudinary');
 const { Users } = require('./database/models/users');
+const TRAILS_API_KEY = process.env.TRAILS_API_KEY;
 
 // // Import DB
 // const { db } = require('./database/index.js')
@@ -107,7 +108,7 @@ app.get("/api/trailslist", (req, res) => {
       {
         headers: {
           "X-RapidAPI-Host": "trailapi-trailapi.p.rapidapi.com",
-          "X-RapidAPI-Key": process.env.TRAILS_API_KEY,
+          "X-RapidAPI-Key": TRAILS_API_KEY,
         },
       }
     )
