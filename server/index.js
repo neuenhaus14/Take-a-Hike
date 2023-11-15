@@ -289,6 +289,46 @@ app.post("/search-friends", (req, res) => {
 })
 
 
+app.put("/add-friends/:userId", (req, res) => {
+  const {userId} = req.params
+  const {friend_user_id} = req.body.options
+
+  joinFriends.create({
+        friending_user_id: userId, 
+        friend_user_id: friend_user_id,    
+    })
+    .then(() => {
+      res.status(200).send('You are now following the user');
+    })
+    .catch((err) => {
+      console.error('Error following user:', err);
+      res.status(500).send('Error following user');
+    });
+})
+
+app.get('/friends-list/:user_id', (req, res) => {
+  // access the user_id field
+  const { user_id } = req.params;
+  // FavoriteQuestion model to find all of the user's favorite questions
+  joinFriends.findAll({ where: { friending_user_id: user_id }})
+    .then((friends) => {
+      Users.findAll({ where: { _id: friends.friend_user_id }})
+      .then((friend) => {
+        console.log(friend)
+        res.status(200);
+        res.send(friend);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.sendStatus(404);
+      });
+    
+    })
+    .catch((err) => {
+      console.error('Could not GET questions by user_id', err);
+      res.sendStatus(500);
+    });
+});
 
 // launches the server from localhost on port 5555
 app.listen(PORT, () => {

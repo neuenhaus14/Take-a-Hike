@@ -11,7 +11,7 @@ const UserProfile = () => {
   useEffect(() => {
     axios.get("/profile").then((profile) => {
       const user = profile.data;
-      console.log(user);
+      //console.log(user);
       setProfileName(user.fullName);
       setPicture(user.picture);
       setEmail(user.email);
