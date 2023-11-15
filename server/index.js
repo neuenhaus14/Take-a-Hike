@@ -17,7 +17,6 @@ const session = require('express-session');
 require('./middleware/auth.js');
 const { cloudinary } = require('./utils/coudinary');
 const { Users } = require('./database/models/users');
-const TRAILS_API_KEY = process.env.TRAILS_API_KEY;
 
 // // Import DB
 // const { db } = require('./database/index.js')
@@ -57,6 +56,7 @@ app.get(
   passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 
+
 app.get(
   '/auth/google/callback',
   passport.authenticate('google', {
@@ -88,29 +88,32 @@ app.get('/logout', (req, res) => {
 
 app.get("/profile",(req, res) => {
   Users.findOne()
-    .then((data) => {
-      console.log('data', data);
-      res.send(data).status(200);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
+  .then((data) => {
+    console.log('data', data);
+    res.send(data).status(200);
+  })
+  .catch((err) => {
+    console.error(err);
+    res.sendStatus(500);
+  });
 });
 
 ////////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
 
+app.get('/api/googlemapskey', (req, res) => {
+  res.json({mapsApiKey: process.env.GOOGLE_MAPS_API_KEY });
+});
 //GET req for trail data by latitude/longitude
 app.get("/api/trailslist", (req, res) => {
   axios
-    .get(
-      `https://trailapi-trailapi.p.rapidapi.com/trails/explore/?lat=${req.query.lat}&lon=${req.query.lon}&radius=100`,
-      {
-        headers: {
-          "X-RapidAPI-Host": "trailapi-trailapi.p.rapidapi.com",
-          "X-RapidAPI-Key": TRAILS_API_KEY,
-        },
-      }
+  .get(
+    `https://trailapi-trailapi.p.rapidapi.com/trails/explore/?lat=${req.query.lat}&lon=${req.query.lon}&radius=100`,
+    {
+      headers: {
+        "X-RapidAPI-Host": "trailapi-trailapi.p.rapidapi.com",
+        "X-RapidAPI-Key": process.env.TRAILS_API_KEY,
+      },
+    }
     )
     .then((response) => {
       // console.log(response.data); - returns array of objects of trail data
@@ -120,29 +123,29 @@ app.get("/api/trailslist", (req, res) => {
       console.error("ERROR: ", err);
       res.sendStatus(404);
     });
-});
+  });
+  
+  //////////////////////////////////////// Cloudinary routes //////////////////////////////////////
 
-//////////////////////////////////////// Cloudinary routes //////////////////////////////////////
-
-// get request to get all images (this will later be trail specific)
-app.post("/api/images", async (req, res) => {
-  console.log(`server index.js || LINE 70`, req.body);
-  // NEED TO CHANGE ENDPOINT TO INCLUDE TRAIL SPECIFIC PARAM SO PHOTOS CAN BE UPLOADED + RENDERED PROPERLY
-
-  // Can create new folder with upload from TrailProfile component. Need to modify get request to filter based on folder param (which will be equal to the trail name)
-  const resources = await cloudinary.search
+  // get request to get all images (this will later be trail specific)
+  app.post("/api/images", async (req, res) => {
+    console.log(`server index.js || LINE 70`, req.body);
+    // NEED TO CHANGE ENDPOINT TO INCLUDE TRAIL SPECIFIC PARAM SO PHOTOS CAN BE UPLOADED + RENDERED PROPERLY
+    
+    // Can create new folder with upload from TrailProfile component. Need to modify get request to filter based on folder param (which will be equal to the trail name)
+    const resources = await cloudinary.search
     .expression(`resource_type:image AND folder:${req.body.trailFolderName}/*`)
     .sort_by('created_at', 'desc')
     .max_results(30)
     .execute();
-  // console.log(
-  //   'SERVER INDEX.JS || CLOUDINARY GET || LINE 38 || resources ==>',
-  //   resources
-  // ;
-  // try to filter before map
-  const secureImageUrls = resources.resources
-    .filter((imageObj) => imageObj.folder === req.body.trailFolderName)
-    .map((image) => image.secure_url);
+    // console.log(
+      //   'SERVER INDEX.JS || CLOUDINARY GET || LINE 38 || resources ==>',
+      //   resources
+      // ;
+      // try to filter before map
+      const secureImageUrls = resources.resources
+      .filter((imageObj) => imageObj.folder === req.body.trailFolderName)
+      .map((image) => image.secure_url);
   res.json(secureImageUrls);
 });
 
