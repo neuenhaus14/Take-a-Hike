@@ -8,8 +8,17 @@ import FriendsList from './FriendsList.jsx'
 const Friends = () => {
   const [userId, setUserId] = useState();
   const [friendSearch, setFriendSearch] = useState("");
+  const [friendAddedButton, setFriendAddedButton] = useState(false);
   const [resUsers, setResUsers] = useState([]);
   const [friendList, setFriendList] = useState([]);
+
+  useEffect(() => {
+    axios.get(`friends-list/${1}`)
+    .then((response) => {
+      setFriendList(response.data)
+    })
+    .catch((err) => console.error(err));
+  }, [setFriendList]);
 
   const searchFriends = () => {
     console.log(friendSearch)
@@ -19,6 +28,7 @@ const Friends = () => {
       }
      })
     .then((response) => {
+      setFriendAddedButton(false);
       setResUsers(response.data)
       console.log("res data", response.data)
     })
@@ -33,21 +43,20 @@ const Friends = () => {
       }
     })
     .then(() => {
-      showFriendList()
+      updateFriendList();
+      setFriendAddedButton(true);
     })
     .catch((err) => console.error(err))
   }
 
-  
-  const showFriendList = () => {
+  const updateFriendList = () => {
     axios.get(`friends-list/${1}`)
     .then((response) => {
-      setFriendList(friendList.concat(response.data))
+      setFriendList(response.data)
     })
     .catch((err) => console.error(err));
   }
 
-  console.log('friendList', friendList)
   return (
     <div>
       <div id="friend-search">
@@ -59,11 +68,12 @@ const Friends = () => {
       </div>
       <div id='friend-search-results'>
       { resUsers.map((result) =>
-      <div id='result-elements'>
-         <img key={result._id} src={`${result.picture}`} width="50" height="50"/> 
-         <span >{result.fullName}</span>
+      <div id='result-elements' key={result._id}>
+         <img src={`${result.picture}`} width="50" height="50"/> 
+         <span>{result.fullName}</span> <br />
+         <span> {result.email.slice(0, 11)} </span>
          <button type="button" onClick = {() => addFriends(result)}>
-          Add Friend</button>
+          {friendAddedButton ? "Friends" : "Add Friend"} </button>
          <br /> 
       </div>
       )}

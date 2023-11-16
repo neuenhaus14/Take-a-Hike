@@ -307,22 +307,22 @@ app.put("/add-friends/:userId", (req, res) => {
 })
 
 app.get('/friends-list/:user_id', (req, res) => {
-  // access the user_id field
+
   const { user_id } = req.params;
-  // FavoriteQuestion model to find all of the user's favorite questions
+
   joinFriends.findAll({ where: { friending_user_id: user_id }})
     .then((friends) => {
-      Users.findAll({ where: { _id: friends.friend_user_id }})
+      const friend = friends.map((friend) => friend.friend_user_id)
+      Users.findAll({ where: { _id: friend }})
       .then((friend) => {
-        console.log(friend)
-        res.status(200);
-        res.send(friend);
+        const friendName = friend.map((name) => name.fullName)
+        console.log(friendName)
+        res.status(200).send(friendName);
       })
       .catch((err) => {
         console.error(err);
         res.sendStatus(404);
-      });
-    
+      })
     })
     .catch((err) => {
       console.error('Could not GET questions by user_id', err);
