@@ -402,13 +402,16 @@ app.post('/add-comment', (req, res) => {
 
   Comments.create({ user_id, trail_id, comment })
     .then((data) => {
-      console.log('comments data', data)
       res.sendStatus(201);
     })
     .catch((err) => {
       console.error(err, "Something went wrong");
       res.sendStatus(500);
     });
+})
+
+app.get('/comments-by-trail/:trail_id', (req, res) => {
+  // write out get request to show comments on trail
 })
 
 // launches the server from localhost on port 5555

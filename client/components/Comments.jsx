@@ -4,20 +4,22 @@ import axios from "axios";
 
 
 const Comments = ({trail_id, user_id}) => {
-  const [comment, setComment] = useState([]);
+  const [comment, setComment] = useState('');
+  const [comments, setComments] = useState([])
+
+  useEffect (() => {
+    axios.get(`/comments-by-trail/${trail_id}`)
+    .then((response) => {
+      console.log('show comments response', response.data)
+      setComments(response.data)
+    })
+    .catch((err) => console.error(err));
+  }, [setComments])
 
   const addComment = () => {
     console.log(user_id, trail_id)
-    axios.post("/add-comment", { 
-      options: {
-        user_id,
-        trail_id,
-        comment
-      }
-     })
-    .then((response) => {
-     console.log('comment has been posted!')
-    })
+    axios.post("/add-comment", { options: { user_id, trail_id, comment } })
+    .then(() => console.log('comment has been posted!'))
     .catch((err) => console.error(err));
   }
 
