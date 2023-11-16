@@ -7,14 +7,12 @@ const days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const Weather = () => {
   const [text, setText] = useState('');
-  const [weather, setWeather] = useState({});
+  const [weather, setWeather] = useState(null);
   const [selectDay, setSelectDay] = useState(days[0]);
-
 
   const getWeather = (location, days) => {
     axios.get(`/api/weather/${location}/${days}`)
       .then(({ data }) => {
-        console.log(data);
         setWeather(data);
       })
   }
@@ -55,7 +53,9 @@ const Weather = () => {
         />
       </form>
       <div>
-        {/* need to render current weather first then map through forecast */}
+        {!weather ? null : (
+          weather.forecast.forecastday.map(forecast => <WeatherForecast key={forecast.date} forecast={forecast} />)
+        )}
       </div>
     </div>
   );
