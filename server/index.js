@@ -17,6 +17,7 @@ const session = require("express-session");
 require("./middleware/auth.js");
 const { cloudinary } = require("./utils/coudinary");
 const { Users } = require("./database/models/users");
+const { UserTrips } = require("./database/models/userTrips"); 
 
 dotenv.config({
   path: path.resolve(__dirname, "../.env"),
@@ -90,7 +91,6 @@ app.get('/logout', (req, res) => {
 });
 
 app.get("/profile",(req, res) => {
-    // console.log('User profile request:', req.user);
     if(req.isAuthenticated()){
       //console.log('/profile get user', req.user)
       res.send(req.user);
@@ -138,7 +138,7 @@ app.get("/api/trailslist", (req, res) => {
 
   // get request to get all images (this will later be trail specific)
   app.post("/api/images", async (req, res) => {
-    console.log(`server index.js || LINE 70`, req.body);
+    // console.log(`server index.js || LINE 70`, req.body);
     // NEED TO CHANGE ENDPOINT TO INCLUDE TRAIL SPECIFIC PARAM SO PHOTOS CAN BE UPLOADED + RENDERED PROPERLY
     
     // Can create new folder with upload from TrailProfile component. Need to modify get request to filter based on folder param (which will be equal to the trail name)
@@ -210,6 +210,24 @@ app.post("/api/packingListItems", (req, res) => {
       res.sendStatus(500);
     });
 });
+
+//Routes for posting to user trips
+app.post("/profile/userTrips", (req, res) => {
+  // console.log("Server index.js LINE 55", req);
+  //using the UserTrips model, create a new entry in the userTrips table
+  UserTrips.create({
+    userId: 1,
+    tripId: 278258,
+  })
+    .then((data) => {
+      // console.log("LINE 63", data.dataValues);
+      res.sendStatus(201);
+    })
+    .catch((err) => {
+      console.error(err, "Something went wrong");
+      res.sendStatus(500);
+    });
+})
 
 ///////////////////////////////////////////////////////////////////////////////
 

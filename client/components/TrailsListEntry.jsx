@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import axios from 'axios';
+
+const handleAddTrail = (trail) => {
+  axios.post('/profile/userTrips', trail)
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((err) => {
+      console.error('ERROR: ', err);
+    });
+};
 
 const TrailsListEntry = ({ trail }) => {
   return (
-    <Link to={`/trailprofile/${trail.id}`}>
+    // <Link to={`/trailprofile/${trail.id}`}>
       <div className="profile-card">
         <div className="list-item-card">
           <img src={trail.thumbnail} />
@@ -18,9 +28,12 @@ const TrailsListEntry = ({ trail }) => {
           <div className="info-group">
             <p>Rating: {trail.rating}</p>
           </div>
+          <div className="button">
+            <button type='button' value={trail} onClick={() => {handleAddTrail(trail)}}>Add Trail to user trails</button>
+          </div>
         </div>
       </div>
-    </Link>
+    // </Link>
   );
 };
 
