@@ -16,14 +16,14 @@ const TrailsList = ({ handleGetTrails, trailList }) => {
         const response = await fetch('/api/google-maps-library');
         const url = await response.text();
         const tagAlreadyExists = document.querySelector(`script[src="${url}"]`);
-        if (!tagAlreadyExists) {
+        if (tagAlreadyExists) {
+          setMapsLibraryLoaded(true);
+        } else {
           const script = document.createElement('script');
           script.src = url;
           document.head.appendChild(script);
           script.onload = () => { setMapsLibraryLoaded(true); };
-        } else {
-          setMapsLibraryLoaded(true);
-        }
+        } 
       } catch (err) {
         console.error('error fetching maps URL: ', err);
       }
