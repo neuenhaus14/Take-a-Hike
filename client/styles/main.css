@@ -268,3 +268,10 @@ body {
   right: 0;
   bottom: 0;
 }
+
+.spinner img{
+  display: block;
+  margin: 0 auto;
+  width: 25%;
+  height: 25%;
+}

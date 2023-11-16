@@ -3,7 +3,7 @@ import TrailsListEntry from './TrailsListEntry.jsx';
 import NavBar from './NavBar.jsx';
 import PlacesAutocomplete, {geocodeByAddress, getLatLng} from 'react-places-autocomplete';
 
-const TrailsList = ({ handleGetTrails, trailList }) => {
+const TrailsList = ({ handleGetTrails, trailList, loading }) => {
   const [location, setLocation] = useState({ lat: '', lon: '' });
   const [address, setAddress] = useState('');
   const [mapsLibraryLoaded, setMapsLibraryLoaded] = useState(false);  
@@ -91,7 +91,6 @@ const TrailsList = ({ handleGetTrails, trailList }) => {
     <div className="trails-list">
       <NavBar />
       <form className="box">
-        
         <h1 className="profile-card">
         Find a trail near you! 
         </h1>
@@ -199,9 +198,16 @@ const TrailsList = ({ handleGetTrails, trailList }) => {
       </form>
       <div className="trails">
         <div className="trail-table">
-          {trailList.map((trail) => {
-            return <TrailsListEntry trail={trail} key={trail.id} />;
-          })}
+          {loading 
+            ? 
+            <div className="list-item-card">
+              <div className="spinner">
+                <img align="center" src='./LoaderSpinner.gif'/>
+              </div>
+            </div> :
+            trailList.map((trail) => {
+              return <TrailsListEntry trail={trail} key={trail.id} />;
+            })}
         </div>
       </div>
     </div>
