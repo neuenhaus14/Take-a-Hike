@@ -10,6 +10,7 @@ const { BirdSightings } = require("./database/models/birdSightings.js");
 const { PackingLists } = require("./database/models/packingLists");
 const { PackingListItems } = require("./database/models/packingListItems");
 const { joinFriends } = require("./database/models/joinFriends");
+const { Comments } = require("./database/models/comments");
 
 // const { default: PackingList } = require("../client/components/PackingList");
 const router = express.Router();
@@ -17,6 +18,7 @@ const session = require("express-session");
 require("./middleware/auth.js");
 const { cloudinary } = require("./utils/coudinary");
 const { Users } = require("./database/models/users");
+
 
 dotenv.config({
   path: path.resolve(__dirname, "../.env"),
@@ -392,6 +394,22 @@ app.get('/friends-list/:user_id', (req, res) => {
       res.sendStatus(500);
     });
 });
+
+app.post('/add-comment', (req, res) => {
+  const { user_id } = req.body.options
+  const { trail_id } = req.body.options
+  const { comment } = req.body.options
+
+  Comments.create({ user_id, trail_id, comment })
+    .then((data) => {
+      console.log('comments data', data)
+      res.sendStatus(201);
+    })
+    .catch((err) => {
+      console.error(err, "Something went wrong");
+      res.sendStatus(500);
+    });
+})
 
 // launches the server from localhost on port 5555
 app.listen(PORT, () => {

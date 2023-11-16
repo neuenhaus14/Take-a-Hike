@@ -15,11 +15,12 @@ const cloudName = 'dbwbxubwi';
 const TrailProfile = ({ trailList }) => {
   const userData = useLoaderData();
   const userId = userData._id;
+  console.log(userId)
   
   // console.log(trailList)
   const { id } = useParams();
   const displayTrail = trailList.find((trail) => trail.id == id);
-  const trailId = id
+  const trailId = parseInt(id)
   // console.log(`TRAILPROFILE || LINE 11 || displayTrail`, displayTrail); // access params
 
   // const getTrailId = trailList.map((trail) => setTrailId(trail.id))
@@ -147,7 +148,7 @@ const TrailProfile = ({ trailList }) => {
           <a href={`${displayTrail.url}`} target="_blank">
             Trail Website
           </a>
-          <Comments trail_Id={trailId} user_Id={userId}/>
+          <Comments trail_id={trailId} user_id={userId}/>
         </div>
         {/* </div> */}
         {/* <input type="file" onChange={(e) => setImage(e.target.files[0])} /> */}
