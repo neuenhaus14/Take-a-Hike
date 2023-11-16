@@ -7,13 +7,17 @@ const days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const Weather = () => {
   const [text, setText] = useState('');
-  const [weather, setWeather] = useState(null);
+  const [weather, setWeather] = useState(false);
   const [selectDay, setSelectDay] = useState(days[0]);
+  const [future, setFuture] = useState([]);
+  const [region, setRegion] = useState(null);
 
   const getWeather = async (location, days) => {
      await axios.get(`/api/weather/${location}/${days}`)
     .then(({ data }) => {
-      setWeather(data);
+      setWeather(true);
+      setFuture(data.forecast.forecastday);
+      setRegion(data.location.name);
     })
   }
 
@@ -21,8 +25,6 @@ const Weather = () => {
     e.preventDefault();
     getWeather(location, days);
   };
-
-  console.log('current weather', weather);
 
   const handleChange = (e) => {
     setText(e.target.value);
@@ -60,16 +62,11 @@ const Weather = () => {
         />
       </form>
       <div>
-        {!weather ? null : (
+        {!weather || future.length === 0 ? null : (
           <div>
-            Forecast: {weather.current.temp_f} °F
+            <p className="current-forecast">Forecast for {region}</p>
+            {future.map(forecast => <WeatherForecast key={forecast.date} forecast={forecast} region={region}/>)}
           </div>
-          )
-        }
-      </div>
-      <div>
-        {!weather ? null : (
-          weather.forecast.forecastday.map(forecast => <WeatherForecast key={forecast.date} forecast={forecast} />)
         )}
       </div>
     </div>

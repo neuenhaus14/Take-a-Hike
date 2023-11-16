@@ -268,3 +268,38 @@ body {
   right: 0;
   bottom: 0;
 }
+
+
+/* WEATHER COMPONENT */
+.current-forecast, .current-date {
+  text-align: center;
+  margin: auto;
+  padding-bottom: 10px;
+}
+
+.weather-conditions {
+  background-color: rgba(153, 221, 223, 0.507);
+  box-shadow: 10px 0px 10px 0px lightgray;
+  border: 1px solid lightgray;
+  margin-bottom: 25px;
+  text-align: center;
+  border-radius: 3px;
+}
+.info-container-top {
+  padding-top: 5px;
+}
+
+.info-container-bottom {
+  padding-bottom: 5px;
+}
+
+.weather-info {
+  margin-left: 20px;
+  margin-right: 20px;
+  font-weight: 500;
+  font-family: "New Century Schoolbook";
+}
+
+.future-forecast {
+  
+}
