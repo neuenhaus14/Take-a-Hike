@@ -10,11 +10,6 @@ const Weather = () => {
   const [weather, setWeather] = useState(null);
   const [selectDay, setSelectDay] = useState(days[0]);
 
-  useEffect(() => {
-    getWeather(text, selectDay)
-    console.log('refreshed')
-  }, []);
-
   const getWeather = async (location, days) => {
      await axios.get(`/api/weather/${location}/${days}`)
     .then(({ data }) => {
