@@ -346,7 +346,8 @@ app.put("/add-friends/:userId", (req, res) => {
     });
 })
 
-app.delete("/delete-friends/:userId", (req, res) => {
+app.delete("/delete-friends/:userId/:friend_user_id", (req, res) => {
+  console.log(req.params);
   const {userId} = req.params
   const {friend_user_id} = req.params
 
@@ -376,9 +377,10 @@ app.get('/friends-list/:user_id', (req, res) => {
       const friend = friends.map((friend) => friend.friend_user_id)
       Users.findAll({ where: { _id: friend }})
       .then((friend) => {
-        const friendName = friend.map((name) => name.fullName)
-        console.log('friendName', friendName)
-        res.status(200).send(friendName);
+        //const friendName = friend.map((name) => name.fullName)
+        //console.log('friendName', friendName)
+        //res.status(200).send(friendName);
+        res.status(200).send(friend);
       })
       .catch((err) => {
         console.error(err);
