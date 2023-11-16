@@ -14,15 +14,15 @@ import Login from './Login.jsx';
 
 const App = () => {
   const [trailList, setTrailList] = useState([]);
-
+  const [loading, setLoading] = useState(false);
   const getUserLoader = async () => {
-   try{
-    const response = await axios.get('/profile');
-    return response.data;
-   } catch (err) {
+    try {
+      const response = await axios.get('/profile');
+      return response.data;
+    } catch (err) {
       console.error(err);
-      throw (err)
-   }
+      throw (err);
+    }
   };
 
   useEffect(() => {
@@ -34,6 +34,7 @@ const App = () => {
 
   // were in trail list
   const handleGetTrails = (location) => {
+    setLoading(true);
     axios
       .get('/api/trailslist', {
         params: { lat: location.lat, lon: location.lon },
@@ -42,6 +43,9 @@ const App = () => {
         setTrailList(response.data.data);
         // add data to local storage
         localStorage.setItem('TrailList', JSON.stringify(response.data.data));
+      })
+      .then(()=>{
+        setLoading(false);
       })
       .catch((err) => {
         console.error('ERROR: ', err);
@@ -55,6 +59,7 @@ const App = () => {
           path='trailslist'
           element={
             <TrailsList
+              loading={loading}
               handleGetTrails={handleGetTrails}
               trailList={trailList}
             />
@@ -70,7 +75,7 @@ const App = () => {
         <Route path='profile' element={<UserProfile />} loader={getUserLoader}/>
       </Route>
     )
-  )
+  );
 
   return (
     <div className='app'>

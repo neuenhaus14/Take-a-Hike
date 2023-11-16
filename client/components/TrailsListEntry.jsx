@@ -26,4 +26,4 @@ const TrailsListEntry = ({ trail }) => {
   );
 };
 
-export default TrailsListEntry
+export default TrailsListEntry;
