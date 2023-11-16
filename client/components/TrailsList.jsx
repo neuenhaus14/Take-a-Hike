@@ -9,9 +9,6 @@ const TrailsList = ({ handleGetTrails, trailList }) => {
   const [mapsLibraryLoaded, setMapsLibraryLoaded] = useState(false);  
   
   useEffect(()=>{
-    window.addEventListener('beforeunload', () => {
-      setMapsLibraryLoaded(false);
-    });
     const initMap = () => setMapsLibraryLoaded(true);
 
     const fetchMapsURL = async () =>{
