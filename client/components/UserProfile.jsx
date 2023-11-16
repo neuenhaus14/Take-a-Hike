@@ -3,11 +3,15 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Friends from "./Friends.jsx";
 import NavBar from "./NavBar.jsx";
+import { useLoaderData } from 'react-router-dom';
 
 const UserProfile = () => {
   const [profileName, setProfileName] = useState("");
   const [picture, setPicture] = useState("");
   const [email, setEmail] = useState("");
+
+  const userData = useLoaderData();
+  const userId = userData._id;
 
   useEffect(() => {
     axios.get("/profile").then((profile) => {
@@ -26,7 +30,7 @@ const UserProfile = () => {
       <a href={picture}></a>
       <p>{email}</p>
       <div>
-        <Friends />
+        <Friends userId={userId}/>
       </div>
     </div>
   );

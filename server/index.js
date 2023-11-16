@@ -9,7 +9,7 @@ const { BirdList } = require("./database/models/birdList.js");
 const { BirdSightings } = require("./database/models/birdSightings.js");
 const { PackingLists } = require("./database/models/packingLists");
 const { PackingListItems } = require("./database/models/packingListItems");
-
+const { joinFriends } = require("./database/models/joinFriends");
 
 // const { default: PackingList } = require("../client/components/PackingList");
 const router = express.Router();
@@ -90,8 +90,9 @@ app.get('/logout', (req, res) => {
 });
 
 app.get("/profile",(req, res) => {
-    console.log('User profile request:', req.user);
+    // console.log('User profile request:', req.user);
     if(req.isAuthenticated()){
+      //console.log('/profile get user', req.user)
       res.send(req.user);
     } else{
       res.send({});
@@ -345,9 +346,30 @@ app.put("/add-friends/:userId", (req, res) => {
     });
 })
 
+app.delete("/delete-friends/:userId", (req, res) => {
+  const {userId} = req.params
+  const {friend_user_id} = req.params
+
+  joinFriends.destroy({ 
+    where: {
+        friending_user_id: userId, 
+        friend_user_id: friend_user_id,    
+  }
+    })
+    .then(() => {
+      console.log('destoryed')
+      res.sendStatus(200);
+    })
+    .catch((err) => {
+      console.error('Could not DELETE friend', err);
+      res.sendStatus(500);
+    });
+})
+
 app.get('/friends-list/:user_id', (req, res) => {
 
   const { user_id } = req.params;
+  console.log('req.params', req.params)
 
   joinFriends.findAll({ where: { friending_user_id: user_id }})
     .then((friends) => {
@@ -355,7 +377,7 @@ app.get('/friends-list/:user_id', (req, res) => {
       Users.findAll({ where: { _id: friend }})
       .then((friend) => {
         const friendName = friend.map((name) => name.fullName)
-        console.log(friendName)
+        console.log('friendName', friendName)
         res.status(200).send(friendName);
       })
       .catch((err) => {

@@ -16,7 +16,6 @@ const Comments = db.define('comments', {
   },
   trail_id: {
     type: DataTypes.INTEGER, 
-    references: { model: Trails, key: '_id' }, 
   },
   comment: DataTypes.STRING,
   likes: DataTypes.INTEGER, 

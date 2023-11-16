@@ -5,23 +5,24 @@ import axios from "axios";
 import FriendsList from './FriendsList.jsx'
 
 // Create Functional Component
-const Friends = () => {
-  const [userId, setUserId] = useState();
+const Friends = ({userId}) => {
   const [friendSearch, setFriendSearch] = useState("");
   const [friendAddedButton, setFriendAddedButton] = useState(false);
   const [resUsers, setResUsers] = useState([]);
   const [friendList, setFriendList] = useState([]);
 
+  const currentUser = userId;
+
   useEffect(() => {
-    axios.get(`friends-list/${1}`)
+    axios.get(`/friends-list/${currentUser}`)
     .then((response) => {
+      console.log('set friend list', response.data)
       setFriendList(response.data)
     })
     .catch((err) => console.error(err));
   }, [setFriendList]);
 
   const searchFriends = () => {
-    console.log(friendSearch)
     axios.post("/search-friends", { 
       options: {
         fullName: friendSearch.trim()
@@ -30,14 +31,12 @@ const Friends = () => {
     .then((response) => {
       setFriendAddedButton(false);
       setResUsers(response.data)
-      console.log("res data", response.data)
     })
     .catch((err) => console.error(err));
   }
 
   const addFriends = (friend) => {
-    console.log('friend', friend)
-    axios.put(`/add-friends/${1}`, {
+    axios.put(`/add-friends/${currentUser}`, {
       options: {
         friend_user_id: friend._id
       }
@@ -50,7 +49,8 @@ const Friends = () => {
   }
 
   const updateFriendList = () => {
-    axios.get(`friends-list/${1}`)
+    console.log('curr user', currentUser)
+    axios.get(`/friends-list/${currentUser}`)
     .then((response) => {
       setFriendList(response.data)
     })
@@ -78,7 +78,7 @@ const Friends = () => {
       </div>
       )}
       <div>
-        <FriendsList friends={friendList}/>
+        <FriendsList friends={friendList} userId={userId}/>
       </div>
       </div>
     </div>
