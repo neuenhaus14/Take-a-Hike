@@ -2,19 +2,62 @@ import React, { useState, useEffect } from "react";
 import TrailsListEntry from "./TrailsListEntry.jsx";
 import NavBar from './NavBar.jsx';
 import PlacesAutocomplete, {geocodeByAddress, getLatLng} from "react-places-autocomplete"
-import axios from "axios";
 
 const TrailsList = ({ handleGetTrails, trailList }) => {
   const [location, setLocation] = useState({ lat: "", lon: "" });
-  const [address, setAddress] = useState("")
- 
+  const [address, setAddress] = useState("");
+  const [mapsLibraryLoaded, setMapsLibraryLoaded] = useState(false);  
   
+  useEffect(()=>{
+  const initMap = () => setMapsLibraryLoaded(true);
+
+  const fetchMapsURL = async () =>{
+    try{
+      const response = await fetch('/api/google-maps-library')
+      const data = await response.text();
+    if(data){
+      const script = document.createElement('script')
+      script.src = `${data}&callback=initMap`;
+      document.head.appendChild(script);
+    }
+    }catch(err){
+      console.error('error fetching maps URL: ', err)
+    }
+  }
+
+  window.initMap = initMap;
+  fetchMapsURL();
+}, []);
+
   const handleLocationInput = (e) => {
     const { name, value } = e.target;
     setLocation((location) => {
       return { ...location, [name]: value, [name]: value };
     });
   };
+
+  const userLocationGrab = () =>{
+    if(navigator.geolocation){
+      navigator.geolocation.getCurrentPosition(
+        (position) =>{
+          setLocation({
+            lat: position.coords.latitude,
+            lon: position.coords.longitude
+          });
+          handleGetTrails({
+            lat: position.coords.latitude,
+            lon: position.coords.longitude
+          });
+        },
+        (err) =>{
+          console.error('error in location grab: ', err)
+        }
+      )
+    }else{
+      console.error('geolocation not supported')
+    }
+    
+  }
 
   const handleSelect = (selectedAddress) =>{
     geocodeByAddress(selectedAddress)
@@ -37,17 +80,33 @@ const TrailsList = ({ handleGetTrails, trailList }) => {
     e.preventDefault();
     handleGetTrails(location);
   };
-
+  
   return (
     <div className="trails-list">
       <NavBar />
-      <h1 className="Header" alignment="center">
-        Find a Trail!
+      <form className="box">
+      <div>      
+      <h1 className="Header" align="center">
+        Find a trail near you! 
       </h1>
+      <div className="button-wrapper" align="center">
+      <button
+      onClick={userLocationGrab}
+      type="button"
+      className="button is-info is-rounded"
+      align="center"
+      >Use Current Location
+      </button>
+      </div>
+      </div></form>
       <form className="box" onSubmit={handleSubmitLocation}>
+      <div>
+      <h1 className="Header" align="center">Or search for another location:</h1>
+        </div>
         <div className="field" key="places-autocomplete-wrapper">
         <label className="label">Address</label>
-        <PlacesAutocomplete
+
+        {mapsLibraryLoaded && <PlacesAutocomplete
   value={address}
   onChange={handleChange}
   onSelect={handleSelect}
@@ -84,7 +143,7 @@ const TrailsList = ({ handleGetTrails, trailList }) => {
       </div>
     </div>
   )}
-</PlacesAutocomplete>
+</PlacesAutocomplete>}
         </div>
         <h5>-OR SEARCH BY-</h5>
         <div className="field">
@@ -115,11 +174,15 @@ const TrailsList = ({ handleGetTrails, trailList }) => {
           </div>
         </div>
 
+        
+        <div className="button-container" align="center">
         <input
+        
           type="submit"
-          value="Send Location"
+          value="Search Location"
           className="button is-info is-rounded"
         />
+        </div>
       </form>
       <div className="trails">
         <div className="trail-table">
