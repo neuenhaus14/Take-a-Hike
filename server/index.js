@@ -4,11 +4,12 @@ const { query } = require("express");
 const express = require("express");
 const path = require("path");
 const passport = require("passport");
-
+const dotenv = require("dotenv")
 const { BirdList } = require("./database/models/birdList.js");
 const { BirdSightings } = require("./database/models/birdSightings.js");
 const { PackingLists } = require("./database/models/packingLists");
 const { PackingListItems } = require("./database/models/packingListItems");
+
 
 // const { default: PackingList } = require("../client/components/PackingList");
 const router = express.Router();
@@ -16,6 +17,10 @@ const session = require("express-session");
 require("./middleware/auth.js");
 const { cloudinary } = require("./utils/coudinary");
 const { Users } = require("./database/models/users");
+
+dotenv.config({
+  path: path.resolve(__dirname, "../.env"),
+});
 
 // Set Distribution Path
 const PORT = 5555;
@@ -105,9 +110,15 @@ app.get('/api/weather/:region/:selectDay', (req, res) => {
 
 ////////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
 
-app.get('/api/googlemapskey', (req, res) => {
-  res.json({mapsApiKey: process.env.GOOGLE_MAPS_API_KEY });
+app.get('/api/google-maps-library', (req, res) => {
+  try {
+      res.send(`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places&callback=initMap`);
+  } catch (err) {
+      res.status(500).json({ error: 'Error fetching maps URL' });
+      console.error('Error fetching maps URL: ', err);
+  }
 });
+
 //GET req for trail data by latitude/longitude
 app.get("/api/trailslist", (req, res) => {
   axios
