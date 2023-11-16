@@ -53,6 +53,14 @@ const Weather = () => {
         />
       </form>
       <div>
+        {`Current weather: `}
+        {
+          !weather ? null : (
+            `${weather.current.temp_f} °F`
+          )
+        }
+      </div>
+      <div>
         {!weather ? null : (
           weather.forecast.forecastday.map(forecast => <WeatherForecast key={forecast.date} forecast={forecast} />)
         )}
