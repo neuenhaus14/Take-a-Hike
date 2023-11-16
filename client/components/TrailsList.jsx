@@ -31,7 +31,6 @@ const TrailsList = ({ handleGetTrails, trailList }) => {
         console.error('error fetching maps URL: ', err);
       }
     };
-
     window.initMap = initMap;
     fetchMapsURL();
     return () =>{
@@ -115,48 +114,54 @@ const TrailsList = ({ handleGetTrails, trailList }) => {
           <h1 className="profile-card">Or search for another location:</h1>
         </div>
         <div className="field" key="places-autocomplete-wrapper">
-          <label className="label">Address</label>
 
-          {mapsLibraryLoaded && <PlacesAutocomplete
-            value={address}
-            onChange={handleChange}
-            onSelect={handleSelect}
-          >
-            {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
-              <div>
-                <input
-                  {...getInputProps({
-                    placeholder: 'Search Places ...',
-                    className: 'card',
-                  })}
-                />
-                <div className="autocomplete-dropdown-container">
-                  {loading && <div>Loading...</div>}
-                  {suggestions.map((suggestion) => {
-                    const className = suggestion.active
-                      ? 'suggestion-item--active'
-                      : 'suggestion-item';
-                    const style = suggestion.active
-                      ? { backgroundColor: '#fafafa', cursor: 'pointer' }
-                      : { backgroundColor: '#ffffff', cursor: 'pointer' };
-                    return (
-                      <div 
-                        {...getSuggestionItemProps(suggestion, {
-                          className,
-                          style,
-                        })}
-                        key={suggestion.placeId}
-                      >
-                        <span>{suggestion.description}</span>
-                      </div>
-                    );
-                  })}
+          {mapsLibraryLoaded && 
+          <>
+            <label className="label">Address</label>
+            <PlacesAutocomplete
+              value={address}
+              onChange={handleChange}
+              onSelect={handleSelect}
+            >
+              {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
+                <div>
+                  <input
+                    {...getInputProps({
+                      placeholder: 'Search Places ...',
+                      className: 'card',
+                    })}
+                  />
+                  <div className="autocomplete-dropdown-container">
+                    {loading && <div>Loading...</div>}
+                    {suggestions.map((suggestion) => {
+                      const className = suggestion.active
+                        ? 'suggestion-item--active'
+                        : 'suggestion-item';
+                      const style = suggestion.active
+                        ? { backgroundColor: '#fafafa', cursor: 'pointer' }
+                        : { backgroundColor: '#ffffff', cursor: 'pointer' };
+                      return (
+                        <div 
+                          {...getSuggestionItemProps(suggestion, {
+                            className,
+                            style,
+                          })}
+                          key={suggestion.placeId}
+                        >
+                          <span>{suggestion.description}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            )}
-          </PlacesAutocomplete>}
+              )}
+            </PlacesAutocomplete>
+            <div>
+              <h5>-OR SEARCH BY-</h5>
+            </div>
+          </>
+          }
         </div>
-        <h5>-OR SEARCH BY-</h5>
         <div className="field">
           <label className="label">Latitude</label>
           <div className="control">
