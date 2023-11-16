@@ -9,20 +9,20 @@ const Trips = db.define("trips", {
         allowNull: false,
     },
     tripDescription: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT, //changed to .text to accomodate longer strings pls work -dan
         allowNull: true,
     },
     tripLocation: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true, //TODO: change to false? maybe
     },
     tripStartDate: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true, //TODO: change to false? maybe
     },
     tripEndDate: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true, //TODO: change to false? maybe
     },
     tripImage: {
         type: DataTypes.STRING,
@@ -39,6 +39,12 @@ const Trips = db.define("trips", {
     //Create a userTrips table
     //this table is the join table for users and trips
     const UserTrips = db.define("userTrips", {
+        id: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            primaryKey: true,
+            autoIncrement: true,
+        },
         // it takes the userId and tripId from the users and trips tables
         userId: {
             type: DataTypes.INTEGER,
@@ -50,8 +56,8 @@ const Trips = db.define("trips", {
         },
     });
     //here, we define associations between the users and trips tables through the userTrips table
-    Users.belongsToMany(Trips, {through: UserTrips, foreignKey: "userId"});
-    Trips.belongsToMany(Users, {through: UserTrips, foreignKey: "tripId"});
+    // Users.belongsToMany(Trips, {through: UserTrips, foreignKey: "userId"});
+    // Trips.belongsToMany(Users, {through: UserTrips, foreignKey: "tripId"});
 
     module.exports = {
         Trips,

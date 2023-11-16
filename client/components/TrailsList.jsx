@@ -1,13 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, } from "react";
 import TrailsListEntry from "./TrailsListEntry.jsx";
 import NavBar from './NavBar.jsx';
 import PlacesAutocomplete, {geocodeByAddress, getLatLng} from "react-places-autocomplete"
+import { useLoaderData } from "react-router-dom";
 
 const TrailsList = ({ handleGetTrails, trailList }) => {
   const [location, setLocation] = useState({ lat: "", lon: "" });
   const [address, setAddress] = useState("");
-  const [mapsLibraryLoaded, setMapsLibraryLoaded] = useState(false);  
-  
+  const [mapsLibraryLoaded, setMapsLibraryLoaded] = useState(false);
+  // use loader data to pull in the current user to add a trail to their trails
+  const userData = useLoaderData();
+  const userId = userData._id
+  console.log('user id', userId);
+
   useEffect(()=>{
   const initMap = () => setMapsLibraryLoaded(true);
 
@@ -188,7 +193,7 @@ const TrailsList = ({ handleGetTrails, trailList }) => {
       <div className="trails">
         <div className="trail-table">
           {trailList.map((trail) => {
-            return <TrailsListEntry trail={trail} key={trail.id} />;
+            return <TrailsListEntry trail={trail}  userId={userId} key={trail.id} />;
           })}
         </div>
       </div>

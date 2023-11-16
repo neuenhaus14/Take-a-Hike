@@ -63,9 +63,10 @@ const App = () => {
             <TrailsList
               handleGetTrails={handleGetTrails}
               trailList={trailList}
+              />
+            }
+            loader={getUserLoader}
             />
-          }
-        />
         <Route path='/' element={<Login />} />
         <Route
           path='trailprofile/:id'
@@ -73,7 +74,7 @@ const App = () => {
         />
         <Route path='quartermaster' element={<Quartermaster />} />
         <Route path='birdingchecklist' element={<BirdingCheckList />} />
-        <Route path='profile' element={<UserProfile />}>
+        <Route path='profile' element={<UserProfile />} loader={getUserLoader}>
           <Route path='user-trips' element={<UserTrips />} />
           <Route path='trip-creator' element={<TripCreator />}>
             <Route path='packing-list' element={<PackingList />} />

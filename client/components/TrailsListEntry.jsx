@@ -2,17 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-const handleAddTrail = (trail) => {
-  axios.post('/profile/userTrips', trail)
+
+
+
+const TrailsListEntry = ({ trail, userId }) => {
+  const handleAddTrail = (trail) => {
+    axios.post('/profile/userTrips', {
+      userId: userId,
+      trail: trail
+    })
     .then((response) => {
       console.log(response);
     })
     .catch((err) => {
-      console.error('ERROR: ', err);
-    });
-};
-
-const TrailsListEntry = ({ trail }) => {
+      console.error(err);
+    })
+  };
   return (
     // <Link to={`/trailprofile/${trail.id}`}>
       <div className="profile-card">
@@ -29,7 +34,7 @@ const TrailsListEntry = ({ trail }) => {
             <p>Rating: {trail.rating}</p>
           </div>
           <div className="button">
-            <button type='button' value={trail} onClick={() => {handleAddTrail(trail)}}>Add Trail to user trails</button>
+            <button type='button' onClick={() => {handleAddTrail(trail)}}>Add Trail to user trails</button>
           </div>
         </div>
       </div>
