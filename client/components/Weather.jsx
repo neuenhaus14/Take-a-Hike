@@ -10,13 +10,25 @@ const Weather = () => {
   const [weather, setWeather] = useState(null);
   const [selectDay, setSelectDay] = useState(days[0]);
 
-  const getWeather = (location, days) => {
-    axios.get(`/api/weather/${location}/${days}`)
-      .then(({ data }) => {
-        setWeather(data);
-      })
+  useEffect(() => {
+    getWeather(text, selectDay)
+    console.log('refreshed')
+  }, []);
+
+  const getWeather = async (location, days) => {
+     await axios.get(`/api/weather/${location}/${days}`)
+    .then(({ data }) => {
+      setWeather(data);
+    })
   }
+
+  const handleSubmit = (e, location, days) => {
+    e.preventDefault();
+    getWeather(location, days);
+  };
+
   console.log('current weather', weather);
+
   const handleChange = (e) => {
     setText(e.target.value);
   }
@@ -49,14 +61,14 @@ const Weather = () => {
           type="submit"
           value="Check region"
           className="button is-info is-rounded"
-          onClick={() => getWeather(text, selectDay)}
+          onClick={(e) => handleSubmit(e, text, selectDay)}
         />
       </form>
       <div>
-        {`Current weather: `}
-        {
-          !weather ? null : (
-            `${weather.current.temp_f} °F`
+        {!weather ? null : (
+          <div>
+            Forecast: {weather.current.temp_f} °F
+          </div>
           )
         }
       </div>
