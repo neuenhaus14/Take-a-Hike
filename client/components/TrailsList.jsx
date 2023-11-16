@@ -85,10 +85,11 @@ const TrailsList = ({ handleGetTrails, trailList }) => {
     <div className="trails-list">
       <NavBar />
       <form className="box">
-      <div>      
-      <h1 className="Header" align="center">
+        
+      <h1 className="profile-card">
         Find a trail near you! 
       </h1>
+        
       <div className="button-wrapper" align="center">
       <button
       onClick={userLocationGrab}
@@ -98,10 +99,10 @@ const TrailsList = ({ handleGetTrails, trailList }) => {
       >Use Current Location
       </button>
       </div>
-      </div></form>
+      </form>
       <form className="box" onSubmit={handleSubmitLocation}>
       <div>
-      <h1 className="Header" align="center">Or search for another location:</h1>
+      <h1 className="profile-card">Or search for another location:</h1>
         </div>
         <div className="field" key="places-autocomplete-wrapper">
         <label className="label">Address</label>
