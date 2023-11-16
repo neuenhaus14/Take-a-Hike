@@ -15,6 +15,19 @@ import Login from './Login.jsx';
 const App = () => {
   const [trailList, setTrailList] = useState([]);
 
+  const getUserLoader = async () => {
+   try{
+    const response = await axios.get('/profile');
+    return response.data;
+   } catch (err) {
+      console.error(err);
+      throw (err)
+   }
+  };
+
+
+
+
   useEffect(() => {
     if (localStorage.getItem('TrailList')) {
       const trails = JSON.parse(localStorage.getItem('TrailList'));
@@ -57,7 +70,7 @@ const App = () => {
         />
         <Route path='quartermaster' element={<Quartermaster />} />
         <Route path='birdingchecklist' element={<BirdingCheckList />} />
-        <Route path='profile' element={<UserProfile />} />
+        <Route path='profile' element={<UserProfile />} loader={getUserLoader}/>
       </Route>
     )
   )
