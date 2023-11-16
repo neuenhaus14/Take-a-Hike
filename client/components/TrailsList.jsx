@@ -9,6 +9,9 @@ const TrailsList = ({ handleGetTrails, trailList }) => {
   const [mapsLibraryLoaded, setMapsLibraryLoaded] = useState(false);  
   
   useEffect(()=>{
+    window.addEventListener('beforeunload', () => {
+      setMapsLibraryLoaded(false);
+    });
     const initMap = () => setMapsLibraryLoaded(true);
 
     const fetchMapsURL = async () =>{
@@ -16,10 +19,13 @@ const TrailsList = ({ handleGetTrails, trailList }) => {
         const response = await fetch('/api/google-maps-library');
         const url = await response.text();
         const tagAlreadyExists = document.querySelector(`script[src="${url}"]`);
-        if (url && !tagAlreadyExists) {
+        if (!tagAlreadyExists) {
           const script = document.createElement('script');
           script.src = url;
           document.head.appendChild(script);
+          script.onload = () => { setMapsLibraryLoaded(true); };
+        } else {
+          setMapsLibraryLoaded(true);
         }
       } catch (err) {
         console.error('error fetching maps URL: ', err);
@@ -28,6 +34,9 @@ const TrailsList = ({ handleGetTrails, trailList }) => {
 
     window.initMap = initMap;
     fetchMapsURL();
+    return () =>{
+      setMapsLibraryLoaded(false);
+    };
   }, []);
 
   const handleLocationInput = (e) => {
