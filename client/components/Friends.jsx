@@ -58,7 +58,7 @@ const Friends = ({userId}) => {
   return (
     <div>
       <div id="friend-search">
-      <h5>Search for Friends</h5>
+      <h3>Search for Friends</h3>
       <input type="text" placeholder="Find Friends" value={friendSearch}
             onChange={(e) => setFriendSearch(e.target.value)} 
             onKeyUp={(e) => e.key === 'Enter' && searchFriends()} />

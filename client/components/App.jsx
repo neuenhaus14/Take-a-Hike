@@ -25,9 +25,6 @@ const App = () => {
    }
   };
 
-
-
-
   useEffect(() => {
     if (localStorage.getItem('TrailList')) {
       const trails = JSON.parse(localStorage.getItem('TrailList'));
@@ -66,7 +63,7 @@ const App = () => {
         <Route path='/' element={<Login />} />
         <Route
           path='trailprofile/:id'
-          element={<TrailProfile trailList={trailList} />}
+          element={<TrailProfile trailList={trailList}/>} loader={getUserLoader}
         />
         <Route path='quartermaster' element={<Quartermaster />} />
         <Route path='birdingchecklist' element={<BirdingCheckList />} />

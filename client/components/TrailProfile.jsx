@@ -5,17 +5,24 @@ import { Image } from 'cloudinary-react';
 import axios from 'axios';
 import { Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-
+import Comments from "./Comments.jsx";
+import { useLoaderData } from 'react-router-dom';
 import PhotoPost from './PhotoPost.jsx';
 
 const preset = 'hikeimages';
 const cloudName = 'dbwbxubwi';
 
 const TrailProfile = ({ trailList }) => {
+  const userData = useLoaderData();
+  const userId = userData._id;
+  
   // console.log(trailList)
   const { id } = useParams();
   const displayTrail = trailList.find((trail) => trail.id == id);
+  const trailId = id
   // console.log(`TRAILPROFILE || LINE 11 || displayTrail`, displayTrail); // access params
+
+  // const getTrailId = trailList.map((trail) => setTrailId(trail.id))
 
   const [image, setImage] = useState('');
   const [trailImageURLs, setTrailImageURLs] = useState();
@@ -140,6 +147,7 @@ const TrailProfile = ({ trailList }) => {
           <a href={`${displayTrail.url}`} target="_blank">
             Trail Website
           </a>
+          <Comments trail_Id={trailId} user_Id={userId}/>
         </div>
         {/* </div> */}
         {/* <input type="file" onChange={(e) => setImage(e.target.files[0])} /> */}

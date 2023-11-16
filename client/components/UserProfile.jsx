@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Friends from "./Friends.jsx";
+
 import NavBar from "./NavBar.jsx";
 import { useLoaderData } from 'react-router-dom';
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
+
 const TrailsListEntry = ({ trail }) => {
   return (
     <Link to={`/trailprofile/${trail.id}`}>
@@ -18,6 +19,7 @@ const TrailsListEntry = ({ trail }) => {
           <div className="info-group">
             <p>Rating: {trail.rating}</p>
           </div>
+          
         </div>
       </div>
     </Link>
