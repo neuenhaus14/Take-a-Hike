@@ -104,7 +104,7 @@ app.get("/profile",(req, res) => {
 app.get('/api/google-maps-library', (req, res) => {
   try {
       const mapsURL = getMapsURL();
-      res.send(mapsURL);
+      res.send(`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places`);
   } catch (err) {
       res.status(500).json({ error: 'Error fetching maps URL' });
       console.error('Error fetching maps URL: ', err);
