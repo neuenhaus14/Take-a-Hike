@@ -14,10 +14,10 @@ const TrailsList = ({ handleGetTrails, trailList }) => {
   const fetchMapsURL = async () =>{
     try{
       const response = await fetch('/api/google-maps-library')
-      const data = await response.text();
-    if(data){
+      const url = await response.text();
+    if(url){
       const script = document.createElement('script')
-      script.src = `${data}&callback=initMap`;
+      script.src = url;
       document.head.appendChild(script);
     }
     }catch(err){

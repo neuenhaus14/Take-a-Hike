@@ -9,7 +9,7 @@ const { BirdList } = require("./database/models/birdList.js");
 const { BirdSightings } = require("./database/models/birdSightings.js");
 const { PackingLists } = require("./database/models/packingLists");
 const { PackingListItems } = require("./database/models/packingListItems");
-const { getMapsURL } = require('./helpers');
+
 
 // const { default: PackingList } = require("../client/components/PackingList");
 const router = express.Router();
@@ -103,8 +103,7 @@ app.get("/profile",(req, res) => {
 
 app.get('/api/google-maps-library', (req, res) => {
   try {
-      const mapsURL = getMapsURL();
-      res.send(`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places`);
+      res.send(`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places&callback=initMap`);
   } catch (err) {
       res.status(500).json({ error: 'Error fetching maps URL' });
       console.error('Error fetching maps URL: ', err);
