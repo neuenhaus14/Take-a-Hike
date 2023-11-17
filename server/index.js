@@ -89,6 +89,7 @@ app.get('/logout', (req, res) => {
   });
 });
 
+
 app.get('/profile', (req, res) => {
   // console.log('User profile request:', req.user);
   if (req.isAuthenticated()) {
@@ -98,6 +99,14 @@ app.get('/profile', (req, res) => {
     res.send({});
   }
 
+// request handler for weather api => FUNCTIONAL
+app.get('/api/weather/:region/:selectDay', (req, res) => {
+  const { region, selectDay } = req.params;
+  console.log('DAYS', selectDay);
+  axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${process.env.WEATHER_API_KEY}&q=${region}&days=${selectDay}&aqi=no&alerts=no`)
+    .then(({ data }) => {
+      res.send(data);
+    });
 });
 
 
