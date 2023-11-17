@@ -2,21 +2,14 @@ import React from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const FriendsList = ({friends, userId}) => {
-  const [friendRemoveButton, setfriendRemoveButton] = useState(false);
+const FriendsList = ({friends, userId, updateFriendList}) => {
 
   const currentUser = userId;
 
   const removeFriends = (friend) => {
-    axios.delete(`/delete-friends/${currentUser}`, {
-      options: {
-        friend_user_id: friend._id
-        //FRIEND ID DOES NOT EXIST BC YOU ARE ONLY GETTING NAMES AS FRIEND
-      }
-    })
+    axios.delete(`/delete-friends/${currentUser}/${friend._id}`)
     .then(() => {
       updateFriendList();
-      setfriendRemoveButton(true);
     })
     .catch((err) => console.error(err))
   }
@@ -26,9 +19,9 @@ const FriendsList = ({friends, userId}) => {
       <h3>Friends:</h3>
       { friends.map((friend, index) =>
       <div id='friends' key={index}>
-         <p>{friend}</p>
+         <p>{friend.fullName}</p>
          <button type="button" onClick = {() => removeFriends(friend)}>
-          {friendRemoveButton ? "Unfriended" : "Unfriend"} </button>
+          Unfriend </button>
          <br />
       </div>
       )}

@@ -10,6 +10,7 @@ const { BirdSightings } = require('./database/models/birdSightings.js');
 const { PackingLists } = require('./database/models/packingLists');
 const { PackingListItems } = require('./database/models/packingListItems');
 const { joinFriends } = require('./database/models/joinFriends');
+const { Comments } = require("./database/models/comments");
 
 // const { default: PackingList } = require("../client/components/PackingList");
 const router = express.Router();
@@ -19,6 +20,7 @@ require("./middleware/auth.js");
 const { cloudinary } = require("./utils/coudinary");
 const { Users } = require("./database/models/users");
 const { UserTrips, Trips } = require("./database/models/userTrips"); 
+
 
 dotenv.config({
   path: path.resolve(__dirname, '../.env'),
@@ -447,21 +449,79 @@ app.get('/friends-list/:user_id', (req, res) => {
     .then((friends) => {
       const friend = friends.map((friend) => friend.friend_user_id);
       Users.findAll({ where: { _id: friend }})
-        .then((friend) => {
-          const friendName = friend.map((name) => name.fullName);
-          console.log('friendName', friendName);
-          res.status(200).send(friendName);
-        })
-        .catch((err) => {
-          console.error(err);
-          res.sendStatus(404);
-        });
+      .then((friend) => {
+        //const friendName = friend.map((name) => name.fullName)
+        //console.log('friendName', friendName)
+        //res.status(200).send(friendName);
+        res.status(200).send(friend);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.sendStatus(404);
+      })
     })
     .catch((err) => {
       console.error('Could not GET questions by user_id', err);
       res.sendStatus(500);
     });
 });
+
+app.post('/add-comment', (req, res) => {
+  const { user_id } = req.body.options
+  const { trail_id } = req.body.options
+  const { comment } = req.body.options
+
+  Comments.create({ user_id, trail_id, comment })
+    .then((data) => {
+      res.sendStatus(201);
+    })
+    .catch((err) => {
+      console.error(err, "Something went wrong");
+      res.sendStatus(500);
+    });
+})
+
+app.get('/comments-by-trail/:trail_id', (req, res) => {
+  const { trail_id } = req.params
+
+  Comments.findAll({where: {trail_id}})
+  .then((trailComments) => {
+    if (trailComments.length > 0){
+      res.status(200).send(trailComments.reverse())
+    }
+  })
+  .catch((err) =>  console.error(err, "Getting trails went wrong"))
+})
+
+app.put('/update-like/:commentId', (req, res) => {
+  const {commentId} = req.params
+  const {likeStatus} = req.body.options
+
+  Comments.findOne({where: {id: commentId}})
+    .then(() => {
+      Comments.update({likeStatus: likeStatus}, {where: {id: commentId}})
+      .then((likeStat) => {
+        if (likeStat){
+          Comments.increment("likes", {where: {id: commentId}})
+          .then(() => {
+            console.log("added to likes")
+            res.sendStatus(201)
+          })
+          .catch((err) =>  console.error(err, "added to likes went wrong"))
+        }else {
+          Comments.decrement("likes", {where: {id: commentId}})
+          .then(() => {
+            console.log("removed from likes")
+            res.sendStatus(201)
+          })
+          .catch((err) =>  console.error(err, "removed from went wrong"))
+        }
+      })
+      .catch((err) =>  console.error(err, "Updating like status went wrong"))
+    })
+    .catch((err) =>  console.error(err, "finding a comment went wrong"))
+
+})
 
 // launches the server from localhost on port 5555
 app.listen(PORT, () => {

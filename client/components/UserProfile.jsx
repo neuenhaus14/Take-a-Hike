@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Outlet, Link } from "react-router-dom";
 import Friends from "./Friends.jsx";
+
 import NavBar from "./NavBar.jsx";
 import TripCreator from './TripCreator.jsx';
 import { useLoaderData } from 'react-router-dom';

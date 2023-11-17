@@ -4,7 +4,6 @@ import axios from 'axios';
 
 
 
-
 const TrailsListEntry = ({ trail, userId }) => {
   const handleAddTrail = (trail) => {
     axios.post('/profile/userTrips', {
@@ -33,6 +32,7 @@ const TrailsListEntry = ({ trail, userId }) => {
           <div className="info-group">
             <p>Rating: {trail.rating}</p>
           </div>
+
           <div className="button">
             <button type='button' onClick={() => {handleAddTrail(trail)}}>Add Trail to user trails</button>
           </div>
