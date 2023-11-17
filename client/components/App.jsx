@@ -11,6 +11,7 @@ import UserProfile from './UserProfile.jsx';
 import BirdingCheckList from './BirdingCheckList.jsx';
 import PackingList from './PackingList.jsx';
 import Login from './Login.jsx';
+import Weather from './Weather.jsx';
 
 const App = () => {
   const [trailList, setTrailList] = useState([]);
@@ -73,6 +74,7 @@ const App = () => {
           path='trailprofile/:id'
           element={<TrailProfile trailList={trailList} />}
         />
+        <Route path='weather' element={<Weather />} />
         <Route path='quartermaster' element={<Quartermaster />} />
         <Route path='birdingchecklist' element={<BirdingCheckList />} />
         <Route path='profile' element={<UserProfile />} loader={getUserLoader}/>
