@@ -1,10 +1,8 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const srcDir = path.resolve(__dirname, "client");
 const distDir = path.resolve(__dirname, "dist");
-
-
 
 module.exports = {
   mode: "development",
@@ -40,6 +38,14 @@ module.exports = {
         test: /\.css$/i,
         use: ["style-loader", "css-loader"],
       },
+      {
+        test: /\.gif$/i,
+        use: [
+          {
+            loader: "file-loader",
+          },
+        ],
+      },
     ],
   },
   plugins: [
@@ -47,14 +53,12 @@ module.exports = {
       template: path.resolve(srcDir, "index.html"),
       inject: "body",
     }),
-    new NodePolyfillPlugin()
+    new NodePolyfillPlugin(),
   ],
   resolve: {
     fallback: {
-        "fs": false
+      fs: false,
     },
-}
+  },
   // target: 'node',
 };
-
-

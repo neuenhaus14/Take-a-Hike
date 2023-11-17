@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
-// import birdLoader from "/birdLoader.gif";
+import birdLoader from "../LoaderSpinner.gif";
 
 const BirdProfile = ({ bird, userId, birdSightings }) => {
   const [wikiDetails, setWikiDetails] = useState({
@@ -88,7 +88,7 @@ const BirdProfile = ({ bird, userId, birdSightings }) => {
       {loading && (
         <div className="card-content">
           <p>Loading...</p>
-          <img src="birdLoader" alt="Loading..." />
+          <img src="./birdNoBack.gif" alt="Loading..." />
         </div>
       )}
       {!loading && wikiDetails.scientificUrl && (
