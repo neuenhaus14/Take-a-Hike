@@ -5,7 +5,7 @@
 .profile-card {
   align-items: center;
   object-fit: contain;
-  font-family: 'Quattrocento', Arial, sans-serif;
+  font-family: "Quattrocento", Arial, sans-serif;
   position: relative;
   overflow: hidden;
   margin: 10px;
@@ -41,7 +41,7 @@
   object-fit: contain;
   align-items: center;
   position: relative;
-  content: '';
+  content: "";
   z-index: 2;
   bottom: 100%;
   left: 0;
@@ -61,7 +61,7 @@ h3 {
   font-weight: 300;
   font-size: 1.5em;
   line-height: 1.2em;
-  font-family: 'Oswald', Arial, sans-serif;
+  font-family: "Oswald", Arial, sans-serif;
   text-transform: uppercase;
   margin-bottom: 25px;
 }
@@ -71,7 +71,7 @@ a {
   font-weight: 100;
   font-size: 1em;
   line-height: 200%;
-  font-family: 'Oswald', Arial, sans-serif;
+  font-family: "Oswald", Arial, sans-serif;
   text-transform: uppercase;
 }
 .profile-card p {
@@ -80,7 +80,7 @@ a {
   opacity: 0.9;
 }
 .profile-card .icons {
-  font-family: 'Oswald', Arial, sans-serif;
+  font-family: "Oswald", Arial, sans-serif;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -109,7 +109,7 @@ body {
   min-height: 100vh;
   display: flex;
   align-items: center;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   background-color: whitesmoke;
 }
 

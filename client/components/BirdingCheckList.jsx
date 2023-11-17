@@ -4,33 +4,79 @@ import axios from "axios";
 import NavBar from "./NavBar.jsx";
 import BirdProfile from "./BirdProfile.jsx";
 
-// Create Functional Component
 const BirdingCheckList = () => {
   const [birdSearch, setBirdSearch] = useState("");
   const [birdList, setBirdList] = useState([]);
   const [userId, setUserId] = useState();
-  const [userName, setUserName] = useState();
+  const [userName, setUserName] = useState("");
   const [birdSightings, setBirdSightings] = useState([]);
+  const [selectedState, setSelectedState] = useState("LA");
 
-  // Call useEffect on Page Load
+  const states = [
+    "AL",
+    "AK",
+    "AZ",
+    "AR",
+    "CA",
+    "CO",
+    "CT",
+    "DE",
+    "FL",
+    "GA",
+    "HI",
+    "ID",
+    "IL",
+    "IN",
+    "IA",
+    "KS",
+    "KY",
+    "LA",
+    "ME",
+    "MD",
+    "MA",
+    "MI",
+    "MN",
+    "MS",
+    "MO",
+    "MT",
+    "NE",
+    "NV",
+    "NH",
+    "NJ",
+    "NM",
+    "NY",
+    "NC",
+    "ND",
+    "OH",
+    "OK",
+    "OR",
+    "PA",
+    "RI",
+    "SC",
+    "SD",
+    "TN",
+    "TX",
+    "UT",
+    "VT",
+    "VA",
+    "WA",
+    "WV",
+    "WI",
+    "WY",
+  ];
+
   useEffect(() => {
     // Fetch bird list from the server
     axios
-      .get("/api/birdList")
+      .get(`/api/birdList?state=${selectedState}`)
       .then((response) => {
-        const updatedBirdList = response.data.map((observation) => ({
-          scientificName: observation.scientificName,
-          commonName: observation.commonName,
-          location: observation.location,
-          totalObserved: observation.totalObserved,
-          observationDate: observation.observationDate,
-        }));
-        setBirdList(updatedBirdList);
+        setBirdList(response.data);
       })
       .catch((err) => console.error("ERROR:", err));
+
     // Fetch bird sightings from the server
     axios
-      .get("/api/birdSightings")
+      .get("/api/birdsightings")
       .then((response) => setBirdSightings(response.data))
       .catch((err) => console.error("ERROR:", err));
 
@@ -43,26 +89,24 @@ const BirdingCheckList = () => {
         setUserName(user.fullName);
       })
       .catch((err) => console.error("ERROR:", err));
-  }, []);
+  }, [selectedState]);
 
-  // Create Search Input Handler
   const handleBirdSearchInput = (event) => setBirdSearch(event.target.value);
 
-  // Create Search Submit Handler
   const handleBirdSearchSubmit = (event) => {
     event.preventDefault();
-    // Filter bird list based on search input
     const filteredBirdList = birdList.filter(
       (bird) =>
         bird.scientificName.toLowerCase().includes(birdSearch) ||
-        bird.commonName.toLowerCase().includes(birdSearch) ||
-        bird.commonFamilyName.toLowerCase().includes(birdSearch) ||
-        bird.scientificFamilyName.toLowerCase().includes(birdSearch)
+        bird.commonName.toLowerCase().includes(birdSearch)
     );
     setBirdList(filteredBirdList);
   };
 
-  // Return Component Template
+  const handleStateChange = (event) => {
+    setSelectedState(event.target.value);
+  };
+
   return (
     <div className="section is-large">
       <NavBar />
@@ -70,9 +114,7 @@ const BirdingCheckList = () => {
         {userName}'s Birding Checklist
       </h1>
       <h2 className="subtitle">
-        Your one stop shop to keep track of all your Louisiana bird sightings.
-        There is no better way to celebrate the great state of Louisiana than
-        spotting all the wonderful birds that inhabit it. So get to hiking!
+        Your one-stop shop to keep track of all your bird sightings.
       </h2>
       <form>
         <label>
@@ -90,10 +132,26 @@ const BirdingCheckList = () => {
           value="Search for Bird"
           onClick={handleBirdSearchSubmit}
         />
+        <div>
+          <label>
+            Select State:
+            <select
+              className="select is-info is-medium"
+              value={selectedState}
+              onChange={handleStateChange}
+            >
+              {states.map((state) => (
+                <option key={state} value={state}>
+                  {state}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
       </form>
       <div className="birds">
         <div className="profile-card">
-          {birdList.map((bird) => (
+          {birdList.slice(0, 25).map((bird) => (
             <BirdProfile
               bird={bird}
               key={bird.scientificName}
@@ -107,5 +165,4 @@ const BirdingCheckList = () => {
   );
 };
 
-// Export Component
 export default BirdingCheckList;

@@ -6,6 +6,7 @@ const BirdProfile = ({ bird, userId, birdSightings }) => {
     scientificUrl: null,
     commonThumbnailUrl: null,
   });
+  const [birdSounds, setBirdSounds] = useState([]);
 
   useEffect(() => {
     const fetchBirdDetails = async () => {
@@ -40,12 +41,20 @@ const BirdProfile = ({ bird, userId, birdSightings }) => {
           scientificUrl: scientificUrl,
           commonThumbnailUrl: commonThumbnailUrl,
         });
+
+        // Fetch bird sounds from the new server-side route
+        const soundApiUrl = `/api/birdsounds/${encodeURIComponent(
+          bird.commonName
+        )}`;
+        const soundResponse = await axios.get(soundApiUrl);
+        setBirdSounds(soundResponse.data.birdSounds);
       } catch (error) {
         console.error("Error fetching bird details:", error.message);
         setWikiDetails({
           scientificUrl: null,
           commonThumbnailUrl: null,
         });
+        setBirdSounds([]);
       }
     };
 
@@ -70,6 +79,8 @@ const BirdProfile = ({ bird, userId, birdSightings }) => {
             target="_blank"
             rel="noopener noreferrer"
             style={{ color: "#0066cc", textDecoration: "none" }}
+            id={`tooltip-${bird.scientificName}`}
+            data-tooltip={`Preview for ${bird.commonName}`}
           >
             {wikiDetails.scientificUrl}
           </a>
@@ -83,9 +94,26 @@ const BirdProfile = ({ bird, userId, birdSightings }) => {
             style={{
               width: "150px",
               height: "150px",
-              border: "1px solid #666",
+              border: "1px solid #665",
             }}
           />
+        </div>
+      )}
+      {birdSounds.length > 0 && (
+        <div className="card-content">
+          <p>Bird Sounds:</p>
+          <ul>
+            {/* Render the sound bar once for each bird */}
+            {birdSounds.length > 0 && (
+              <li>
+                <audio controls>
+                  <source src={birdSounds[0].file} type="audio/mpeg" />
+                  Your browser does not support the audio element.
+                </audio>
+                <p>{birdSounds[0].en}</p>
+              </li>
+            )}
+          </ul>
         </div>
       )}
       <div className="card-content">

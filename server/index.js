@@ -81,7 +81,7 @@ app.get("/logout", (req, res) => {
 });
 
 app.get("/profile", (req, res) => {
-  console.log("User profile request:", req.user);
+  // console.log("User profile request:", req.user);
   if (req.isAuthenticated()) {
     res.send(req.user);
   } else {
@@ -201,7 +201,7 @@ app.post("/api/packingListItems", (req, res) => {
 
 //GET req for all birdList data
 app.get("/api/birdList", async (req, res) => {
-  console.log("Request user bird:", req.user);
+  // console.log("Request user bird:", req.user);
   try {
     const stateCode = req.query.state || "LA";
     const apiUrl = `https://api.ebird.org/v2/data/obs/US-${stateCode}/recent`;
@@ -224,6 +224,23 @@ app.get("/api/birdList", async (req, res) => {
   } catch (err) {
     console.error("ERROR:", err);
     res.sendStatus(500);
+  }
+});
+
+app.get("/api/birdsounds/:birdName", async (req, res) => {
+  try {
+    const birdName = req.params.birdName;
+    const soundApiUrl = `https://xeno-canto.org/api/2/recordings?query=${encodeURIComponent(
+      birdName
+    )}`;
+
+    const soundResponse = await axios.get(soundApiUrl);
+    const birdSounds = soundResponse.data.recordings;
+
+    res.json({ birdSounds });
+  } catch (error) {
+    console.error("Error fetching bird sounds:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
