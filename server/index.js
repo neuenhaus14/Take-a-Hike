@@ -415,7 +415,45 @@ app.post('/add-comment', (req, res) => {
 })
 
 app.get('/comments-by-trail/:trail_id', (req, res) => {
-  // write out get request to show comments on trail
+  const { trail_id } = req.params
+
+  Comments.findAll({where: {trail_id}})
+  .then((trailComments) => {
+    if (trailComments.length > 0){
+      res.status(200).send(trailComments.reverse())
+    }
+  })
+  .catch((err) =>  console.error(err, "Getting trails went wrong"))
+})
+
+app.put('/update-like/:commentId', (req, res) => {
+  const {commentId} = req.params
+  const {likeStatus} = req.body.options
+
+  Comments.findOne({where: {id: commentId}})
+    .then(() => {
+      Comments.update({likeStatus: likeStatus}, {where: {id: commentId}})
+      .then((likeStat) => {
+        if (likeStat){
+          Comments.increment("likes", {where: {id: commentId}})
+          .then(() => {
+            console.log("added to likes")
+            res.sendStatus(201)
+          })
+          .catch((err) =>  console.error(err, "added to likes went wrong"))
+        }else {
+          Comments.decrement("likes", {where: {id: commentId}})
+          .then(() => {
+            console.log("removed from likes")
+            res.sendStatus(201)
+          })
+          .catch((err) =>  console.error(err, "removed from went wrong"))
+        }
+      })
+      .catch((err) =>  console.error(err, "Updating like status went wrong"))
+    })
+    .catch((err) =>  console.error(err, "finding a comment went wrong"))
+
 })
 
 // launches the server from localhost on port 5555
