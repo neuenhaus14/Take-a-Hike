@@ -269,7 +269,6 @@ body {
   bottom: 0;
 }
 
-
 /* WEATHER COMPONENT */
 .current-forecast, .current-date {
   text-align: center;
@@ -300,6 +299,12 @@ body {
   font-family: "New Century Schoolbook";
 }
 
-.future-forecast {
+/*.future-forecast {*/
   
+
+.spinner img{
+  display: block;
+  margin: 0 auto;
+  width: 25%;
+  height: 25%;
 }
