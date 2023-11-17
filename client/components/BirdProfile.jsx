@@ -21,17 +21,13 @@ const BirdProfile = ({ bird, userId, birdSightings }) => {
           bird.commonName.replace(/[^a-zA-Z0-9 ]/g, "")
         );
 
-        // Simulate a delay for demonstration purposes (remove this in production)
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
         // Fetch Wikipedia details for scientific name including URL
-        const scientificWikiApiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=info&inprop=url&titles=${scientificSearchTerm}`;
+        const scientificWikiApiUrl = `/api/wiki/${scientificSearchTerm}`;
         const scientificWikiResponse = await axios.get(scientificWikiApiUrl);
 
-        const scientificPages = scientificWikiResponse.data.query.pages;
-        const scientificFirstPageId = Object.keys(scientificPages)[0];
-        const scientificUrl =
-          scientificPages[scientificFirstPageId]?.fullurl || null;
+        setWikiDetails({
+          scientificUrl: scientificWikiResponse.data.scientificUrl,
+        });
 
         // // Fetch Wikipedia details for common name including thumbnail
         // const commonWikiApiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=pageimages|pageterms&piprop=thumbnail&pithumbsize=200&titles=${commonSearchTerm}`;
@@ -42,10 +38,10 @@ const BirdProfile = ({ bird, userId, birdSightings }) => {
         // const commonThumbnailUrl =
         //   commonPages[commonFirstPageId]?.thumbnail?.source || null;
 
-        setWikiDetails({
-          scientificUrl: scientificUrl,
-          // commonThumbnailUrl: commonThumbnailUrl,
-        });
+        // setWikiDetails({
+        //   scientificUrl: scientificUrl,
+        //   // commonThumbnailUrl: commonThumbnailUrl,
+        // });
 
         // Lazy load ??
         if (!birdSoundsLoaded.current) {
