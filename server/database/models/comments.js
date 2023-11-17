@@ -18,6 +18,7 @@ const Comments = db.define('comments', {
     type: DataTypes.INTEGER, 
   },
   comment: DataTypes.STRING,
+  likeStatus:DataTypes.BOOLEAN, 
   likes: DataTypes.INTEGER, 
 
   

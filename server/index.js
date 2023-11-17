@@ -10,13 +10,17 @@ const { BirdSightings } = require('./database/models/birdSightings.js');
 const { PackingLists } = require('./database/models/packingLists');
 const { PackingListItems } = require('./database/models/packingListItems');
 const { joinFriends } = require('./database/models/joinFriends');
+const { Comments } = require("./database/models/comments");
 
 // const { default: PackingList } = require("../client/components/PackingList");
 const router = express.Router();
-const session = require('express-session');
-require('./middleware/auth.js');
-const { cloudinary } = require('./utils/coudinary');
-const { Users } = require('./database/models/users');
+
+const session = require("express-session");
+require("./middleware/auth.js");
+const { cloudinary } = require("./utils/coudinary");
+const { Users } = require("./database/models/users");
+const { UserTrips, Trips } = require("./database/models/userTrips"); 
+
 
 dotenv.config({
   path: path.resolve(__dirname, '../.env'),
@@ -90,6 +94,15 @@ app.get('/logout', (req, res) => {
 });
 
 
+app.get("/profile",(req, res) => {
+    if(req.isAuthenticated()){
+      //console.log('/profile get user', req.user)
+      res.send(req.user);
+    } else{
+      res.send({});
+    }
+
+
 app.get('/profile', (req, res) => {
   // console.log('User profile request:', req.user);
   if (req.isAuthenticated()) {
@@ -150,6 +163,7 @@ app.post('/api/images', async (req, res) => {
   console.log('server index.js || LINE 70', req.body);
   // NEED TO CHANGE ENDPOINT TO INCLUDE TRAIL SPECIFIC PARAM SO PHOTOS CAN BE UPLOADED + RENDERED PROPERLY
   try {
+n
     // Can create new folder with upload from TrailProfile component. Need to modify get request to filter based on folder param (which will be equal to the trail name)
     const {resources} = await cloudinary.search
       .expression(`resource_type:image AND folder:${req.body.trailFolderName}/*`)
@@ -224,6 +238,52 @@ app.post('/api/packingListItems', (req, res) => {
       res.sendStatus(500);
     });
 });
+
+//Routes for posting to user trips
+  app.post("/profile/userTrips", (req, res) => {
+    // console.log("Server index.js LINE 55", req.body);
+    Trips.findOne({
+      where: {
+        tripName: req.body.trail.name,
+        tripLocation: `${req.body.trail.city}, ${req.body.trail.region}` ,
+      },
+    })
+    .then((existingTrip) => {
+      if (existingTrip) {
+        console.log("Trip already exists!")
+        res.sendStatus(409)
+      } else {
+        Trips.create({
+          tripName: req.body.trail.name,
+          tripDescription: 'test description cause theya re all',
+          tripLocation: `${req.body.trail.city}, ${req.body.trail.region}` ,
+          tripStartDate: null, //TODO:// update with user data
+          tripEndDate: null, //TODO:// update with user data
+          tripImage: null, //TODO:// update with user data
+        })
+          .then((data) => {
+            console.log('Successfully created trip', data.dataValues);
+            UserTrips.create({
+              userId: req.body.userId,
+              tripId: req.body.trail.id,
+            })
+              .then((data) => {
+                // console.log("LINE 63", data.dataValues);
+                res.sendStatus(201);
+              })
+              .catch((err) => {
+                console.error(err, "Something went wrong");
+                res.sendStatus(500);
+              });
+          })
+          .catch((err) => {
+            console.error(err, "Something went wrong");
+            res.sendStatus(500);
+          });
+      }
+    })
+  })
+  //using the UserTrips model, create a new entry in the userTrips table
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -389,21 +449,79 @@ app.get('/friends-list/:user_id', (req, res) => {
     .then((friends) => {
       const friend = friends.map((friend) => friend.friend_user_id);
       Users.findAll({ where: { _id: friend }})
-        .then((friend) => {
-          const friendName = friend.map((name) => name.fullName);
-          console.log('friendName', friendName);
-          res.status(200).send(friendName);
-        })
-        .catch((err) => {
-          console.error(err);
-          res.sendStatus(404);
-        });
+      .then((friend) => {
+        //const friendName = friend.map((name) => name.fullName)
+        //console.log('friendName', friendName)
+        //res.status(200).send(friendName);
+        res.status(200).send(friend);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.sendStatus(404);
+      })
     })
     .catch((err) => {
       console.error('Could not GET questions by user_id', err);
       res.sendStatus(500);
     });
 });
+
+app.post('/add-comment', (req, res) => {
+  const { user_id } = req.body.options
+  const { trail_id } = req.body.options
+  const { comment } = req.body.options
+
+  Comments.create({ user_id, trail_id, comment })
+    .then((data) => {
+      res.sendStatus(201);
+    })
+    .catch((err) => {
+      console.error(err, "Something went wrong");
+      res.sendStatus(500);
+    });
+})
+
+app.get('/comments-by-trail/:trail_id', (req, res) => {
+  const { trail_id } = req.params
+
+  Comments.findAll({where: {trail_id}})
+  .then((trailComments) => {
+    if (trailComments.length > 0){
+      res.status(200).send(trailComments.reverse())
+    }
+  })
+  .catch((err) =>  console.error(err, "Getting trails went wrong"))
+})
+
+app.put('/update-like/:commentId', (req, res) => {
+  const {commentId} = req.params
+  const {likeStatus} = req.body.options
+
+  Comments.findOne({where: {id: commentId}})
+    .then(() => {
+      Comments.update({likeStatus: likeStatus}, {where: {id: commentId}})
+      .then((likeStat) => {
+        if (likeStat){
+          Comments.increment("likes", {where: {id: commentId}})
+          .then(() => {
+            console.log("added to likes")
+            res.sendStatus(201)
+          })
+          .catch((err) =>  console.error(err, "added to likes went wrong"))
+        }else {
+          Comments.decrement("likes", {where: {id: commentId}})
+          .then(() => {
+            console.log("removed from likes")
+            res.sendStatus(201)
+          })
+          .catch((err) =>  console.error(err, "removed from went wrong"))
+        }
+      })
+      .catch((err) =>  console.error(err, "Updating like status went wrong"))
+    })
+    .catch((err) =>  console.error(err, "finding a comment went wrong"))
+
+})
 
 // launches the server from localhost on port 5555
 app.listen(PORT, () => {

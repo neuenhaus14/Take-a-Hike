@@ -11,7 +11,12 @@ import UserProfile from './UserProfile.jsx';
 import BirdingCheckList from './BirdingCheckList.jsx';
 import PackingList from './PackingList.jsx';
 import Login from './Login.jsx';
+
+import UserTrips from './UserTrips.jsx';
+import BirdProfile from './BirdProfile.jsx';
+import TripCreator from './TripCreator.jsx';
 import Weather from './Weather.jsx';
+
 
 const App = () => {
   const [trailList, setTrailList] = useState([]);
@@ -25,9 +30,6 @@ const App = () => {
       throw (err);
     }
   };
-
-
-
 
   useEffect(() => {
     if (localStorage.getItem('TrailList')) {
@@ -66,18 +68,26 @@ const App = () => {
               loading={loading}
               handleGetTrails={handleGetTrails}
               trailList={trailList}
+              />
+            }
+            loader={getUserLoader}
             />
-          }
-        />
         <Route path='/' element={<Login />} />
         <Route
           path='trailprofile/:id'
-          element={<TrailProfile trailList={trailList} />}
+          element={<TrailProfile trailList={trailList}/>} loader={getUserLoader}
         />
         <Route path='weather' element={<Weather />} />
         <Route path='quartermaster' element={<Quartermaster />} />
         <Route path='birdingchecklist' element={<BirdingCheckList />} />
-        <Route path='profile' element={<UserProfile />} loader={getUserLoader}/>
+        <Route path='profile' element={<UserProfile />} loader={getUserLoader}>
+          <Route path='user-trips' element={<UserTrips />} />
+          <Route path='trip-creator' element={<TripCreator />}>
+            <Route path='packing-list' element={<PackingList />} />
+            <Route path='trails-list' element={<TrailsList />} />
+            </Route>
+          <Route path='bird-profile' element={<BirdProfile />} />
+          </Route>
       </Route>
     )
   );
