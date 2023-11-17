@@ -212,35 +212,48 @@ app.post("/api/packingListItems", (req, res) => {
 });
 
 //Routes for posting to user trips
-app.post("/profile/userTrips", (req, res) => {
-  console.log("Server index.js LINE 55", req.body);
-  Trips.create({
-    tripName: req.body.trail.name,
-    tripDescription: 'test description cause theya re all',
-    tripLocation: `${req.body.trail.city}, ${req.body.trail.region}` ,
-    tripStartDate: null, //TODO:// update with user data
-    tripEndDate: null, //TODO:// update with user data
-    tripImage: null, //TODO:// update with user data
-  })
-    .then((data) => {
-      console.log('Successfully created trip', data.dataValues);
-      UserTrips.create({
-        userId: req.body.userId,
-        tripId: req.body.trail.id,
-      })
-        .then((data) => {
-          // console.log("LINE 63", data.dataValues);
-          res.sendStatus(201);
-        })
-        .catch((err) => {
-          console.error(err, "Something went wrong");
-          res.sendStatus(500);
-        });
+  app.post("/profile/userTrips", (req, res) => {
+    // console.log("Server index.js LINE 55", req.body);
+    Trips.findOne({
+      where: {
+        tripName: req.body.trail.name,
+        tripLocation: `${req.body.trail.city}, ${req.body.trail.region}` ,
+      },
     })
-    .catch((err) => {
-      console.error(err, "Something went wrong");
-      res.sendStatus(500);
-    });
+    .then((existingTrip) => {
+      if (existingTrip) {
+        console.log("Trip already exists!")
+        res.sendStatus(409)
+      } else {
+        Trips.create({
+          tripName: req.body.trail.name,
+          tripDescription: 'test description cause theya re all',
+          tripLocation: `${req.body.trail.city}, ${req.body.trail.region}` ,
+          tripStartDate: null, //TODO:// update with user data
+          tripEndDate: null, //TODO:// update with user data
+          tripImage: null, //TODO:// update with user data
+        })
+          .then((data) => {
+            console.log('Successfully created trip', data.dataValues);
+            UserTrips.create({
+              userId: req.body.userId,
+              tripId: req.body.trail.id,
+            })
+              .then((data) => {
+                // console.log("LINE 63", data.dataValues);
+                res.sendStatus(201);
+              })
+              .catch((err) => {
+                console.error(err, "Something went wrong");
+                res.sendStatus(500);
+              });
+          })
+          .catch((err) => {
+            console.error(err, "Something went wrong");
+            res.sendStatus(500);
+          });
+      }
+    })
   })
   //using the UserTrips model, create a new entry in the userTrips table
 
