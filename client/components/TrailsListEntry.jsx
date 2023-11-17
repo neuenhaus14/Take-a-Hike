@@ -42,4 +42,4 @@ const TrailsListEntry = ({ trail, userId }) => {
   );
 };
 
-export default TrailsListEntry
+export default TrailsListEntry;
