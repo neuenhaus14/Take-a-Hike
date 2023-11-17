@@ -103,15 +103,6 @@ app.get("/profile",(req, res) => {
     }
   });
 
-app.get('/profile', (req, res) => {
-  // console.log('User profile request:', req.user);
-  if (req.isAuthenticated()) {
-    //console.log('/profile get user', req.user)
-    res.send(req.user);
-  } else {
-    res.send({});
-  }
-});
 
 // request handler for weather api => FUNCTIONAL
 app.get('/api/weather/:region/:selectDay', (req, res) => {

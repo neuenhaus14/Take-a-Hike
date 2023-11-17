@@ -9,6 +9,16 @@ const Comments = ({trail_id, user_id}) => {
   const [comments, setComments] = useState([])
   const [likeStatus, setLikeStatus] = useState(false);
 
+  const addComment = (comment) => {
+    console.log(user_id, trail_id)
+    axios.post("/add-comment", { options: { user_id, trail_id, comment } })
+    .then(() => {
+      updateCommentList()
+      console.log('comment has been posted!')
+    })
+    .catch((err) => console.error(err));
+  }
+
   useEffect (() => {
     axios.get(`/comments-by-trail/${trail_id}`)
     .then((response) => {
@@ -18,10 +28,17 @@ const Comments = ({trail_id, user_id}) => {
     .catch((err) => console.error(err));
   }, [setComments])
 
-  const addComment = () => {
-    console.log(user_id, trail_id)
-    axios.post("/add-comment", { options: { user_id, trail_id, comment } })
-    .then(() => console.log('comment has been posted!'))
+  const updateCommentState = (response) => {
+    setComments(response)
+  }
+
+  const updateCommentList = () => {
+    axios.get(`/comments-by-trail/${trail_id}`)
+    .then((response) => {
+      console.log('show comments response', response.data)
+      //setComments(response.data)
+      updateCommentState(response.data)
+    })
     .catch((err) => console.error(err));
   }
 
@@ -38,14 +55,15 @@ const Comments = ({trail_id, user_id}) => {
     .catch((err) => console.error(err));
   }
 
+  
   return (
     <div>
       <div id="add-comments">
         <h3>COMMENTS</h3>
         <input type="text" placeholder="Share your experience!" value={comment}
               onChange={(e) => setComment(e.target.value)} 
-              onKeyUp={(e) => e.key === 'Enter' && addComment()} />
-        <button onClick = {() => addComment()}>Post</button>
+              onKeyUp={(e) => e.key === 'Enter' && addComment(comment)} />
+        <button onClick = {() => addComment(comment)}>Post</button>
         </div>
       <div id="render-comments">
       { comments.map((comment, index) => 

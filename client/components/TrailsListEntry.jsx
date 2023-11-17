@@ -18,7 +18,7 @@ const TrailsListEntry = ({ trail, userId }) => {
     })
   };
   return (
-    // <Link to={`/trailprofile/${trail.id}`}>
+    <Link to={`/trailprofile/${trail.id}`}>
       <div className="profile-card">
         <div className="list-item-card">
           <img src={trail.thumbnail} />
@@ -38,7 +38,7 @@ const TrailsListEntry = ({ trail, userId }) => {
           </div>
         </div>
       </div>
-    // </Link>
+     </Link>
   );
 };
 
