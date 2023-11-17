@@ -40,10 +40,12 @@ const BirdingCheckList = () => {
   const handelBirdSearchSubmit = (event) => {
     event.preventDefault();
     setBirdList(birdList
-      .filter(bird => bird.scientificName.toLowerCase().includes(birdSearch) || 
+      .filter((bird) => {
+        console.log('bird log', bird);
+        bird.scientificName.toLowerCase().includes(birdSearch) || 
         bird.commonName.toLowerCase().includes(birdSearch) || 
         bird.commonFamilyName.toLowerCase().includes(birdSearch) || 
-        bird.scientificFamilyName.toLowerCase().includes(birdSearch))
+        bird.scientificFamilyName.toLowerCase().includes(birdSearch)})
       );    
   }
 
