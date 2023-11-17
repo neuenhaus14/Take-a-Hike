@@ -244,24 +244,40 @@ app.get("/api/birdsounds/:birdName", async (req, res) => {
   }
 });
 
-//GET req for all select birdList data
-app.get("/api/birdList/birdSearch", (req, res) => {
-  BirdList.findAll({
-    where: {
-      scientificName: sequelize.where(
-        sequelize.fn("LOWER", sequelize.col("scientificName")),
-        "LIKE",
-        "%" + req.query.search.toLowerCase() + "%"
-      ),
-    },
-  })
-    .then((birds) => {
-      res.json(birds);
-    })
-    .catch((err) => {
-      console.error("ERROR: ", err);
-      res.sendStatus(404);
+// GET req for filtered birdList data based on search query
+app.get("/api/birdList/search", async (req, res) => {
+  try {
+    const stateCode = req.query.state || "LA";
+    const searchQuery = req.query.search || ""; // Get the search query from the request
+
+    const apiUrl = `https://api.ebird.org/v2/data/obs/US-${stateCode}/recent`;
+
+    const response = await axios.get(apiUrl, {
+      headers: {
+        "X-eBirdApiToken": process.env.X_EBIRD_API_KEY,
+      },
     });
+
+    const birdList = response.data.map((observation) => ({
+      scientificName: observation.sciName,
+      commonName: observation.comName,
+      location: observation.locName,
+      totalObserved: observation.howMany,
+      observationDate: observation.obsDt,
+    }));
+
+    // Filter the bird list based on the search query
+    const filteredBirdList = birdList.filter(
+      (bird) =>
+        bird.scientificName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        bird.commonName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    res.json(filteredBirdList);
+  } catch (err) {
+    console.error("ERROR:", err);
+    res.sendStatus(500);
+  }
 });
 
 ///////////////////////////////////////////////////////////////////////////////

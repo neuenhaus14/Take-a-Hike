@@ -93,14 +93,18 @@ const BirdingCheckList = () => {
 
   const handleBirdSearchInput = (event) => setBirdSearch(event.target.value);
 
-  const handleBirdSearchSubmit = (event) => {
+  const handleBirdSearchSubmit = async (event) => {
     event.preventDefault();
-    const filteredBirdList = birdList.filter(
-      (bird) =>
-        bird.scientificName.toLowerCase().includes(birdSearch) ||
-        bird.commonName.toLowerCase().includes(birdSearch)
-    );
-    setBirdList(filteredBirdList);
+
+    try {
+      // Fetch bird list from the server based on the search input and selected state
+      const response = await axios.get(
+        `/api/birdList/search?state=${selectedState}&search=${birdSearch}`
+      );
+      setBirdList(response.data);
+    } catch (error) {
+      console.error("Error fetching bird list:", error.message);
+    }
   };
 
   const handleStateChange = (event) => {
