@@ -1,9 +1,9 @@
 import React from 'react';
 
-const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-const WeatherForecast = ({ forecast, region }) => {
-  const date = new Date(forecast.date).toString().slice(0, 15)
+const WeatherForecast = ({ forecast }) => {
+  const date = `${forecast.date.slice(5, forecast.date.length)}-${forecast.date.slice(0, 4)}`;
 
   return (
     <div>
