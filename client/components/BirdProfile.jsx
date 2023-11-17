@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+
+// import birdLoader from "/birdLoader.gif";
 
 const BirdProfile = ({ bird, userId, birdSightings }) => {
   const [wikiDetails, setWikiDetails] = useState({
@@ -7,6 +9,8 @@ const BirdProfile = ({ bird, userId, birdSightings }) => {
     commonThumbnailUrl: null,
   });
   const [birdSounds, setBirdSounds] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const birdSoundsLoaded = useRef(false);
 
   useEffect(() => {
     const fetchBirdDetails = async () => {
@@ -19,6 +23,9 @@ const BirdProfile = ({ bird, userId, birdSightings }) => {
           bird.commonName.replace(/[^a-zA-Z0-9 ]/g, "")
         );
 
+        // Simulate a delay for demonstration purposes (remove this in production)
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
         // Fetch Wikipedia details for scientific name including URL
         const scientificWikiApiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=info&inprop=url&titles=${scientificSearchTerm}`;
         const scientificWikiResponse = await axios.get(scientificWikiApiUrl);
@@ -28,26 +35,32 @@ const BirdProfile = ({ bird, userId, birdSightings }) => {
         const scientificUrl =
           scientificPages[scientificFirstPageId]?.fullurl || null;
 
-        // Fetch Wikipedia details for common name including thumbnail
-        const commonWikiApiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=pageimages|pageterms&piprop=thumbnail&pithumbsize=200&titles=${commonSearchTerm}`;
-        const commonWikiResponse = await axios.get(commonWikiApiUrl);
+        // // Fetch Wikipedia details for common name including thumbnail
+        // const commonWikiApiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=pageimages|pageterms&piprop=thumbnail&pithumbsize=200&titles=${commonSearchTerm}`;
+        // const commonWikiResponse = await axios.get(commonWikiApiUrl);
 
-        const commonPages = commonWikiResponse.data.query.pages;
-        const commonFirstPageId = Object.keys(commonPages)[0];
-        const commonThumbnailUrl =
-          commonPages[commonFirstPageId]?.thumbnail?.source || null;
+        // const commonPages = commonWikiResponse.data.query.pages;
+        // const commonFirstPageId = Object.keys(commonPages)[1];
+        // const commonThumbnailUrl =
+        //   commonPages[commonFirstPageId]?.thumbnail?.source || null;
 
         setWikiDetails({
           scientificUrl: scientificUrl,
-          commonThumbnailUrl: commonThumbnailUrl,
+          // commonThumbnailUrl: commonThumbnailUrl,
         });
 
-        // Fetch bird sounds from the new server-side route
-        const soundApiUrl = `/api/birdsounds/${encodeURIComponent(
-          bird.commonName
-        )}`;
-        const soundResponse = await axios.get(soundApiUrl);
-        setBirdSounds(soundResponse.data.birdSounds);
+        // Lazy load ??
+        if (!birdSoundsLoaded.current) {
+          const soundApiUrl = `/api/birdsounds/${encodeURIComponent(
+            bird.commonName
+          )}`;
+          const soundResponse = await axios.get(soundApiUrl);
+          setBirdSounds(soundResponse.data.birdSounds);
+          birdSoundsLoaded.current = true;
+        }
+
+        // Set loading to false after the data is fetched
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching bird details:", error.message);
         setWikiDetails({
@@ -55,6 +68,7 @@ const BirdProfile = ({ bird, userId, birdSightings }) => {
           commonThumbnailUrl: null,
         });
         setBirdSounds([]);
+        setLoading(false); // Set loading to false in case of an error
       }
     };
 
@@ -71,7 +85,13 @@ const BirdProfile = ({ bird, userId, birdSightings }) => {
         margin: "10px",
       }}
     >
-      {wikiDetails.scientificUrl && (
+      {loading && (
+        <div className="card-content">
+          <p>Loading...</p>
+          <img src="birdLoader" alt="Loading..." />
+        </div>
+      )}
+      {!loading && wikiDetails.scientificUrl && (
         <div className="card-content">
           <p>Learn more about the {bird.commonName} on Wikipedia:</p>
           <a
@@ -86,7 +106,7 @@ const BirdProfile = ({ bird, userId, birdSightings }) => {
           </a>
         </div>
       )}
-      {wikiDetails.commonThumbnailUrl && (
+      {/* {wikiDetails.commonThumbnailUrl && (
         <div className="card-content">
           <img
             src={wikiDetails.commonThumbnailUrl}
@@ -98,12 +118,12 @@ const BirdProfile = ({ bird, userId, birdSightings }) => {
             }}
           />
         </div>
-      )}
-      {birdSounds.length > 0 && (
+      )} */}
+      {!loading && birdSounds.length > 0 && (
         <div className="card-content">
           <p>Bird Sounds:</p>
           <ul>
-            {/* Render the sound bar once for each bird */}
+            {/* render the sound bar once for each bird */}
             {birdSounds.length > 0 && (
               <li>
                 <audio controls>
@@ -116,13 +136,15 @@ const BirdProfile = ({ bird, userId, birdSightings }) => {
           </ul>
         </div>
       )}
-      <div className="card-content">
-        <p className="title">{bird.commonName}</p>
-        <p className="subtitle">{bird.scientificName}</p>
-        <p>Location: {bird.location}</p>
-        <p>Total Observed: {bird.totalObserved}</p>
-        <p>Observation Date: {bird.observationDate}</p>
-      </div>
+      {!loading && (
+        <div className="card-content">
+          <p className="title">{bird.commonName}</p>
+          <p className="subtitle">{bird.scientificName}</p>
+          <p>Location: {bird.location}</p>
+          <p>Total Observed: {bird.totalObserved}</p>
+          <p>Observation Date: {bird.observationDate}</p>
+        </div>
+      )}
     </div>
   );
 };
