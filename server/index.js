@@ -13,10 +13,12 @@ const { joinFriends } = require('./database/models/joinFriends');
 
 // const { default: PackingList } = require("../client/components/PackingList");
 const router = express.Router();
-const session = require('express-session');
-require('./middleware/auth.js');
-const { cloudinary } = require('./utils/coudinary');
-const { Users } = require('./database/models/users');
+
+const session = require("express-session");
+require("./middleware/auth.js");
+const { cloudinary } = require("./utils/coudinary");
+const { Users } = require("./database/models/users");
+const { UserTrips, Trips } = require("./database/models/userTrips"); 
 
 dotenv.config({
   path: path.resolve(__dirname, '../.env'),
@@ -90,6 +92,15 @@ app.get('/logout', (req, res) => {
 });
 
 
+app.get("/profile",(req, res) => {
+    if(req.isAuthenticated()){
+      //console.log('/profile get user', req.user)
+      res.send(req.user);
+    } else{
+      res.send({});
+    }
+
+
 app.get('/profile', (req, res) => {
   // console.log('User profile request:', req.user);
   if (req.isAuthenticated()) {
@@ -150,6 +161,7 @@ app.post('/api/images', async (req, res) => {
   console.log('server index.js || LINE 70', req.body);
   // NEED TO CHANGE ENDPOINT TO INCLUDE TRAIL SPECIFIC PARAM SO PHOTOS CAN BE UPLOADED + RENDERED PROPERLY
   try {
+n
     // Can create new folder with upload from TrailProfile component. Need to modify get request to filter based on folder param (which will be equal to the trail name)
     const {resources} = await cloudinary.search
       .expression(`resource_type:image AND folder:${req.body.trailFolderName}/*`)
@@ -224,6 +236,52 @@ app.post('/api/packingListItems', (req, res) => {
       res.sendStatus(500);
     });
 });
+
+//Routes for posting to user trips
+  app.post("/profile/userTrips", (req, res) => {
+    // console.log("Server index.js LINE 55", req.body);
+    Trips.findOne({
+      where: {
+        tripName: req.body.trail.name,
+        tripLocation: `${req.body.trail.city}, ${req.body.trail.region}` ,
+      },
+    })
+    .then((existingTrip) => {
+      if (existingTrip) {
+        console.log("Trip already exists!")
+        res.sendStatus(409)
+      } else {
+        Trips.create({
+          tripName: req.body.trail.name,
+          tripDescription: 'test description cause theya re all',
+          tripLocation: `${req.body.trail.city}, ${req.body.trail.region}` ,
+          tripStartDate: null, //TODO:// update with user data
+          tripEndDate: null, //TODO:// update with user data
+          tripImage: null, //TODO:// update with user data
+        })
+          .then((data) => {
+            console.log('Successfully created trip', data.dataValues);
+            UserTrips.create({
+              userId: req.body.userId,
+              tripId: req.body.trail.id,
+            })
+              .then((data) => {
+                // console.log("LINE 63", data.dataValues);
+                res.sendStatus(201);
+              })
+              .catch((err) => {
+                console.error(err, "Something went wrong");
+                res.sendStatus(500);
+              });
+          })
+          .catch((err) => {
+            console.error(err, "Something went wrong");
+            res.sendStatus(500);
+          });
+      }
+    })
+  })
+  //using the UserTrips model, create a new entry in the userTrips table
 
 ///////////////////////////////////////////////////////////////////////////////
 
