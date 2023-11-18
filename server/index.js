@@ -411,7 +411,6 @@ app.post('/search-friends', (req, res) => {
 
   Users.findAll({ where: {fullName: fullName} })
     .then((users) => {
-      console.log('data', users);
       res.status(200).send(users);
     })
     .catch((err) => {
@@ -438,14 +437,14 @@ app.put('/add-friends/:userId', (req, res) => {
     });
 });
 
-app.delete('/delete-friends/:userId', (req, res) => {
+app.delete('/delete-friends/:userId/:friendId', (req, res) => {
   const {userId} = req.params;
-  const {friend_user_id} = req.params;
+  const {friendId} = req.params;
 
   joinFriends.destroy({ 
     where: {
       friending_user_id: userId, 
-      friend_user_id: friend_user_id,    
+      friend_user_id: friendId,    
     }
   })
     .then(() => {
@@ -491,7 +490,7 @@ app.post('/add-comment', (req, res) => {
 
   Comments.create({ user_id, trail_id, comment })
     .then((data) => {
-      res.sendStatus(201);
+      res.status(201).send([data]);
     })
     .catch((err) => {
       console.error(err, "Something went wrong");

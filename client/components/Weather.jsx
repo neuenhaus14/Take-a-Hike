@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import NavBar from './NavBar.jsx';
 import WeatherForecast from './WeatherForecast.jsx';
@@ -20,6 +20,7 @@ const Weather = () => {
       setRegion(data.location.name);
     })
   }
+  console.log('forecast', future)
 
   const handleSubmit = (e, location, days) => {
     e.preventDefault();
