@@ -357,7 +357,6 @@ app.get("/api/birdList/search", async (req, res) => {
 });
 
 app.get("/api/wiki/:birdName", async (req, res) => {
-  //console.log()
   try {
     const birdName = req.params.birdName;
     const wikiApiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=info&inprop=url&titles=${encodeURIComponent(
