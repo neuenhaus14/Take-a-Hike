@@ -144,7 +144,7 @@ app.get("/api/trailslist", (req, res) => {
 
 // get request to get all images (this will later be trail specific)
 app.post("/api/images", async (req, res) => {
-  console.log("server index.js || LINE 70", req.body);
+  // console.log("server index.js || LINE 70", req.body);
   // NEED TO CHANGE ENDPOINT TO INCLUDE TRAIL SPECIFIC PARAM SO PHOTOS CAN BE UPLOADED + RENDERED PROPERLY
   try {
     // Can create new folder with upload from TrailProfile component. Need to modify get request to filter based on folder param (which will be equal to the trail name)
@@ -166,7 +166,7 @@ app.post("/api/images", async (req, res) => {
       .map((image) => image.secure_url);
     res.json(secureImageUrls);
   } catch (err) {
-    console.error("error in api images post: ", err);
+    // console.error("error in api images post: ", err);
   }
 });
 
@@ -483,7 +483,6 @@ app.delete("/delete-friends/:userId/:friendId", (req, res) => {
 
 app.get("/friends-list/:user_id", (req, res) => {
   const { user_id } = req.params;
-  console.log("req.params", req.params);
 
   joinFriends
     .findAll({ where: { friending_user_id: user_id } })
@@ -533,6 +532,28 @@ app.get("/comments-by-trail/:trail_id", (req, res) => {
     })
     .catch((err) => console.error(err, "Getting trails went wrong"));
 });
+
+app.delete('/delete-comment/:user_id/:id/:trail_id', (req, res) => {
+  const { user_id } = req.params;
+  const { id } = req.params;
+  const { trail_id } = req.params;
+  // console.log("req.params", req.params);
+
+  Comments.destroy({ 
+    where: { 
+      user_id: user_id,
+      id: id, 
+      trail_id: trail_id
+    }})
+  .then((response) => {
+    console.log("deleted comment", response);
+    res.sendStatus(200);
+  })
+  .catch((err) => {
+    console.error("Could not DELETE comment", err);
+    res.sendStatus(500);
+  });
+})
 
 app.put("/update-like/:commentId", (req, res) => {
   const { commentId } = req.params;

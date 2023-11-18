@@ -59,9 +59,7 @@ const Friends = ({userId}) => {
   }
 
   // clears the <input> after enter or button press
-  const clearInput = () => {
-    setCommentValue(' ')
-  }
+  const clearInput = () => { setCommentValue('') }
 
   return (
     <div>

@@ -44,18 +44,25 @@ const Comments = ({trail_id, user_id}) => {
     .catch((err) => console.error(err));
   }
 
-  const deleteComment = (commentId) => {
-    console.log("friend", friend)
-    axios.delete(`/delete-comment/${user_id}/${commentId}`)
-    .then(() => {
-      console.log("deleted")
-      addComment() // this will refresh??? or will the useEffect??
+  const deleteComment = (id) => {
+    axios.delete(`/delete-comment/${user_id}/${id}/${trail_id}`)
+    .then((response) => {
+      console.log("deleted", response)
+      updateCommentList();
     })
     .catch((err) => console.error(err))
   }
+
+  const updateCommentList = () => {
+    axios.get(`/comments-by-trail/${trail_id}`)
+    .then((response) => {
+      setComments(response.data)
+    })
+    .catch((err) => console.error(err));
+  }
   
   // clears the <input> after enter or button press
-  const clearInput = () => { setCommentValue(' ') }
+  const clearInput = () => { setCommentValue('') }
   
   return (
     <div>
