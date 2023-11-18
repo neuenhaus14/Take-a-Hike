@@ -44,10 +44,18 @@ const Comments = ({trail_id, user_id}) => {
     .catch((err) => console.error(err));
   }
 
-  // clears the <input> after enter or button press
-  const clearInput = () => {
-    setCommentValue(' ')
+  const deleteComment = (commentId) => {
+    console.log("friend", friend)
+    axios.delete(`/delete-comment/${user_id}/${commentId}`)
+    .then(() => {
+      console.log("deleted")
+      addComment() // this will refresh??? or will the useEffect??
+    })
+    .catch((err) => console.error(err))
   }
+  
+  // clears the <input> after enter or button press
+  const clearInput = () => { setCommentValue(' ') }
   
   return (
     <div>
@@ -64,6 +72,7 @@ const Comments = ({trail_id, user_id}) => {
           <p>{comment.comment}</p> <span>{moment(comment.createdAt).format('ll')}</span>
           <button onClick = {() => updateLikes(comment.id)}>❤️</button>
           <span>{comment.likes}</span>
+          <button onClick = {() => deleteComment(comment.id)}> 🗑️ </button>
         </div>
       )}  
       </div>
