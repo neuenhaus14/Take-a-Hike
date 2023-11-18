@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Image } from 'cloudinary-react';
 import axios from 'axios';
-import { Fab } from '@mui/material';
+import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import Comments from "./Comments.jsx";
 import { useLoaderData } from 'react-router-dom';
@@ -177,7 +177,8 @@ const TrailProfile = ({ trailList }) => {
               </div>
             )) // </div>
           ) : (
-            <p src="https://i.gifer.com/ZZ5H.gif">Getting images</p>
+            <></>
+            // <p src="https://i.gifer.com/ZZ5H.gif">Getting images</p>
           )}
           {/* {trailImageURLs ? (
           // <div> div to house images for css styling

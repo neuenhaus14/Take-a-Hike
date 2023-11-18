@@ -1,7 +1,7 @@
 // Import Dependencies
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Routes, Route, createHashRouter, createRoutesFromChildren, Link, Outlet, RouterProvider } from 'react-router-dom';
+import { Route, createHashRouter, createRoutesFromChildren, RouterProvider } from 'react-router-dom';
 
 // import './styles/main.css';
 import TrailsList from './TrailsList.jsx';
