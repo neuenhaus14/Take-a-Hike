@@ -20,7 +20,6 @@ const Weather = () => {
       setRegion(data.location.name);
     })
   }
-  console.log('forecast', future)
 
   const handleSubmit = (e, location, days) => {
     e.preventDefault();

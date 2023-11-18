@@ -1,7 +1,5 @@
 import React from 'react';
 
-const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
 const WeatherForecast = ({ forecast }) => {
   const date = `${forecast.date.slice(5, forecast.date.length)}-${forecast.date.slice(0, 4)}`;
 
