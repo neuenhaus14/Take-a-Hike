@@ -84,8 +84,8 @@ const App = () => {
         <Route path='quartermaster' element={<Quartermaster />} />
         <Route path='birdingchecklist' element={<BirdingCheckList />} />
         <Route path='profile' element={<UserProfile />} loader={getUserLoader}>
-          <Route path='user-trips' element={<UserTrips />} />
-          <Route path='trip-creator' element={<TripCreator />}>
+          <Route path='user-trips/:userId' element={<UserTrips />} />
+          <Route path='trip-creator/:userId' element={<TripCreator />}>
             <Route path='packing-list' element={<PackingList />} />
             <Route path='trails-list' element={<TrailsList />} />
             </Route>

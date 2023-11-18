@@ -11,6 +11,12 @@ const UserProfile = () => {
   const [profileName, setProfileName] = useState("");
   const [picture, setPicture] = useState("");
   const [email, setEmail] = useState("");
+  const [myTrips, setMyTrips] = useState([]);
+  const [showOutlet, setShowOutlet] = useState(false);
+
+  const handleButtonClick = () => {
+    setShowOutlet(true);
+  }
 
   const userData = useLoaderData();
   console.log('userData', userData);
@@ -33,10 +39,27 @@ const UserProfile = () => {
       <a href={picture}></a>
       <p>{email}</p>
       <div className="outlet">
-        <Link to="/profile/user-trips">My Trips</Link> |  
-        <Link to="/profile/trip-creator">Create a Trip</Link> |
-        <Link to="/profile/bird-profile">Bird Lists</Link> | 
-        <Outlet />
+        <Link to={`/profile/user-trips/${userId}`}>
+          <button type="button" onClick={() => {handleButtonClick()}}>
+            My Trips
+            </button>  
+            </Link>
+
+        <Link to={`/profile/trip-creator/${userId}`}>
+          <button type="button" onClick={() => {handleButtonClick()}}>
+            Create a Trip
+            </button>
+            </Link>
+
+        <Link to="/profile/bird-profile">
+          <button type="button" onClick={() => {handleButtonClick()}}>
+            Bird Lists
+            </button> 
+            </Link>
+        {showOutlet ? (
+          <Outlet />)
+        : ( <div></div> )
+        }
       </div>
       <div>
         <Friends userId={userId}/>
