@@ -1,6 +1,5 @@
 const axios = require('axios');
 const sequelize = require('sequelize');
-const { query } = require('express');
 const express = require('express');
 const path = require('path');
 const passport = require('passport');
@@ -18,12 +17,8 @@ require('./middleware/auth.js');
 const { cloudinary } = require('./utils/coudinary');
 const { Users } = require('./database/models/users');
 
-dotenv.config({
-  path: path.resolve(__dirname, '../.env'),
-});
-
 // Set Distribution Path
-const PORT = 5555;
+const PORT = process.env.PORT || 5555;
 const distPath = path.resolve(__dirname, '..', 'dist'); //serves the hmtl file of the application as default on load
 
 // Create backend API
@@ -47,8 +42,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Create API Routes
-const successLoginUrl = 'http://localhost:5555/#/trailslist';
-const errorLoginUrl = 'http://localhost:5555/login/error';
+const successLoginUrl = `http://localhost:${PORT}/#/trailslist`;
+const errorLoginUrl = `http://localhost${PORT}/login/error`;
 
 //Auth Routes
 app.get(

@@ -6,10 +6,10 @@ module.exports = {
   mode: 'production',
   devtool: 'inline-source-map',
   entry: {
-    app: path.resolve(__dirname, './client/index.jsx'),
+    app: path.resolve(__dirname, 'index.jsx'),
   },
   output: {
-    path: path.resolve(__dirname, './dist'),
+    path: path.resolve(__dirname, 'dist'),
     filename: '[name].bundle.js',
   },
   module: {
@@ -38,7 +38,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, './client/index.html'),
+      template: path.resolve(__dirname, '..', './client/index.html'),
       inject: 'body',
     }),
     new NodePolyfillPlugin()
@@ -47,10 +47,8 @@ module.exports = {
     fallback: {
       'fs': false,
     },
-    extensions: ['.js', '.jsx', '.gif'],
-    
+    extensions: ['.js', '.jsx', '.gif'], 
   },
-  watch: true,
 };
 
 
