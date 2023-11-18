@@ -110,10 +110,9 @@ app.get("/api/weather/:region/:selectDay", (req, res) => {
 
 // request handler for weatherForecasts table
 app.post('/api/weatherForecasts', (req, res) => {
-  WeatherForecast.findAll()
-    .then((data) => {
-      res.send(data);
-    })
+  // change to create
+  console.log('new forecast in db', req.params);
+  res.send(body);
 });
 
 ////////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////

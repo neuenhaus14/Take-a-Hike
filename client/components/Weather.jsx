@@ -19,7 +19,29 @@ const Weather = () => {
       setFuture(data.forecast.forecastday);
       setRegion(data.location.name);
     })
-  }
+  };
+  console.log(future);
+
+  const handleAdd = () => {
+    future
+    ?
+    future.map((weather) => {
+      axios.post('/api/weatherForecasts', {
+        userId: 5,
+        avgTemp: Math.floor(weather.day.avgtemp_f),
+        highTemp: Math.floor(weather.day.maxtemp_f),
+        lowTemp: Math.floor(weather.mintemp_f),
+        rain: weather.day.daily_chance__rain,
+        condition: weather.day.conditiion.text,
+        region: region,
+        date: `${weather.date.slice(5, weather.date.length)}-${weather.date.slice(0, 4)}`
+      })
+      .then(() => console.log('sent to db'))
+      .catch((err) => console.error('Could not POST forecast to database', err));
+    })
+    :
+    null
+  };
 
   const handleSubmit = (e, location, days) => {
     e.preventDefault();
@@ -59,6 +81,12 @@ const Weather = () => {
           value="Check region"
           className="button is-info is-rounded"
           onClick={(e) => handleSubmit(e, text, selectDay)}
+        />
+        <input
+          type="submit"
+          value="Add to your trip!"
+          className="button is-success is-rounded add-to-trip"
+          onClick={handleAdd}
         />
       </form>
       <div>
