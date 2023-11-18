@@ -75,10 +75,10 @@ const BirdingCheckList = () => {
       .catch((err) => console.error("ERROR:", err));
 
     // Fetch bird sightings from the server
-    axios
-      .get("/api/birdsightings")
-      .then((response) => setBirdSightings(response.data))
-      .catch((err) => console.error("ERROR:", err));
+    // axios
+    //   .get("/api/birdsightings")
+    //   .then((response) => setBirdSightings(response.data))
+    //   .catch((err) => console.error("ERROR:", err));
 
     // Fetch user profile
     axios

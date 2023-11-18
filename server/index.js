@@ -383,6 +383,24 @@ app.get("/api/wiki/:birdName", async (req, res) => {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////Bird Sightings Routes
 
+app.post("/api/birdsightings/watchlist", async (req, res) => {
+  try {
+    const { bird_id, user_id, addToWatchlist } = req.body;
+    console.log("bird sightings:", req.body);
+
+    await BirdSightings.create({
+      bird_id: bird_id,
+      user_id: user_id,
+      inWatchlist: addToWatchlist,
+    });
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error updating watchlist:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 //GET req for all birdSightings data
 app.get("/api/birdsightings", (req, res) => {
   BirdSightings.findAll()
@@ -399,7 +417,7 @@ app.get("/api/birdsightings", (req, res) => {
 app.post("/api/birdsightings", (req, res) => {
   // console.log('Line 231 - Back End Bird Sightings Post Request: ', req.body);
   BirdSightings.create({
-    bird_id: req.body.bird_id,
+    // bird_id: req.body.bird_id,
     user_id: req.body.user_id,
   })
     .then((data) => {
