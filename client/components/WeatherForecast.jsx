@@ -10,9 +10,9 @@ const WeatherForecast = ({ forecast }) => {
       </div>
       <div className="weather-conditions">
         <div className="info-container-top">
-          <span className="weather-info"> Average: {forecast.day.avgtemp_f} °F</span>
-          <span className="weather-info"> High: {forecast.day.maxtemp_f} °F</span>
-          <span className="weather-info"> Low: {forecast.day.mintemp_f} °F</span>
+          <span className="weather-info"> Average: {Math.floor(forecast.day.avgtemp_f)} °F</span>
+          <span className="weather-info"> High: {Math.floor(forecast.day.maxtemp_f)} °F</span>
+          <span className="weather-info"> Low: {Math.floor(forecast.day.mintemp_f)} °F</span>
         </div>
         <div className="info-container-bottom">
           <span className="weather-info">Chance of Rain: {forecast.day.daily_chance_of_rain}% </span>

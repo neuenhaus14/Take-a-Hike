@@ -10,6 +10,7 @@ const { PackingLists } = require("./database/models/packingLists");
 const { PackingListItems } = require("./database/models/packingListItems");
 const { joinFriends } = require("./database/models/joinFriends");
 const { Comments } = require("./database/models/comments");
+const { WeatherForecast } = require('./database/models/weatherForecast.js');
 const cors = require('cors');
 
 // const { default: PackingList } = require("../client/components/PackingList");
@@ -105,6 +106,14 @@ app.get("/api/weather/:region/:selectDay", (req, res) => {
     .then(({ data }) => {
       res.send(data);
     });
+});
+
+// request handler for weatherForecasts table
+app.post('/api/weatherForecasts', (req, res) => {
+  WeatherForecast.findAll()
+    .then((data) => {
+      res.send(data);
+    })
 });
 
 ////////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
