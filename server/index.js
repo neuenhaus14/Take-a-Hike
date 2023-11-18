@@ -401,6 +401,28 @@ app.post("/api/birdsightings/watchlist", async (req, res) => {
   }
 });
 
+app.delete(
+  "/api/birdsightings/watchlist/:bird_id/:user_id",
+  async (req, res) => {
+    try {
+      const { bird_id, user_id } = req.params;
+      console.log("delete req body:", req.body);
+
+      await BirdSightings.destroy({
+        where: {
+          bird_id: bird_id,
+          user_id: user_id,
+        },
+      });
+
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error("Error removing from watchlist:", error.message);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+);
+
 //GET req for all birdSightings data
 app.get("/api/birdsightings", (req, res) => {
   BirdSightings.findAll()

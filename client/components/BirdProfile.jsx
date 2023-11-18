@@ -51,9 +51,8 @@ const BirdProfile = ({ bird, userId }) => {
   const addToWatchlist = async () => {
     try {
       await axios.post("/api/birdsightings/watchlist", {
-        bird_id: bird.scientificName, // Send the scientific name
+        bird_id: bird.commonName,
         user_id: userId,
-        addToWatchlist: true,
       });
       setInWatchlist(true);
     } catch (error) {
@@ -63,11 +62,11 @@ const BirdProfile = ({ bird, userId }) => {
 
   const removeFromWatchlist = async () => {
     try {
-      await axios.post("/api/birdsightings/watchlist", {
-        bird_id: bird.scientificName, // Send the scientific name
-        user_id: userId,
-        addToWatchlist: false,
-      });
+      await axios.delete(
+        `/api/birdsightings/watchlist/${encodeURIComponent(
+          bird.commonName
+        )}/${userId}`
+      );
       setInWatchlist(false);
     } catch (error) {
       console.error("Error removing from watchlist:", error.message);
