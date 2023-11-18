@@ -8,19 +8,9 @@ const Comments = ({trail_id, user_id}) => {
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([])
   const [likeStatus, setLikeStatus] = useState(false);
+  const [commentValue, setCommentValue] = useState('');
 
-  const addComment = (comment) => {
-    console.log(user_id, trail_id)
-    axios.post("/add-comment", { options: { user_id, trail_id, comment } })
-    .then((response) => {
-      //updateCommentList()
-      console.log('add comment', response)
-      setComments(response.data.concat(comments))
-      console.log('comment has been posted!')
-    })
-    .catch((err) => console.error(err));
-  }
-
+  //loads comments from database on page render
   useEffect (() => {
     axios.get(`/comments-by-trail/${trail_id}`)
     .then((response) => {
@@ -30,20 +20,16 @@ const Comments = ({trail_id, user_id}) => {
     .catch((err) => console.error(err));
   }, [setComments])
 
-
-  // const updateCommentState = (response) => {
-  //   setComments(response)
-  // }
-
-  // const updateCommentList = () => {
-  //   axios.get(`/comments-by-trail/${trail_id}`)
-  //   .then((response) => {
-  //     console.log('show comments response', response.data)
-  //     //setComments(response.data)
-  //     updateCommentState(response.data)
-  //   })
-  //   .catch((err) => console.error(err));
-  // }
+  // adds comment to database and immediately shows on page bc of state
+  const addComment = () => {
+    console.log(user_id, trail_id)
+    axios.post("/add-comment", { options: { user_id, trail_id, comment } })
+    .then((response) => {
+      setComments(response.data.concat(comments))
+      clearInput()
+    })
+    .catch((err) => console.error(err));
+  }
 
   const updateLikes = (commentId) => {
     axios.put(`/update-like/${commentId}`, {
@@ -57,21 +43,36 @@ const Comments = ({trail_id, user_id}) => {
     })
     .catch((err) => console.error(err));
   }
+
+  const deleteComment = (commentId) => {
+    console.log("friend", friend)
+    axios.delete(`/delete-comment/${user_id}/${commentId}`)
+    .then(() => {
+      console.log("deleted")
+      addComment() // this will refresh??? or will the useEffect??
+    })
+    .catch((err) => console.error(err))
+  }
+  
+  // clears the <input> after enter or button press
+  const clearInput = () => { setCommentValue(' ') }
   
   return (
     <div>
       <div id="add-comments">
         <h3>COMMENTS</h3>
-        <input type="text" placeholder="Share your experience!" value={comment}
-              onChange={(e) => setComment(e.target.value)} 
-              onKeyUp={(e) => e.key === 'Enter' && addComment(comment)} />
-        <button onClick = {() => addComment(comment)}>Post</button>
+        <input id='comment' type="text" placeholder="Share your experience!" value={commentValue}
+              onChange={(e) => {setComment(e.target.value); setCommentValue(e.target.value)}} 
+              onKeyUp={(e) => e.key === 'Enter' && addComment()} />
+        <button onClick = {() => {addComment(); clearInput()}}>Post</button>
         </div>
       <div id="render-comments">
       { comments.map((comment, index) => 
         <div id='comments' key={index}>
           <p>{comment.comment}</p> <span>{moment(comment.createdAt).format('ll')}</span>
-          <button onClick = {() => updateLikes(comment.id)}>❤️{comment.likes}</button>
+          <button onClick = {() => updateLikes(comment.id)}>❤️</button>
+          <span>{comment.likes}</span>
+          <button onClick = {() => deleteComment(comment.id)}> 🗑️ </button>
         </div>
       )}  
       </div>
