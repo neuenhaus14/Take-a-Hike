@@ -32,6 +32,14 @@ const WeatherForecast = db.define('weatherForecasts', {
   condition: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  region: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  date: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 });
 
