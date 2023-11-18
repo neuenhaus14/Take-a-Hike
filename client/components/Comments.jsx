@@ -12,8 +12,10 @@ const Comments = ({trail_id, user_id}) => {
   const addComment = (comment) => {
     console.log(user_id, trail_id)
     axios.post("/add-comment", { options: { user_id, trail_id, comment } })
-    .then(() => {
-      updateCommentList()
+    .then((response) => {
+      //updateCommentList()
+      console.log('add comment', response)
+      setComments(response.data.concat(comments))
       console.log('comment has been posted!')
     })
     .catch((err) => console.error(err));
@@ -28,19 +30,20 @@ const Comments = ({trail_id, user_id}) => {
     .catch((err) => console.error(err));
   }, [setComments])
 
-  const updateCommentState = (response) => {
-    setComments(response)
-  }
 
-  const updateCommentList = () => {
-    axios.get(`/comments-by-trail/${trail_id}`)
-    .then((response) => {
-      console.log('show comments response', response.data)
-      //setComments(response.data)
-      updateCommentState(response.data)
-    })
-    .catch((err) => console.error(err));
-  }
+  // const updateCommentState = (response) => {
+  //   setComments(response)
+  // }
+
+  // const updateCommentList = () => {
+  //   axios.get(`/comments-by-trail/${trail_id}`)
+  //   .then((response) => {
+  //     console.log('show comments response', response.data)
+  //     //setComments(response.data)
+  //     updateCommentState(response.data)
+  //   })
+  //   .catch((err) => console.error(err));
+  // }
 
   const updateLikes = (commentId) => {
     axios.put(`/update-like/${commentId}`, {
@@ -54,7 +57,6 @@ const Comments = ({trail_id, user_id}) => {
     })
     .catch((err) => console.error(err));
   }
-
   
   return (
     <div>

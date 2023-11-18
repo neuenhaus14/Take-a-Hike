@@ -155,7 +155,6 @@ app.post('/api/images', async (req, res) => {
   console.log('server index.js || LINE 70', req.body);
   // NEED TO CHANGE ENDPOINT TO INCLUDE TRAIL SPECIFIC PARAM SO PHOTOS CAN BE UPLOADED + RENDERED PROPERLY
   try {
-n
     // Can create new folder with upload from TrailProfile component. Need to modify get request to filter based on folder param (which will be equal to the trail name)
     const {resources} = await cloudinary.search
       .expression(`resource_type:image AND folder:${req.body.trailFolderName}/*`)
@@ -414,7 +413,6 @@ app.put('/add-friends/:userId', (req, res) => {
 app.delete('/delete-friends/:userId/:friendId', (req, res) => {
   const {userId} = req.params;
   const {friendId} = req.params;
-  console.log(req.params)
 
   joinFriends.destroy({ 
     where: {
@@ -465,7 +463,7 @@ app.post('/add-comment', (req, res) => {
 
   Comments.create({ user_id, trail_id, comment })
     .then((data) => {
-      res.sendStatus(201);
+      res.status(201).send([data]);
     })
     .catch((err) => {
       console.error(err, "Something went wrong");
