@@ -50,6 +50,7 @@ const Friends = ({userId}) => {
   const updateFriendList = () => {
     axios.get(`/friends-list/${currentUser}`)
     .then((response) => {
+      console.log(response)
       setFriendList(response.data)
     })
     .catch((err) => console.error(err));

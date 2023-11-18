@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
-import birdLoader from "../LoaderSpinner.gif";
-
 const BirdProfile = ({ bird, userId, birdSightings }) => {
   const [wikiDetails, setWikiDetails] = useState({
     scientificUrl: null,

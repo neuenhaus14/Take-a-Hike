@@ -7,6 +7,7 @@ const FriendsList = ({friends, userId, updateFriendList}) => {
   const currentUser = userId;
 
   const removeFriends = (friend) => {
+    console.log("friend", friend)
     axios.delete(`/delete-friends/${currentUser}/${friend._id}`)
     .then(() => {
       updateFriendList();

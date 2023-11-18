@@ -1,5 +1,5 @@
 // Import Dependencies
-const { DataTypes, Sequelize } = require("sequelize");
+const { DataTypes } = require("sequelize");
 const { db } = require("../index.js");
 
 // Create Schema/Model

@@ -1,7 +1,7 @@
 import React from 'react';
 import 'regenerator-runtime/runtime';
 import { Image } from 'cloudinary-react';
-import { Avatar } from '@material-ui/core';
+import Avatar from '@material-ui/core/Avatar';
 // import { AccountCircleIcon } from '@mui/icons-material';
 
 const preset = 'hikeimages';
