@@ -3,7 +3,8 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
 const srcDir = path.resolve(__dirname, "client");
 const distDir = path.resolve(__dirname, "dist");
-
+const BundleAnalyzerPlugin =
+  require("webpack-bundle-analyzer").BundleAnalyzerPlugin
 
 
 module.exports = {
@@ -47,7 +48,8 @@ module.exports = {
       template: path.resolve(srcDir, "index.html"),
       inject: "body",
     }),
-    new NodePolyfillPlugin()
+    new NodePolyfillPlugin(),
+    new BundleAnalyzerPlugin()
   ],
   resolve: {
     fallback: {
