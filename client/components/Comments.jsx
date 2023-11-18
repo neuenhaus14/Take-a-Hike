@@ -47,7 +47,7 @@ const Comments = ({trail_id, user_id}) => {
   const deleteComment = (id) => {
     axios.delete(`/delete-comment/${user_id}/${id}/${trail_id}`)
     .then((response) => {
-      console.log("deleted", response)
+      console.log("deleted", response);
       updateCommentList();
     })
     .catch((err) => console.error(err))
