@@ -1,54 +1,152 @@
-// Import Dependencies
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
-// Create Functional Component
-const BirdProfile = ({bird, userId, birdSightings}) => {
-  const [checked, setChecked] = useState(false);
+import birdLoader from "../LoaderSpinner.gif";
+
+const BirdProfile = ({ bird, userId, birdSightings }) => {
+  const [wikiDetails, setWikiDetails] = useState({
+    scientificUrl: null,
+    commonThumbnailUrl: null,
+  });
+  const [birdSounds, setBirdSounds] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const birdSoundsLoaded = useRef(false);
 
   useEffect(() => {
-    // console.log("BirdSightings: ", birdSightings);
-    // console.log("Bird: ", bird._id);
-    // console.log("UserId: ", userId);
-    // setChecked(birdSightings.filter(sightingInstance => sightingInstance.bird_id === bird._id && sightingInstance.user_id === userId))
-  }, [])
+    const fetchBirdDetails = async () => {
+      try {
+        const scientificSearchTerm = encodeURIComponent(
+          bird.scientificName.replace(/[^a-zA-Z0-9 ]/g, "")
+        );
 
-  // Create Checkbox Click Handler
-  const handelCheckboxClick = () => {
-    // console.log(bird._id, userId)
-    if (!checked === true) {
-      setChecked(true);
-      // console.log("bird._id: ", bird._id);
-      // console.log("user_id: ", userId);
-      // axios.post('api/birdsightings', { bird_id: bird._id, user_id: userId})
-      //   .then(() => console.log("Bird Sightings Post Successful"))
-      //   .catch((err) => console.error('Bird Sightings Post Error: ', err));
-    } else {
-      setChecked(false);
-      // axios.post('api/birdsightings', {params: { bird_id: bird._id, user_id: userId}})
-      //   .then(() => console.log("Bird Sightings Post Successful"))
-      //   .catch((err) => console.error('Bird Sightings Delete Error: ', err));
-    }
-  };
+        const commonSearchTerm = encodeURIComponent(
+          bird.commonName.replace(/[^a-zA-Z0-9 ]/g, "")
+        );
 
-  // Return Component Template
+        // Simulate a delay for demonstration purposes (remove this in production)
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Fetch Wikipedia details for scientific name including URL
+        const scientificWikiApiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=info&inprop=url&titles=${scientificSearchTerm}`;
+        const scientificWikiResponse = await axios.get(scientificWikiApiUrl);
+
+        const scientificPages = scientificWikiResponse.data.query.pages;
+        const scientificFirstPageId = Object.keys(scientificPages)[0];
+        const scientificUrl =
+          scientificPages[scientificFirstPageId]?.fullurl || null;
+
+        // // Fetch Wikipedia details for common name including thumbnail
+        // const commonWikiApiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=pageimages|pageterms&piprop=thumbnail&pithumbsize=200&titles=${commonSearchTerm}`;
+        // const commonWikiResponse = await axios.get(commonWikiApiUrl);
+
+        // const commonPages = commonWikiResponse.data.query.pages;
+        // const commonFirstPageId = Object.keys(commonPages)[1];
+        // const commonThumbnailUrl =
+        //   commonPages[commonFirstPageId]?.thumbnail?.source || null;
+
+        setWikiDetails({
+          scientificUrl: scientificUrl,
+          // commonThumbnailUrl: commonThumbnailUrl,
+        });
+
+        // Lazy load ??
+        if (!birdSoundsLoaded.current) {
+          const soundApiUrl = `/api/birdsounds/${encodeURIComponent(
+            bird.commonName
+          )}`;
+          const soundResponse = await axios.get(soundApiUrl);
+          setBirdSounds(soundResponse.data.birdSounds);
+          birdSoundsLoaded.current = true;
+        }
+
+        // Set loading to false after the data is fetched
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching bird details:", error.message);
+        setWikiDetails({
+          scientificUrl: null,
+          commonThumbnailUrl: null,
+        });
+        setBirdSounds([]);
+        setLoading(false); // Set loading to false in case of an error
+      }
+    };
+
+    fetchBirdDetails();
+  }, [bird.scientificName, bird.commonName]);
+
   return (
-    <div className="block">
-      <input type="checkbox" checked={checked} onChange={handelCheckboxClick}/>
-      {/* <div> BirdId:{bird._id} userId:{userId}</div> */}
-      <div className="message-header" >Common Name: {bird.commonName}</div>
-      <ul>
-        <li>Scientific Name: {bird.scientificName}</li>
-        <li>Common Family Name: {bird.commonFamilyName}</li>
-        <li>Scientific Family Name: {bird.scientificFamilyName}</li>
-        <li>Order: {bird.order}</li>
-        {/* <li>{birdSound}</li> */}
-        {/* <li>{birdImg}</li> */}
-      </ul>
+    <div
+      className="card"
+      style={{
+        border: "2px solid #333",
+        backgroundColor: "#ddd",
+        padding: "10px",
+        margin: "10px",
+      }}
+    >
+      {loading && (
+        <div className="card-content">
+          <p>Loading...</p>
+          <img src="./birdNoBack.gif" alt="Loading..." />
+        </div>
+      )}
+      {!loading && wikiDetails.scientificUrl && (
+        <div className="card-content">
+          <p>Learn more about the {bird.commonName} on Wikipedia:</p>
+          <a
+            href={wikiDetails.scientificUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "#0066cc", textDecoration: "none" }}
+            id={`tooltip-${bird.scientificName}`}
+            data-tooltip={`Preview for ${bird.commonName}`}
+          >
+            {wikiDetails.scientificUrl}
+          </a>
+        </div>
+      )}
+      {/* {wikiDetails.commonThumbnailUrl && (
+        <div className="card-content">
+          <img
+            src={wikiDetails.commonThumbnailUrl}
+            alt={bird.commonName}
+            style={{
+              width: "150px",
+              height: "150px",
+              border: "1px solid #665",
+            }}
+          />
+        </div>
+      )} */}
+      {!loading && birdSounds.length > 0 && (
+        <div className="card-content">
+          <p>Bird Sounds:</p>
+          <ul>
+            {/* render the sound bar once for each bird */}
+            {birdSounds.length > 0 && (
+              <li>
+                <audio controls>
+                  <source src={birdSounds[0].file} type="audio/mpeg" />
+                  Your browser does not support the audio element.
+                </audio>
+                <p>{birdSounds[0].en}</p>
+              </li>
+            )}
+          </ul>
+        </div>
+      )}
+      {!loading && (
+        <div className="card-content">
+          <p className="title">{bird.commonName}</p>
+          <p className="subtitle">{bird.scientificName}</p>
+          <p>Location: {bird.location}</p>
+          <p>Total Observed: {bird.totalObserved}</p>
+          <p>Observation Date: {bird.observationDate}</p>
+        </div>
+      )}
     </div>
   );
 };
 
-// Export Component
 export default BirdProfile;

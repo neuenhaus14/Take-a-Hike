@@ -60,7 +60,6 @@ app.get(
   passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 
-
 app.get(
   '/auth/google/callback',
   passport.authenticate('google', {
@@ -74,20 +73,17 @@ app.get(
   }
 );
 
-
-
-
 //ADDING LOGOUT REQUEST HANDLER
-app.get('/logout', (req, res) => {
+app.get("/logout", (req, res) => {
   req.logout((err) => {
     if (err) {
-      console.error('Error logging out', err);
+      console.error("Error logging out", err);
     }
     req.session.destroy((error) => {
       if (error) {
-        console.error('Error destroying session', error);
+        console.error("Error destroying session", error)
       }
-      console.log('session user', req.user);
+      console.log("session user", req.user);
       res.sendStatus(200);
     });
   });
@@ -103,15 +99,6 @@ app.get("/profile",(req, res) => {
     }
   });
 
-app.get('/profile', (req, res) => {
-  // console.log('User profile request:', req.user);
-  if (req.isAuthenticated()) {
-    //console.log('/profile get user', req.user)
-    res.send(req.user);
-  } else {
-    res.send({});
-  }
-});
 
 // request handler for weather api => FUNCTIONAL
 app.get('/api/weather/:region/:selectDay', (req, res) => {
@@ -156,7 +143,7 @@ app.get('/api/trailslist', (req, res) => {
       res.sendStatus(404);
     });
 });
-  
+ 
 //////////////////////////////////////// Cloudinary routes //////////////////////////////////////
 
 // get request to get all images (this will later be trail specific)
@@ -164,7 +151,6 @@ app.post('/api/images', async (req, res) => {
   console.log('server index.js || LINE 70', req.body);
   // NEED TO CHANGE ENDPOINT TO INCLUDE TRAIL SPECIFIC PARAM SO PHOTOS CAN BE UPLOADED + RENDERED PROPERLY
   try {
-n
     // Can create new folder with upload from TrailProfile component. Need to modify get request to filter based on folder param (which will be equal to the trail name)
     const {resources} = await cloudinary.search
       .expression(`resource_type:image AND folder:${req.body.trailFolderName}/*`)
@@ -293,8 +279,9 @@ app.post('/api/packingListItems', (req, res) => {
 //////////////////////////////////////////////////////////////Bird List Routes
 
 //GET req for all birdList data
-app.get('/api/birdList', async (req, res) => {
-  console.log('Request user bird:', req.user);
+
+app.get("/api/birdList", async (req, res) => {
+  // console.log("Request user bird:", req.user);
   try {
     const stateCode = req.query.state || 'LA';
     const apiUrl = `https://api.ebird.org/v2/data/obs/US-${stateCode}/recent`;
@@ -310,8 +297,8 @@ app.get('/api/birdList', async (req, res) => {
       commonName: observation.comName,
       location: observation.locName,
       totalObserved: observation.howMany,
+      observationDate: observation.obsDt,
     }));
-    //add obvs date
 
     res.json(birdList);
   } catch (err) {
@@ -320,24 +307,59 @@ app.get('/api/birdList', async (req, res) => {
   }
 });
 
-//GET req for all select birdList data
-app.get('/api/birdList/birdSearch', (req, res) => {
-  BirdList.findAll({
-    where: {
-      scientificName: sequelize.where(
-        sequelize.fn('LOWER', sequelize.col('scientificName')),
-        'LIKE',
-        '%' + req.query.search.toLowerCase() + '%'
-      ),
-    },
-  })
-    .then((birds) => {
-      res.json(birds);
-    })
-    .catch((err) => {
-      console.error('ERROR: ', err);
-      res.sendStatus(404);
+
+app.get("/api/birdsounds/:birdName", async (req, res) => {
+  try {
+    const birdName = req.params.birdName;
+    const soundApiUrl = `https://xeno-canto.org/api/2/recordings?query=${encodeURIComponent(
+      birdName
+    )}`;
+
+    const soundResponse = await axios.get(soundApiUrl);
+    const birdSounds = soundResponse.data.recordings;
+
+    res.json({ birdSounds });
+  } catch (error) {
+    console.error("Error fetching bird sounds:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// GET req for filtered birdList data based on search query
+app.get("/api/birdList/search", async (req, res) => {
+  try {
+    const stateCode = req.query.state || "LA";
+    const searchQuery = req.query.search || ""; // Get the search query from the request
+
+    const apiUrl = `https://api.ebird.org/v2/data/obs/US-${stateCode}/recent`;
+
+    const response = await axios.get(apiUrl, {
+      headers: {
+        "X-eBirdApiToken": process.env.X_EBIRD_API_KEY,
+      },
+
     });
+
+    const birdList = response.data.map((observation) => ({
+      scientificName: observation.sciName,
+      commonName: observation.comName,
+      location: observation.locName,
+      totalObserved: observation.howMany,
+      observationDate: observation.obsDt,
+    }));
+
+    // Filter the bird list based on the search query
+    const filteredBirdList = birdList.filter(
+      (bird) =>
+        bird.scientificName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        bird.commonName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    res.json(filteredBirdList);
+  } catch (err) {
+    console.error("ERROR:", err);
+    res.sendStatus(500);
+  }
 });
 
 ///////////////////////////////////////////////////////////////////////////////
