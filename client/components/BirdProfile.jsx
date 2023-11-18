@@ -21,10 +21,12 @@ const BirdProfile = ({ bird, userId }) => {
         const scientificWikiApiUrl = `/api/wiki/${scientificSearchTerm}`;
         const scientificWikiResponse = await axios.get(scientificWikiApiUrl);
 
+        //get wiki link
         setWikiDetails({
           scientificUrl: scientificWikiResponse.data.scientificUrl,
         });
 
+        //lazy load?
         if (!birdSoundsLoaded.current) {
           const soundApiUrl = `/api/birdsounds/${encodeURIComponent(
             bird.commonName
@@ -45,11 +47,36 @@ const BirdProfile = ({ bird, userId }) => {
       }
     };
 
-    fetchBirdDetails();
-  }, [bird._id, bird.scientificName, bird.commonName, userId]);
+    //need to check the watch list so only users watch will render
+    const checkWatchlist = async () => {
+      try {
+        const watchlistResponse = await axios.get(
+          "/api/birdsightings/watchlist",
+          {
+            params: {
+              bird_id: bird.commonName,
+              user_id: userId,
+            },
+          }
+        );
 
+        setInWatchlist(watchlistResponse.data.inWatchlist);
+      } catch (error) {
+        console.error("Error checking watchlist:", error.message);
+      }
+    };
+
+    fetchBirdDetails();
+    checkWatchlist();
+  }, [bird.commonName, userId]);
+
+  //add to watch list
   const addToWatchlist = async () => {
     try {
+      const watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
+      watchlist.push(bird.commonName);
+      localStorage.setItem("watchlist", JSON.stringify(watchlist));
+
       await axios.post("/api/birdsightings/watchlist", {
         bird_id: bird.commonName,
         user_id: userId,
@@ -62,11 +89,19 @@ const BirdProfile = ({ bird, userId }) => {
 
   const removeFromWatchlist = async () => {
     try {
-      await axios.delete(
-        `/api/birdsightings/watchlist/${encodeURIComponent(
-          bird.commonName
-        )}/${userId}`
+      const watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
+      const updatedWatchlist = watchlist.filter(
+        (name) => name !== bird.commonName
       );
+      localStorage.setItem("watchlist", JSON.stringify(updatedWatchlist));
+
+      await axios.delete("/api/birdsightings/watchlist", {
+        data: {
+          bird_id: bird.commonName,
+          user_id: userId,
+          addToWatchlist: false,
+        },
+      });
       setInWatchlist(false);
     } catch (error) {
       console.error("Error removing from watchlist:", error.message);
@@ -129,11 +164,28 @@ const BirdProfile = ({ bird, userId }) => {
       )}
       <div className="card-content">
         {inWatchlist ? (
+          <input
+            type="submit"
+            value="Remove from Watchlist"
+            className="button is-danger is-rounded"
+            onClick={removeFromWatchlist}
+          />
+        ) : (
+          <input
+            type="submit"
+            value="Add to Watchlist"
+            className="button is-success is-rounded"
+            onClick={addToWatchlist}
+          />
+        )}
+      </div>
+      {/* <div className="card-content">
+        {inWatchlist ? (
           <button onClick={removeFromWatchlist}>Remove from Watchlist</button>
         ) : (
           <button onClick={addToWatchlist}>Add to Watchlist</button>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -102,6 +102,9 @@ const BirdingCheckList = () => {
         `/api/birdList/search?state=${selectedState}&search=${birdSearch}`
       );
       setBirdList(response.data);
+
+      // clear the search input box
+      setBirdSearch("");
     } catch (error) {
       console.error("Error fetching bird list:", error.message);
     }
