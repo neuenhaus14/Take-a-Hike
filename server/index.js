@@ -11,6 +11,7 @@ const { PackingLists } = require('./database/models/packingLists');
 const { PackingListItems } = require('./database/models/packingListItems');
 const { joinFriends } = require('./database/models/joinFriends');
 const { Comments } = require("./database/models/comments");
+const cors = require('cors');
 
 // const { default: PackingList } = require("../client/components/PackingList");
 const router = express.Router();
@@ -37,6 +38,7 @@ const app = express();
 app.use(express.json()); // handles parsing content in the req.body from post/update requests
 app.use(express.static(distPath)); // Statically serves up client directory
 app.use(express.urlencoded({ extended: true })); // Parses url (allows arrays and objects)
+app.use(cors());
 app.use(
   session({
     secret: 'keyboard cat',
