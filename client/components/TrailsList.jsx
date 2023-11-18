@@ -1,13 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import TrailsListEntry from './TrailsListEntry.jsx';
+
+import React, { useState, useEffect, } from "react";
+import TrailsListEntry from "./TrailsListEntry.jsx";
 import NavBar from './NavBar.jsx';
-import PlacesAutocomplete, {geocodeByAddress, getLatLng} from 'react-places-autocomplete';
+import PlacesAutocomplete, {geocodeByAddress, getLatLng} from "react-places-autocomplete"
+import { useLoaderData } from "react-router-dom";
 
 const TrailsList = ({ handleGetTrails, trailList, loading }) => {
-  const [location, setLocation] = useState({ lat: '', lon: '' });
-  const [address, setAddress] = useState('');
-  const [mapsLibraryLoaded, setMapsLibraryLoaded] = useState(false);  
-  
+  const [location, setLocation] = useState({ lat: "", lon: "" });
+  const [address, setAddress] = useState("");
+  const [mapsLibraryLoaded, setMapsLibraryLoaded] = useState(false);
+  // use loader data to pull in the current user to add a trail to their trails
+  const userData = useLoaderData();
+  const userId = userData._id
+  console.log('user id', userId);
+
+
   useEffect(()=>{
     const initMap = () => setMapsLibraryLoaded(true);
 
@@ -208,6 +215,7 @@ const TrailsList = ({ handleGetTrails, trailList, loading }) => {
             trailList.map((trail) => {
               return <TrailsListEntry trail={trail} key={trail.id} />;
             })}
+
         </div>
       </div>
     </div>

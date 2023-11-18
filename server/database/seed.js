@@ -13,6 +13,8 @@ const parkCodes = require("./data/parkCodes.json");
 const birdsOfLA = require("./data/eBirdData.js")
 const { BirdList } = require("./models/birdList.js")
 const { BirdSightings } = require("./models/birdSightings.js")
+//import new models to seed
+const { Trips, UserTrips } = require("./models/userTrips.js");
 const { joinFriends } = require('./models/joinFriends');
 const { Comments } = require('./models/comments');
 db.options.logging = false;
@@ -35,6 +37,20 @@ const seedSqlize = () => {
       console.log(
         "\x1b[36m",
         "\nDatabase (MySQL): 'Users' table successfully created!"
+      )
+    )
+    .then(() => Trips.sync())
+    .then(() =>
+      console.log(
+        "\x1b[36m",
+        "\nDatabase (MySQL): 'Trips' table successfully created!"
+      )
+    )
+    .then(() => UserTrips.sync())
+    .then(() =>
+      console.log(
+        "\x1b[36m",
+        "\nDatabase (MySQL): 'UserTrips' table successfully created!"
       )
     )
     .then(() => PackingLists.sync())

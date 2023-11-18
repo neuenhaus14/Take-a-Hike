@@ -16,7 +16,6 @@ const Friends = ({userId}) => {
   useEffect(() => {
     axios.get(`/friends-list/${currentUser}`)
     .then((response) => {
-      console.log('set friend list', response.data)
       setFriendList(response.data)
     })
     .catch((err) => console.error(err));
@@ -49,7 +48,6 @@ const Friends = ({userId}) => {
   }
 
   const updateFriendList = () => {
-    console.log('curr user', currentUser)
     axios.get(`/friends-list/${currentUser}`)
     .then((response) => {
       setFriendList(response.data)
@@ -60,11 +58,11 @@ const Friends = ({userId}) => {
   return (
     <div>
       <div id="friend-search">
-      <h5>Search for Friends</h5>
+      <h3>Search for Friends</h3>
       <input type="text" placeholder="Find Friends" value={friendSearch}
             onChange={(e) => setFriendSearch(e.target.value)} 
             onKeyUp={(e) => e.key === 'Enter' && searchFriends()} />
-      <button onClick = {() => {searchFriends(); console.log('clicked')}}>Search</button>
+      <button onClick = {() => searchFriends()}>Search</button>
       </div>
       <div id='friend-search-results'>
       { resUsers.map((result) =>
@@ -78,7 +76,11 @@ const Friends = ({userId}) => {
       </div>
       )}
       <div>
-        <FriendsList friends={friendList} userId={userId}/>
+        <FriendsList 
+        friends={friendList} 
+        userId={userId}
+        updateFriendList={updateFriendList}
+        />
       </div>
       </div>
     </div>
