@@ -14,7 +14,6 @@ const UserProfile = () => {
   const [email, setEmail] = useState("");
 
   const userData = useLoaderData();
-  console.log('userData', userData);
   const userId = userData._id;
 
   useEffect(() => {
