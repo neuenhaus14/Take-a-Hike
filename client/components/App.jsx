@@ -20,7 +20,7 @@ import Weather from './Weather.jsx';
 
 const App = () => {
   const [trailList, setTrailList] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loadingTrails, setLoadingTrail] = useState(false);
   const getUserLoader = async () => {
     try {
       const response = await axios.get('/profile');
@@ -40,7 +40,7 @@ const App = () => {
 
   // were in trail list
   const handleGetTrails = (location) => {
-    setLoading(true);
+    setLoadingTrail(true);
     axios
       .get('/api/trailslist', {
         params: { lat: location.lat, lon: location.lon },
@@ -51,10 +51,13 @@ const App = () => {
         localStorage.setItem('TrailList', JSON.stringify(response.data.data));
       })
       .then(()=>{
-        setLoading(false);
+        setLoadingTrail(false);
       })
       .catch((err) => {
         console.error('ERROR: ', err);
+      })
+      .finally(() => {
+        setLoadingTrail(false);
       });
   };
 
@@ -65,7 +68,7 @@ const App = () => {
           path='trailslist'
           element={
             <TrailsList
-              loading={loading}
+              loading={loadingTrails}
               handleGetTrails={handleGetTrails}
               trailList={trailList}
               />
