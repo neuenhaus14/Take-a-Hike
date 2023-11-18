@@ -3,6 +3,8 @@ const { db } = require("./index.js");
 const { Trails } = require("./models/trails.js");
 const { dummyParkData } = require("../../copyAPIparkData/dummyDataCopy.js");
 const { dummyUserData } = require("../../copyAPIparkData/dummyUserData.js");
+const { dummyFriendData } = require("../../copyAPIparkData/dummyFriendData.js");
+const { dummyCommentData } = require("../../copyAPIparkData/dummyCommentData.js")
 const { PackingLists } = require("./models/packingLists.js");
 const { PackingListItems } = require("./models/packingListItems.js");
 const { Users } = require("./models/users.js");
@@ -10,6 +12,10 @@ const { async } = require("regenerator-runtime");
 const birdsOfLA = require("./data/eBirdData.js")
 const { BirdList } = require("./models/birdList.js")
 const { BirdSightings } = require("./models/birdSightings.js")
+//import new models to seed
+const { Trips, UserTrips } = require("./models/userTrips.js");
+const { joinFriends } = require('./models/joinFriends');
+const { Comments } = require('./models/comments');
 
 db.options.logging = false;
 
@@ -31,6 +37,20 @@ const seedSqlize = () => {
       console.log(
         "\x1b[36m",
         "\nDatabase (MySQL): 'Users' table successfully created!"
+      )
+    )
+    .then(() => Trips.sync())
+    .then(() =>
+      console.log(
+        "\x1b[36m",
+        "\nDatabase (MySQL): 'Trips' table successfully created!"
+      )
+    )
+    .then(() => UserTrips.sync())
+    .then(() =>
+      console.log(
+        "\x1b[36m",
+        "\nDatabase (MySQL): 'UserTrips' table successfully created!"
       )
     )
     .then(() => PackingLists.sync())
@@ -70,7 +90,44 @@ const seedSqlize = () => {
         "\nDatabase (MySQL): 'Trails' table successfully created!"
       )
     )
-
+    .then(() => joinFriends.sync())
+    .then(() =>
+      console.log(
+        "\x1b[36m",
+        "\nDatabase (MySQL): 'joinFriends' table successfully created!"
+      )
+    )   
+    .then(() => Comments.sync())
+    .then(() =>
+      console.log(
+        "\x1b[36m",
+        "\nDatabase (MySQL): 'Comments' table successfully created!"
+      )
+    )  
+    .then(() => Promise.all(dummyUserData.map((txn) => Users.create(txn))))
+    .then((arr) =>
+      console.log(
+        "\x1b[32m",
+        `\nDatabase (MySQL): Successfully seeded users with ${arr.length} entries!\n`,
+        "\x1b[37m"
+      )
+    ) 
+    .then(() => Promise.all(dummyFriendData.map((txn) => joinFriends.create(txn))))
+    .then((arr) =>
+      console.log(
+        "\x1b[32m",
+        `\nDatabase (MySQL): Successfully seeded joinFriends with ${arr.length} entries!\n`,
+        "\x1b[37m"
+      )
+    ) 
+    .then(() => Promise.all(dummyCommentData.map((txn) => Comments.create(txn))))
+    .then((arr) =>
+      console.log(
+        "\x1b[32m",
+        `\nDatabase (MySQL): Successfully seeded comments with ${arr.length} entries!\n`,
+        "\x1b[37m"
+      )
+    )
     .then(() => Promise.all(dummyParkData.map((txn) => Trails.create(txn))))
     .then((arr) =>
       console.log(
