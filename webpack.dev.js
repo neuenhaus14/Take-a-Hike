@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
+const Terser = require('terser-webpack-plugin');
 
 module.exports = {
   mode: 'development',

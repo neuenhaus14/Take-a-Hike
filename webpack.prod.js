@@ -48,7 +48,7 @@ module.exports = {
       'fs': false,
     },
     extensions: ['.js', '.jsx', '.gif'], 
-  },
+  },  
 };
 
 

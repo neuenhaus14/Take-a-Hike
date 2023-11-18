@@ -8,7 +8,8 @@
     "prod": "webpack --mode production",
     "start": "nodemon server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "seed": "node server/database/seed.js"
+    "seed": "node server/database/seed.js",
+    "analyze": "webpack --mode production --profile --json > stats.json && webpack-bundle-analyzer stats.json"
   },
   "repository": {
     "url": "git+https://github.com/Rmachirica/Take-a-Hike.git"
@@ -39,10 +40,10 @@
     "csv-parse": "^5.0.4",
     "csv-parser": "^3.0.0",
     "dotenv": "^16.0.0",
-    "eslint": "^8.11.0",
     "express": "^4.17.3",
     "express-session": "^1.17.2",
     "file-loader": "^6.2.0",
+    "mkdirp": "^3.0.1",
     "moment": "^2.29.4",
     "mysql2": "^2.3.3",
     "node-fetch": "^3.3.2",
@@ -65,8 +66,15 @@
     "@babel/plugin-transform-runtime": "^7.23.3",
     "@babel/preset-env": "^7.16.11",
     "css-loader": "^6.7.1",
+    "eslint": "^8.54.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "html-webpack-plugin": "^5.5.0",
     "sequelize-cli": "^6.6.2",
+    "terser-webpack-plugin": "^5.3.9",
     "webpack-bundle-analyzer": "^4.10.1",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.15.1"
