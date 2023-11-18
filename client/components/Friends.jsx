@@ -7,7 +7,7 @@ import FriendsList from './FriendsList.jsx'
 // Create Functional Component
 const Friends = ({userId}) => {
   const [friendSearch, setFriendSearch] = useState("");
-  const [friendAddedButton, setFriendAddedButton] = useState(false);
+  const [friendSearchResults, setFriendSearchResults] = useState(false);
   const [resUsers, setResUsers] = useState([]);
   const [friendList, setFriendList] = useState([]);
   const [commentValue, setCommentValue] = useState('');
@@ -29,9 +29,9 @@ const Friends = ({userId}) => {
       }
      })
     .then((response) => {
-      setFriendAddedButton(false);
       setResUsers(response.data)
       clearInput()
+      setFriendSearchResults(true);
     })
     .catch((err) => console.error(err));
   }
@@ -44,7 +44,7 @@ const Friends = ({userId}) => {
     })
     .then(() => {
       updateFriendList();
-      setFriendAddedButton(true);
+      setFriendSearchResults(false);
     })
     .catch((err) => console.error(err))
   }
@@ -72,24 +72,27 @@ const Friends = ({userId}) => {
             onKeyUp={(e) => e.key === 'Enter' && searchFriends()} />
       <button onClick = {() => {searchFriends(); clearInput()}}>Search</button>
       </div>
-      <div id='friend-search-results'>
-      { resUsers.map((result) =>
-      <div id='result-elements' key={result._id}>
-         <img src={`${result.picture}`} width="50" height="50"/> 
-         <span>{result.fullName}</span> <br />
-         <span> {result.email.slice(0, 11)} </span>
-         <button type="button" onClick = {() => addFriends(result)}>
-          {friendAddedButton ? "Friends" : "Add Friend"} </button>
-         <br /> 
-      </div>
-      )}
+      {friendSearchResults 
+        ? (
+          <div id='friend-search-results'>
+          { resUsers.map((result) =>
+          <div id='result-elements' key={result._id}>
+             <img src={`${result.picture}`} width="50" height="50"/> 
+             <span>{result.fullName}</span> <br />
+             <span> {result.email.slice(0, 11)} </span>
+             <button type="button" onClick = {() => addFriends(result)}>
+              Add Friend</button>
+             <br /> 
+          </div>
+          )}
+        </div>
+        ) : null }
       <div>
         <FriendsList 
         friends={friendList} 
         userId={userId}
         updateFriendList={updateFriendList}
         />
-      </div>
       </div>
     </div>
   )
