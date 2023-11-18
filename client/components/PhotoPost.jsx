@@ -1,6 +1,6 @@
 import React from 'react';
 import 'regenerator-runtime/runtime';
-import { Image } from 'cloudinary-react';
+import { Image } from 'cloudinary-react/Image';
 import Avatar from '@material-ui/core/Avatar';
 // import { AccountCircleIcon } from '@mui/icons-material';
 

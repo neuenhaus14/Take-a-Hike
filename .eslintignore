@@ -2,4 +2,3 @@
 **/node_modules
 **/lib
 **/client/dist
-webpack.config.js
