@@ -43,7 +43,7 @@ const BirdProfile = ({ bird, userId, birdSightings }) => {
         //   // commonThumbnailUrl: commonThumbnailUrl,
         // });
 
-        // Lazy load ??
+        // this is Lazy load ??
         if (!birdSoundsLoaded.current) {
           const soundApiUrl = `/api/birdsounds/${encodeURIComponent(
             bird.commonName
