@@ -99,7 +99,7 @@ app.get("/profile",(req, res) => {
     } else{
       res.send({});
     }
-
+  })
 
 app.get('/profile', (req, res) => {
   // console.log('User profile request:', req.user);
@@ -109,6 +109,7 @@ app.get('/profile', (req, res) => {
   } else {
     res.send({});
   }
+})
 
 // request handler for weather api => FUNCTIONAL
 app.get('/api/weather/:region/:selectDay', (req, res) => {

@@ -5,7 +5,7 @@ import NavBar from './NavBar.jsx';
 import PlacesAutocomplete, {geocodeByAddress, getLatLng} from "react-places-autocomplete"
 import { useLoaderData } from "react-router-dom";
 
-const TrailsList = ({ handleGetTrails, trailList }) => {
+const TrailsList = ({ handleGetTrails, trailList, loading }) => {
   const [location, setLocation] = useState({ lat: "", lon: "" });
   const [address, setAddress] = useState("");
   const [mapsLibraryLoaded, setMapsLibraryLoaded] = useState(false);
