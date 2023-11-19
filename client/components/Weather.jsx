@@ -4,7 +4,11 @@ import NavBar from './NavBar.jsx';
 import WeatherForecast from './WeatherForecast.jsx';
 
 const days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
+/**
+ * TODO:
+ * Use loader data to get user's id in the component to pass into the axios post request
+ * make sure each forecast updated in the state has a randomly generated key to avoid deleting mismatched forecasts across different planned trips
+ */
 const Weather = () => {
   const [text, setText] = useState('');
   const [weather, setWeather] = useState(false);
@@ -22,7 +26,8 @@ const Weather = () => {
   };
   console.log(future);
 
-  const handleAdd = () => {
+  const handleAdd = (e) => {
+    e.preventDefault();
     future
     ?
     future.map((weather) => {
@@ -32,7 +37,7 @@ const Weather = () => {
         highTemp: Math.floor(weather.day.maxtemp_f),
         lowTemp: Math.floor(weather.mintemp_f),
         rain: weather.day.daily_chance__rain,
-        condition: weather.day.conditiion.text,
+        condition: weather.day.condition.text,
         region: region,
         date: `${weather.date.slice(5, weather.date.length)}-${weather.date.slice(0, 4)}`
       })
@@ -86,7 +91,7 @@ const Weather = () => {
           type="submit"
           value="Add to your trip!"
           className="button is-success is-rounded add-to-trip"
-          onClick={handleAdd}
+          onClick={(e) => handleAdd(e)}
         />
       </form>
       <div>

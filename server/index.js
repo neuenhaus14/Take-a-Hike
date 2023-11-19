@@ -110,9 +110,10 @@ app.get("/api/weather/:region/:selectDay", (req, res) => {
 
 // request handler for weatherForecasts table
 app.post('/api/weatherForecasts', (req, res) => {
+  // all deconstructed values are defined
+  const { userId, avgTemp, highTemp, lowTemp, condition, region, date } = req.body;
   // change to create
-  console.log('new forecast in db', req.params);
-  res.send(body);
+  console.log('new forecast in db', avgTemp);
 });
 
 ////////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
