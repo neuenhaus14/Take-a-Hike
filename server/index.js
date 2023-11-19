@@ -261,7 +261,7 @@ app.post('/api/packingListItems', (req, res) => {
           tripImage: null, //TODO:// update with user data
         })
           .then((data) => {
-            console.log('Successfully created trip', data.dataValues);
+            console.log('Successfully created trip', data.dataValues, 'user id', req.body.userId);
             UserTrips.create({
               userId: req.body.userId,
               tripId: req.body.trail.id,
@@ -282,6 +282,24 @@ app.post('/api/packingListItems', (req, res) => {
       }
     })
   })
+
+  app.get('/profile/userTrips/:userId', (req, res) => {
+    console.log('Request user trips:', req.user);
+    const { userId } = req.params;
+    UserTrips.findAll({
+      where: {
+        userId: userId,
+      },
+    })
+      .then((userTrips) => {
+        console.log('User trips:', userTrips);
+        res.json(userTrips);
+      })
+      .catch((err) => {
+        console.error('ERROR: ', err);
+        res.sendStatus(404);
+      });
+  });
   //using the UserTrips model, create a new entry in the userTrips table
 
 ///////////////////////////////////////////////////////////////////////////////
