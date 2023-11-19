@@ -14,6 +14,10 @@ const WeatherForecast = db.define('weatherForecasts', {
     type: DataTypes.INTEGER,
     allowNull: true
   },
+  unique_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  },
   avgTemp: {
     type: DataTypes.INTEGER,
     allowNull: true
