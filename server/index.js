@@ -512,13 +512,17 @@ app.post("/add-comment", (req, res) => {
   const { comment } = req.body.options;
 
   Comments.create({ user_id, trail_id, comment })
-    .then((data) => {
-      res.status(201).send([data]);
+  .then((trailComment) => {
+    Users.findAll({where: {_id: trailComment.user_id}})
+      .then((user) => {
+        trailComment.dataValues.username = user[0].email 
+        res.status(200).send([trailComment]);
+      })
+      .catch((err) => {
+        console.error(err, "Something went wrong with getting comments");
+        res.sendStatus(500);
+      });
     })
-    .catch((err) => {
-      console.error(err, "Something went wrong");
-      res.sendStatus(500);
-    });
 });
 
 app.get("/comments-by-trail/:trail_id", (req, res) => {
