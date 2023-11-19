@@ -16,13 +16,23 @@ const UserTrips = () => {
     const getMyTrips = () => {
         axios.get(`/profile/userTrips/${userId}`)
             .then((trips) => {
-            // console.log('trips', trips);
+            console.log('trips', trips);
             setMyTrips(trips.data);
         });
     }
+    useEffect(() => {
+        getMyTrips();
+    }, [])
     return (
         <div className="trips">
-            <h1> test</h1>
+           {myTrips.map((trip) => {
+                return (
+                     <div className="trip-card">
+                          <h1>{trip.userId}</h1>
+                          <p>{trip.tripId}</p>
+                     </div>
+                )
+           })}
         </div>
     )
 }
