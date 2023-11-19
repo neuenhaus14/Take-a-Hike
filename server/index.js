@@ -524,15 +524,6 @@ app.post("/add-comment", (req, res) => {
 app.get("/comments-by-trail/:trail_id", (req, res) => {
   const { trail_id } = req.params;
 
-//   Comments.findAll({ where: { trail_id } })
-//     .then((trailComments) => {
-//       if (trailComments.length > 0) {
-//         res.status(200).send(trailComments.reverse());
-//       }
-//     })
-//     .catch((err) => console.error(err, "Getting trails went wrong"));
-// });
-
 Comments.findAll({ where: { trail_id } })
 .then((trailComments) => {
   const user = trailComments.map((comment) => comment.user_id);
