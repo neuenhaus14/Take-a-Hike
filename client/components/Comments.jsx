@@ -78,11 +78,13 @@ const Comments = ({trail_id, user_id}) => {
       <div id="render-comments">
       { comments.map((comment, index) => 
         <div id='comments' key={index}>
-          <span> {comment.username.slice(0, 11)} </span>
-          <p>{comment.comment}</p> <span>{moment(comment.createdAt).format('ll')}</span>
+          <span> <b>{comment.username.slice(0, 11)}: </b></span>
+          <span>{comment.comment}   </span> 
           <button onClick = {() => updateLikes(comment.id)}>❤️</button>
           <span>{comment.likes}</span>
-          <button onClick = {() => deleteComment(comment.id)}> 🗑️ </button>
+          <button onClick = {() => deleteComment(comment.id)}> 🗑️ </button> 
+          <p>{moment(comment.createdAt).format('ll')}</p>
+          <br />
         </div>
       )}  
       </div>
