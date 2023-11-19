@@ -7,6 +7,7 @@ import moment from "moment";
 const Comments = ({trail_id, user_id}) => {
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([])
+  // const [commentsUsers, setCommentsUsers] = useState([]);
   const [likeStatus, setLikeStatus] = useState(false);
   const [commentValue, setCommentValue] = useState('');
 
@@ -19,6 +20,7 @@ const Comments = ({trail_id, user_id}) => {
     })
     .catch((err) => console.error(err));
   }, [setComments])
+
 
   // adds comment to database and immediately shows on page bc of state
   const addComment = () => {
@@ -60,7 +62,7 @@ const Comments = ({trail_id, user_id}) => {
     })
     .catch((err) => console.error(err));
   }
-  
+ 
   // clears the <input> after enter or button press
   const clearInput = () => { setCommentValue('') }
   

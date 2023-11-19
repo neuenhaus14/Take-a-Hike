@@ -524,14 +524,32 @@ app.post("/add-comment", (req, res) => {
 app.get("/comments-by-trail/:trail_id", (req, res) => {
   const { trail_id } = req.params;
 
-  Comments.findAll({ where: { trail_id } })
-    .then((trailComments) => {
-      if (trailComments.length > 0) {
-        res.status(200).send(trailComments.reverse());
-      }
+//   Comments.findAll({ where: { trail_id } })
+//     .then((trailComments) => {
+//       if (trailComments.length > 0) {
+//         res.status(200).send(trailComments.reverse());
+//       }
+//     })
+//     .catch((err) => console.error(err, "Getting trails went wrong"));
+// });
+
+Comments.findAll({ where: { trail_id } })
+.then((trailComments) => {
+  const user = trailComments.map((comment) => comment.user_id);
+  Users.findAll({where: {_id: user}})
+    .then((user) => {
+        trailComments.map((trailComment) => { 
+        return trailComment.dataValues.username = user[0].email 
+      })
+      res.status(200).send(trailComments.reverse());
     })
-    .catch((err) => console.error(err, "Getting trails went wrong"));
-});
+    .catch((err) => {
+      console.error(err, "Something went wrong with getting comments");
+      res.sendStatus(500);
+    });
+  })
+  .catch((err) => console.error(err, "Getting comments went wrong"));
+  });
 
 app.delete('/delete-comment/:user_id/:id/:trail_id', (req, res) => {
   const { user_id } = req.params;
