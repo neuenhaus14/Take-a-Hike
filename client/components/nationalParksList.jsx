@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import NationalParksEntry from './NationalParksEntry.jsx';
-import NavBar from './NavBar.jsx';
-import PlacesAutocomplete, {geocodeByAddress, getLatLng} from 'react-places-autocomplete';
+import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
+import NationalParksEntry from './nationalParksEntry';
+import NavBar from './NavBar';
 
-const NationalParksList = ({ handleGetNationalParks, nationalParkList, loading }) => {
+const NationalParksList = () => {
   const [location, setLocation] = useState({ lat: '', lon: '' });
   const [address, setAddress] = useState('');
-  const [mapsLibraryLoaded, setMapsLibraryLoaded] = useState(false);  
-  
-  useEffect(()=>{
+  const [mapsLibraryLoaded, setMapsLibraryLoaded] = useState(false);
+  const [nationalParkList, setNationalParkList] = useState([]);
+  const [loadingParks, SetLoadingParks] = useState(false);
+
+  useEffect(() => {
     const initMap = () => setMapsLibraryLoaded(true);
 
-    const fetchMapsURL = async () =>{
+    const fetchMapsURL = async () => {
       try {
         const response = await fetch('/api/google-maps-library');
         const url = await response.text();
@@ -23,53 +25,54 @@ const NationalParksList = ({ handleGetNationalParks, nationalParkList, loading }
           script.src = url;
           document.head.appendChild(script);
           script.onload = () => { setMapsLibraryLoaded(true); };
-        } 
+        }
       } catch (err) {
         console.error('error fetching maps URL: ', err);
       }
     };
     window.initMap = initMap;
     fetchMapsURL();
-    return () =>{
+    return () => {
       setMapsLibraryLoaded(false);
     };
   }, []);
 
-  const handleLocationInput = (e) => {
-    const { name, value } = e.target;
-    setLocation((location) => {
-      return { ...location, [name]: value, [name]: value };
-    });
+  const handleGetNationalParks = () => {
+    console.log('TO DO');
   };
 
-  const userLocationGrab = () =>{
+  const handleLocationInput = (e) => {
+    const { name, value } = e.target;
+    setLocation((location) => ({ ...location, [name]: value, [name]: value }));
+  };
+
+  const userLocationGrab = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) =>{
+        (position) => {
           setLocation({
             lat: position.coords.latitude,
-            lon: position.coords.longitude
+            lon: position.coords.longitude,
           });
           handleGetNationalParks({
             lat: position.coords.latitude,
-            lon: position.coords.longitude
+            lon: position.coords.longitude,
           });
         },
-        (err) =>{
+        (err) => {
           console.error('error in location grab: ', err);
-        }
+        },
       );
     } else {
       console.error('geolocation not supported');
     }
-    
   };
 
-  const handleSelect = (selectedAddress) =>{
+  const handleSelect = (selectedAddress) => {
     geocodeByAddress(selectedAddress)
       .then((results) => getLatLng(results[0]))
-      .then((latLng) =>{
-        setLocation({lat: latLng.lat, lon: latLng.lng});
+      .then((latLng) => {
+        setLocation({ lat: latLng.lat, lon: latLng.lng });
         setAddress(selectedAddress);
       })
 
@@ -78,7 +81,7 @@ const NationalParksList = ({ handleGetNationalParks, nationalParkList, loading }
       });
   };
 
-  const handleChange = (address) =>{
+  const handleChange = (address) => {
     setAddress(address);
   };
 
@@ -86,22 +89,23 @@ const NationalParksList = ({ handleGetNationalParks, nationalParkList, loading }
     e.preventDefault();
     handleGetNationalParks(location);
   };
-  
+
   return (
     <div className="trails-list">
       <NavBar />
       <form className="box">
         <h1 className="profile-card">
-        Find a trail near you! 
+          Find a trail near you!
         </h1>
-        
+
         <div className="button-wrapper" align="center">
           <button
             onClick={userLocationGrab}
             type="button"
             className="button is-info is-rounded"
             align="center"
-          >Use Current Location
+          >
+            Use Current Location
           </button>
         </div>
       </form>
@@ -111,52 +115,55 @@ const NationalParksList = ({ handleGetNationalParks, nationalParkList, loading }
         </div>
         <div className="field" key="places-autocomplete-wrapper">
 
-          {mapsLibraryLoaded && 
-          <>
-            <label className="label">Address</label>
-            <PlacesAutocomplete
-              value={address}
-              onChange={handleChange}
-              onSelect={handleSelect}
-            >
-              {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
-                <div>
-                  <input
-                    {...getInputProps({
-                      placeholder: 'Search Places ...',
-                      className: 'card',
-                    })}
-                  />
-                  <div className="autocomplete-dropdown-container">
-                    {loading && <div>Loading...</div>}
-                    {suggestions.map((suggestion) => {
-                      const className = suggestion.active
-                        ? 'suggestion-item--active'
-                        : 'suggestion-item';
-                      const style = suggestion.active
-                        ? { backgroundColor: '#fafafa', cursor: 'pointer' }
-                        : { backgroundColor: '#ffffff', cursor: 'pointer' };
-                      return (
-                        <div 
-                          {...getSuggestionItemProps(suggestion, {
-                            className,
-                            style,
-                          })}
-                          key={suggestion.placeId}
-                        >
-                          <span>{suggestion.description}</span>
-                        </div>
-                      );
-                    })}
+          {mapsLibraryLoaded
+          && (
+            <>
+              <label className="label">Address</label>
+              <PlacesAutocomplete
+                value={address}
+                onChange={handleChange}
+                onSelect={handleSelect}
+              >
+                {({
+                  getInputProps, suggestions, getSuggestionItemProps, loading,
+                }) => (
+                  <div>
+                    <input
+                      {...getInputProps({
+                        placeholder: 'Search Places ...',
+                        className: 'card',
+                      })}
+                    />
+                    <div className="autocomplete-dropdown-container">
+                      {loadingParks && <div>Loading...</div>}
+                      {suggestions.map((suggestion) => {
+                        const className = suggestion.active
+                          ? 'suggestion-item--active'
+                          : 'suggestion-item';
+                        const style = suggestion.active
+                          ? { backgroundColor: '#fafafa', cursor: 'pointer' }
+                          : { backgroundColor: '#ffffff', cursor: 'pointer' };
+                        return (
+                          <div
+                            {...getSuggestionItemProps(suggestion, {
+                              className,
+                              style,
+                            })}
+                            key={suggestion.placeId}
+                          >
+                            <span>{suggestion.description}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
-            </PlacesAutocomplete>
-            <div>
-              <h5>-OR SEARCH BY-</h5>
-            </div>
-          </>
-          }
+                )}
+              </PlacesAutocomplete>
+              <div>
+                <h5>-OR SEARCH BY-</h5>
+              </div>
+            </>
+          )}
         </div>
         <div className="field">
           <label className="label">Latitude</label>
@@ -187,7 +194,7 @@ const NationalParksList = ({ handleGetNationalParks, nationalParkList, loading }
         </div>
         <div className="button-container" align="center">
           <input
-        
+
             type="submit"
             value="Search Location"
             className="button is-info is-rounded"
@@ -196,16 +203,16 @@ const NationalParksList = ({ handleGetNationalParks, nationalParkList, loading }
       </form>
       <div className="trails">
         <div className="trail-table">
-          {loading 
-            ? 
-            <div className="list-item-card">
-              <div className="spinner">
-                <img align="center" src='./LoaderSpinner.gif'/>
+          {loadingParks
+            ? (
+              <div className="list-item-card">
+                <div className="spinner">
+                  <img align="center" src="./LoaderSpinner.gif" />
+                </div>
               </div>
-            </div> :
-            nationalParkList.map((nationalPark) => {
-              return <NationalParksEntry nationalPark={nationalPark} key={nationalPark.id} />;
-            })}
+            )
+            : null}
+          {/* // nationalParkList.map((nationalPark) => <NationalParksEntry nationalPark={nationalPark} key={nationalPark.id} />) */}
         </div>
       </div>
     </div>

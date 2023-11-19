@@ -1,28 +1,30 @@
-const axios = require("axios");
-const sequelize = require("sequelize");
-const express = require("express");
-const path = require("path");
-const passport = require("passport");
-const dotenv = require("dotenv");
-const { BirdList } = require("./database/models/birdList.js");
-const { BirdSightings } = require("./database/models/birdSightings.js");
-const { PackingLists } = require("./database/models/packingLists");
-const { PackingListItems } = require("./database/models/packingListItems");
-const { joinFriends } = require("./database/models/joinFriends");
-const { Comments } = require("./database/models/comments");
+/* eslint-disable no-shadow */
+const axios = require('axios');
+const sequelize = require('sequelize');
+const express = require('express');
+const path = require('path');
+const passport = require('passport');
+const dotenv = require('dotenv');
+const session = require('express-session');
+const { BirdList } = require('./database/models/birdList.js');
+const { BirdSightings } = require('./database/models/birdSightings.js');
+const { PackingLists } = require('./database/models/packingLists');
+const { PackingListItems } = require('./database/models/packingListItems');
+const { joinFriends } = require('./database/models/joinFriends');
+const { Comments } = require('./database/models/comments');
 
 // const { default: PackingList } = require("../client/components/PackingList");
 const router = express.Router();
 
-const session = require("express-session");
-require("./middleware/auth.js");
-const { cloudinary } = require("./utils/coudinary");
-const { Users } = require("./database/models/users");
-const { UserTrips, Trips } = require("./database/models/userTrips");
+require('./middleware/auth.js');
+const { cloudinary } = require('./utils/coudinary');
+const { Users } = require('./database/models/users');
+const { UserTrips, Trips } = require('./database/models/userTrips');
+const { NationalParks } = require('./database/models/nationalParks.js');
 
 // Set Distribution Path
 const PORT = process.env.PORT || 5555;
-const distPath = path.resolve(__dirname, "..", "dist"); //serves the hmtl file of the application as default on load
+const distPath = path.resolve(__dirname, '..', 'dist'); //serves the hmtl file of the application as default on load
 
 // Create backend API
 const app = express();
@@ -33,11 +35,11 @@ app.use(express.static(distPath)); // Statically serves up client directory
 app.use(express.urlencoded({ extended: true })); // Parses url (allows arrays and objects)
 app.use(
   session({
-    secret: "keyboard cat",
+    secret: 'keyboard cat',
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false },
-  })
+  }),
 );
 
 // Reorder passport.session() to come after session()
@@ -50,40 +52,40 @@ const errorLoginUrl = `http://localhost${PORT}/login/error`;
 
 //Auth Routes
 app.get(
-  "/login/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  '/login/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] }),
 );
 
 app.get(
-  "/auth/google/callback",
-  passport.authenticate("google", {
-    failureMessage: "cannot log in to Google",
+  '/auth/google/callback',
+  passport.authenticate('google', {
+    failureMessage: 'cannot log in to Google',
     failureRedirect: errorLoginUrl,
     successRedirect: successLoginUrl,
   }),
   (req, res) => {
-    console.log("User: ", req.user);
-    res.send("thank you for signing in!");
-  }
+    console.log('User: ', req.user);
+    res.send('thank you for signing in!');
+  },
 );
 
 //ADDING LOGOUT REQUEST HANDLER
-app.get("/logout", (req, res) => {
+app.get('/logout', (req, res) => {
   req.logout((err) => {
     if (err) {
-      console.error("Error logging out", err);
+      console.error('Error logging out', err);
     }
     req.session.destroy((error) => {
       if (error) {
-        console.error("Error destroying session", error);
+        console.error('Error destroying session', error);
       }
-      console.log("session user", req.user);
+      console.log('session user', req.user);
       res.sendStatus(200);
     });
   });
 });
 
-app.get("/profile", (req, res) => {
+app.get('/profile', (req, res) => {
   if (req.isAuthenticated()) {
     //console.log('/profile get user', req.user)
     res.send(req.user);
@@ -93,12 +95,12 @@ app.get("/profile", (req, res) => {
 });
 
 // request handler for weather api => FUNCTIONAL
-app.get("/api/weather/:region/:selectDay", (req, res) => {
+app.get('/api/weather/:region/:selectDay', (req, res) => {
   const { region, selectDay } = req.params;
-  console.log("DAYS", selectDay);
+  console.log('DAYS', selectDay);
   axios
     .get(
-      `http://api.weatherapi.com/v1/forecast.json?key=${process.env.WEATHER_API_KEY}&q=${region}&days=${selectDay}&aqi=no&alerts=no`
+      `http://api.weatherapi.com/v1/forecast.json?key=${process.env.WEATHER_API_KEY}&q=${region}&days=${selectDay}&aqi=no&alerts=no`,
     )
     .then(({ data }) => {
       res.send(data);
@@ -107,35 +109,35 @@ app.get("/api/weather/:region/:selectDay", (req, res) => {
 
 ////////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
 
-app.get("/api/google-maps-library", (req, res) => {
+app.get('/api/google-maps-library', (req, res) => {
   try {
     res.send(
-      `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places&callback=initMap`
+      `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places&callback=initMap`,
     );
   } catch (err) {
-    res.status(500).json({ error: "Error fetching maps URL" });
-    console.error("Error fetching maps URL: ", err);
+    res.status(500).json({ error: 'Error fetching maps URL' });
+    console.error('Error fetching maps URL: ', err);
   }
 });
 
 //GET req for trail data by latitude/longitude
-app.get("/api/trailslist", (req, res) => {
+app.get('/api/trailslist', (req, res) => {
   axios
     .get(
       `https://trailapi-trailapi.p.rapidapi.com/trails/explore/?lat=${req.query.lat}&lon=${req.query.lon}&radius=100`,
       {
         headers: {
-          "X-RapidAPI-Host": "trailapi-trailapi.p.rapidapi.com",
-          "X-RapidAPI-Key": process.env.TRAILS_API_KEY,
+          'X-RapidAPI-Host': 'trailapi-trailapi.p.rapidapi.com',
+          'X-RapidAPI-Key': process.env.TRAILS_API_KEY,
         },
-      }
+      },
     )
     .then((response) => {
       // console.log(response.data); - returns array of objects of trail data
       res.json(response.data);
     })
     .catch((err) => {
-      console.error("ERROR: ", err);
+      console.error('ERROR: ', err);
       res.sendStatus(404);
     });
 });
@@ -143,16 +145,16 @@ app.get("/api/trailslist", (req, res) => {
 //////////////////////////////////////// Cloudinary routes //////////////////////////////////////
 
 // get request to get all images (this will later be trail specific)
-app.post("/api/images", async (req, res) => {
-  console.log("server index.js || LINE 70", req.body);
+app.post('/api/images', async (req, res) => {
+  console.log('server index.js || LINE 70', req.body);
   // NEED TO CHANGE ENDPOINT TO INCLUDE TRAIL SPECIFIC PARAM SO PHOTOS CAN BE UPLOADED + RENDERED PROPERLY
   try {
     // Can create new folder with upload from TrailProfile component. Need to modify get request to filter based on folder param (which will be equal to the trail name)
     const { resources } = await cloudinary.search
       .expression(
-        `resource_type:image AND folder:${req.body.trailFolderName}/*`
+        `resource_type:image AND folder:${req.body.trailFolderName}/*`,
       )
-      .sort_by("created_at", "desc")
+      .sort_by('created_at', 'desc')
       .max_results(30)
       .execute();
 
@@ -166,14 +168,14 @@ app.post("/api/images", async (req, res) => {
       .map((image) => image.secure_url);
     res.json(secureImageUrls);
   } catch (err) {
-    console.error("error in api images post: ", err);
+    console.error('error in api images post: ', err);
   }
 });
 
 /**
  * Routes saving for packing list
  */
-app.post("/api/packingLists", (req, res) => {
+app.post('/api/packingLists', (req, res) => {
   // console.log(req.body, "Server index.js LINE 55");
   PackingLists.create({
     listName: req.body.listName,
@@ -184,14 +186,14 @@ app.post("/api/packingLists", (req, res) => {
       res.sendStatus(201);
     })
     .catch((err) => {
-      console.error(err, "Something went wrong");
+      console.error(err, 'Something went wrong');
       res.sendStatus(500);
     });
 });
 /**
  * Routes for packing list GET ALL LISTS
  */
-app.get("/api/packingLists", (req, res) => {
+app.get('/api/packingLists', (req, res) => {
   // console.log("Server index.js LINE 166", req.body);
   PackingLists.findAll()
     .then((data) => {
@@ -199,7 +201,7 @@ app.get("/api/packingLists", (req, res) => {
       res.status(200).send(data);
     })
     .catch((err) => {
-      console.error(err, "Something went wrong");
+      console.error(err, 'Something went wrong');
       res.sendStatus(404);
     });
 });
@@ -207,7 +209,7 @@ app.get("/api/packingLists", (req, res) => {
 /**
  * post request to the packingListItems
  */
-app.post("/api/packingListItems", (req, res) => {
+app.post('/api/packingListItems', (req, res) => {
   // console.log(
   //   "Is this being reached? LINE 103 SERVER.index.js || REQ.BODY \n",
   //   req.body
@@ -218,13 +220,13 @@ app.post("/api/packingListItems", (req, res) => {
       res.sendStatus(200);
     })
     .catch((err) => {
-      console.error("Failed to create FROM 113", err);
+      console.error('Failed to create FROM 113', err);
       res.sendStatus(500);
     });
 });
 
 //Routes for posting to user trips
-app.post("/profile/userTrips", (req, res) => {
+app.post('/profile/userTrips', (req, res) => {
   // console.log("Server index.js LINE 55", req.body);
   Trips.findOne({
     where: {
@@ -233,19 +235,19 @@ app.post("/profile/userTrips", (req, res) => {
     },
   }).then((existingTrip) => {
     if (existingTrip) {
-      console.log("Trip already exists!");
+      console.log('Trip already exists!');
       res.sendStatus(409);
     } else {
       Trips.create({
         tripName: req.body.trail.name,
-        tripDescription: "test description cause theya re all",
+        tripDescription: 'test description cause theya re all',
         tripLocation: `${req.body.trail.city}, ${req.body.trail.region}`,
         tripStartDate: null, //TODO:// update with user data
         tripEndDate: null, //TODO:// update with user data
         tripImage: null, //TODO:// update with user data
       })
         .then((data) => {
-          console.log("Successfully created trip", data.dataValues);
+          console.log('Successfully created trip', data.dataValues);
           UserTrips.create({
             userId: req.body.userId,
             tripId: req.body.trail.id,
@@ -255,12 +257,12 @@ app.post("/profile/userTrips", (req, res) => {
               res.sendStatus(201);
             })
             .catch((err) => {
-              console.error(err, "Something went wrong");
+              console.error(err, 'Something went wrong');
               res.sendStatus(500);
             });
         })
         .catch((err) => {
-          console.error(err, "Something went wrong");
+          console.error(err, 'Something went wrong');
           res.sendStatus(500);
         });
     }
@@ -276,15 +278,15 @@ app.post("/profile/userTrips", (req, res) => {
 
 //GET req for all birdList data
 
-app.get("/api/birdList", async (req, res) => {
+app.get('/api/birdList', async (req, res) => {
   // console.log("Request user bird:", req.user);
   try {
-    const stateCode = req.query.state || "LA";
+    const stateCode = req.query.state || 'LA';
     const apiUrl = `https://api.ebird.org/v2/data/obs/US-${stateCode}/recent`;
 
     const response = await axios.get(apiUrl, {
       headers: {
-        "X-eBirdApiToken": process.env.X_EBIRD_API_KEY,
+        'X-eBirdApiToken': process.env.X_EBIRD_API_KEY,
       },
     });
 
@@ -298,16 +300,16 @@ app.get("/api/birdList", async (req, res) => {
 
     res.json(birdList);
   } catch (err) {
-    console.error("ERROR:", err);
+    console.error('ERROR:', err);
     res.sendStatus(500);
   }
 });
 
-app.get("/api/birdsounds/:birdName", async (req, res) => {
+app.get('/api/birdsounds/:birdName', async (req, res) => {
   try {
-    const birdName = req.params.birdName;
+    const { birdName } = req.params;
     const soundApiUrl = `https://xeno-canto.org/api/2/recordings?query=${encodeURIComponent(
-      birdName
+      birdName,
     )}`;
 
     const soundResponse = await axios.get(soundApiUrl);
@@ -315,22 +317,22 @@ app.get("/api/birdsounds/:birdName", async (req, res) => {
 
     res.json({ birdSounds });
   } catch (error) {
-    console.error("Error fetching bird sounds:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error fetching bird sounds:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
 // GET req for filtered birdList data based on search query
-app.get("/api/birdList/search", async (req, res) => {
+app.get('/api/birdList/search', async (req, res) => {
   try {
-    const stateCode = req.query.state || "LA";
-    const searchQuery = req.query.search || ""; // Get the search query from the request
+    const stateCode = req.query.state || 'LA';
+    const searchQuery = req.query.search || ''; // Get the search query from the request
 
     const apiUrl = `https://api.ebird.org/v2/data/obs/US-${stateCode}/recent`;
 
     const response = await axios.get(apiUrl, {
       headers: {
-        "X-eBirdApiToken": process.env.X_EBIRD_API_KEY,
+        'X-eBirdApiToken': process.env.X_EBIRD_API_KEY,
       },
     });
 
@@ -344,26 +346,25 @@ app.get("/api/birdList/search", async (req, res) => {
 
     // Filter the bird list based on the search query
     const filteredBirdList = birdList.filter(
-      (bird) =>
-        bird.scientificName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        bird.commonName.toLowerCase().includes(searchQuery.toLowerCase())
+      (bird) => bird.scientificName.toLowerCase().includes(searchQuery.toLowerCase())
+        || bird.commonName.toLowerCase().includes(searchQuery.toLowerCase()),
     );
 
     res.json(filteredBirdList);
   } catch (err) {
-    console.error("ERROR:", err);
+    console.error('ERROR:', err);
     res.sendStatus(500);
   }
 });
 
-app.get("/api/wiki/:birdName", async (req, res) => {
+app.get('/api/wiki/:birdName', async (req, res) => {
   try {
-    const birdName = req.params.birdName;
+    const { birdName } = req.params;
     const wikiApiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=info&inprop=url&titles=${encodeURIComponent(
-      birdName
+      birdName,
     )}`;
     const response = await axios.get(wikiApiUrl);
-    const pages = response.data.query.pages;
+    const { pages } = response.data.query;
 
     const scientificUrl = Object.values(pages)
       .map((page) => page.fullurl)
@@ -375,8 +376,8 @@ app.get("/api/wiki/:birdName", async (req, res) => {
 
     res.json(wikiDetails);
   } catch (error) {
-    console.error("Error fetching Wikipedia details:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error fetching Wikipedia details:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
@@ -384,19 +385,19 @@ app.get("/api/wiki/:birdName", async (req, res) => {
 ///////////////////////////////////////////////////////Bird Sightings Routes
 
 //GET req for all birdSightings data
-app.get("/api/birdsightings", (req, res) => {
+app.get('/api/birdsightings', (req, res) => {
   BirdSightings.findAll()
     .then((birdSightings) => {
       res.json(birdSightings);
     })
     .catch((err) => {
-      console.error("ERROR: ", err);
+      console.error('ERROR: ', err);
       res.sendStatus(404);
     });
 });
 
 //POST req to birdSightings database
-app.post("/api/birdsightings", (req, res) => {
+app.post('/api/birdsightings', (req, res) => {
   // console.log('Line 231 - Back End Bird Sightings Post Request: ', req.body);
   BirdSightings.create({
     bird_id: req.body.bird_id,
@@ -407,13 +408,13 @@ app.post("/api/birdsightings", (req, res) => {
       res.sendStatus(201);
     })
     .catch((err) => {
-      console.error(err, "Something went wrong");
+      console.error(err, 'Something went wrong');
       res.sendStatus(500);
     });
 });
 
 //Delete req to birdSightings database
-app.delete("/api/birdsightings", (req, res) => {
+app.delete('/api/birdsightings', (req, res) => {
   // console.log('Line 231 - Back End Bird Sightings Delete Request: ', req.body);
   BirdSightings.delete({
     bird_id: req.body.bird_id,
@@ -424,15 +425,15 @@ app.delete("/api/birdsightings", (req, res) => {
       res.sendStatus(201);
     })
     .catch((err) => {
-      console.error(err, "Something went wrong");
+      console.error(err, 'Something went wrong');
       res.sendStatus(500);
     });
 });
 
-app.post("/search-friends", (req, res) => {
+app.post('/search-friends', (req, res) => {
   const { fullName } = req.body.options;
 
-  Users.findAll({ where: { fullName: fullName } })
+  Users.findAll({ where: { fullName } })
     .then((users) => {
       res.status(200).send(users);
     })
@@ -442,25 +443,25 @@ app.post("/search-friends", (req, res) => {
     });
 });
 
-app.put("/add-friends/:userId", (req, res) => {
+app.put('/add-friends/:userId', (req, res) => {
   const { userId } = req.params;
   const { friend_user_id } = req.body.options;
 
   joinFriends
     .create({
       friending_user_id: userId,
-      friend_user_id: friend_user_id,
+      friend_user_id,
     })
     .then(() => {
-      res.status(200).send("You are now following the user");
+      res.status(200).send('You are now following the user');
     })
     .catch((err) => {
-      console.error("Error following user:", err);
-      res.status(500).send("Error following user");
+      console.error('Error following user:', err);
+      res.status(500).send('Error following user');
     });
 });
 
-app.delete("/delete-friends/:userId/:friendId", (req, res) => {
+app.delete('/delete-friends/:userId/:friendId', (req, res) => {
   const { userId } = req.params;
   const { friendId } = req.params;
 
@@ -472,18 +473,18 @@ app.delete("/delete-friends/:userId/:friendId", (req, res) => {
       },
     })
     .then(() => {
-      console.log("destoryed");
+      console.log('destoryed');
       res.sendStatus(200);
     })
     .catch((err) => {
-      console.error("Could not DELETE friend", err);
+      console.error('Could not DELETE friend', err);
       res.sendStatus(500);
     });
 });
 
-app.get("/friends-list/:user_id", (req, res) => {
+app.get('/friends-list/:user_id', (req, res) => {
   const { user_id } = req.params;
-  console.log("req.params", req.params);
+  console.log('req.params', req.params);
 
   joinFriends
     .findAll({ where: { friending_user_id: user_id } })
@@ -502,12 +503,12 @@ app.get("/friends-list/:user_id", (req, res) => {
         });
     })
     .catch((err) => {
-      console.error("Could not GET questions by user_id", err);
+      console.error('Could not GET questions by user_id', err);
       res.sendStatus(500);
     });
 });
 
-app.post("/add-comment", (req, res) => {
+app.post('/add-comment', (req, res) => {
   const { user_id } = req.body.options;
   const { trail_id } = req.body.options;
   const { comment } = req.body.options;
@@ -517,12 +518,12 @@ app.post("/add-comment", (req, res) => {
       res.status(201).send([data]);
     })
     .catch((err) => {
-      console.error(err, "Something went wrong");
+      console.error(err, 'Something went wrong');
       res.sendStatus(500);
     });
 });
 
-app.get("/comments-by-trail/:trail_id", (req, res) => {
+app.get('/comments-by-trail/:trail_id', (req, res) => {
   const { trail_id } = req.params;
 
   Comments.findAll({ where: { trail_id } })
@@ -531,36 +532,68 @@ app.get("/comments-by-trail/:trail_id", (req, res) => {
         res.status(200).send(trailComments.reverse());
       }
     })
-    .catch((err) => console.error(err, "Getting trails went wrong"));
+    .catch((err) => console.error(err, 'Getting trails went wrong'));
 });
 
-app.put("/update-like/:commentId", (req, res) => {
+app.put('/update-like/:commentId', (req, res) => {
   const { commentId } = req.params;
   const { likeStatus } = req.body.options;
 
   Comments.findOne({ where: { id: commentId } })
     .then(() => {
-      Comments.update({ likeStatus: likeStatus }, { where: { id: commentId } })
+      Comments.update({ likeStatus }, { where: { id: commentId } })
         .then((likeStat) => {
           if (likeStat) {
-            Comments.increment("likes", { where: { id: commentId } })
+            Comments.increment('likes', { where: { id: commentId } })
               .then(() => {
-                console.log("added to likes");
+                console.log('added to likes');
                 res.sendStatus(201);
               })
-              .catch((err) => console.error(err, "added to likes went wrong"));
+              .catch((err) => console.error(err, 'added to likes went wrong'));
           } else {
-            Comments.decrement("likes", { where: { id: commentId } })
+            Comments.decrement('likes', { where: { id: commentId } })
               .then(() => {
-                console.log("removed from likes");
+                console.log('removed from likes');
                 res.sendStatus(201);
               })
-              .catch((err) => console.error(err, "removed from went wrong"));
+              .catch((err) => console.error(err, 'removed from went wrong'));
           }
         })
-        .catch((err) => console.error(err, "Updating like status went wrong"));
+        .catch((err) => console.error(err, 'Updating like status went wrong'));
     })
-    .catch((err) => console.error(err, "finding a comment went wrong"));
+    .catch((err) => console.error(err, 'finding a comment went wrong'));
+});
+
+app.get('/nationalParksGetAndSave', async (req, res) => {
+  try {
+    const response = await axios.get(
+      `https://developer.nps.gov/api/v1/places?q=hiking&limit=1840&api_key=${process.env.NATIONAL_PARKS_API_KEY}`,
+    );
+    const unfilteredData = response.data.data;
+    const mappedParkData = unfilteredData
+      .filter((item) => (item.tags 
+      && item.tags.some((tag) => tag.toLowerCase() === 'trailhead')) 
+      || (item.amenities 
+      && item.amenities.some((amenity) => amenity.toLowerCase() === 'trailhead')))
+      .filter((item) => item.relatedParks?.[0]?.parkCode)
+      .map((item) => ({
+        title: item.title,
+        latitude: item.latitude || null,
+        longitude: item.longitude || null,
+        image: item.images[0].url || null,
+        parkCode: item.relatedParks[0].parkCode || null,
+        description: item.bodyText || null,
+        link: item.url || null,
+      }));
+      
+    await NationalParks.bulkCreate(mappedParkData);
+    console.log('Parks data successfully saved to database');
+
+    res.sendStatus(200);
+  } catch (err) {
+    console.error('error fetching and saving parks', err);
+    res.sendStatus(500);
+  }
 });
 
 // launches the server from localhost on port 5555

@@ -1,9 +1,9 @@
 // Import Dependencies
-const { DataTypes } = require("sequelize");
-const { db } = require("../index.js");
+const { DataTypes } = require('sequelize');
+const { db } = require('../index');
 
 // Create Schema/Model
-const NationalParks = db.define("parks", {
+const NationalParks = db.define('parks', {
   _id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -13,34 +13,34 @@ const NationalParks = db.define("parks", {
     type: DataTypes.STRING,
   },
   latitude: {
-    type: DataTypes.DECIMAL,
+    type: DataTypes.DECIMAL(10, 7),
   },
   longitude: {
-    type: DataTypes.DECIMAL,
+    type: DataTypes.DECIMAL(10, 7),
   },
   image: { 
-    type: DataTypes.STRING 
-},
+    type: DataTypes.STRING, 
+  },
   parkCode: { 
-    type: DataTypes.STRING(6)
-},
+    type: DataTypes.STRING(6),
+  },
   description: { 
-    type: DataTypes.TEXT
-},
+    type: DataTypes.TEXT,
+  },
   link: {
-    type: DataTypes.STRING
-  }
+    type: DataTypes.STRING,
+  },
 });
 
-const NationalParkCodes = db.define("parkCodes", {
+const NationalParkCodes = db.define('parkCodes', {
   code: {
-        type: DataTypes.STRING,
-        primaryKey: true,
-      },
+    type: DataTypes.STRING,
+    primaryKey: true,
+  },
   title: {
-        type: DataTypes.STRING(85),
-      },
-})
+    type: DataTypes.STRING(85),
+  },
+});
 
 // Export Schema
 module.exports = {
