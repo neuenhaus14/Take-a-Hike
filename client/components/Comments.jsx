@@ -25,14 +25,16 @@ const Comments = ({trail_id, user_id}) => {
   // adds comment to database and immediately shows on page bc of state
   const addComment = () => {
     console.log(user_id, trail_id)
-    axios.post("/add-comment", { options: { user_id, trail_id, comment } })
-    .then((response) => {
-      console.log(response)
-      console.log('comments', comments)
-      setComments(response.data.concat(comments))
-      clearInput()
-    })
-    .catch((err) => console.error(err));
+    if(user_id !== undefined){
+      axios.post("/add-comment", { options: { user_id, trail_id, comment } })
+      .then((response) => {
+        console.log(response)
+        console.log('comments', comments)
+        setComments(response.data.concat(comments))
+        clearInput()
+      })
+      .catch((err) => console.error(err));
+    }
   }
 
   const updateLikes = (commentId) => {
@@ -43,7 +45,7 @@ const Comments = ({trail_id, user_id}) => {
     })
     .then(() => {
       setLikeStatus(true);
-      console.log('comment has been liked!')
+      console.log('comment has been liked!', likeStatus)
     })
     .catch((err) => console.error(err));
   }
@@ -68,6 +70,7 @@ const Comments = ({trail_id, user_id}) => {
   // clears the <input> after enter or button press
   const clearInput = () => { setCommentValue('') }
   
+  console.log('like status outside!', likeStatus)
   return (
     <div>
       <div id="add-comments">

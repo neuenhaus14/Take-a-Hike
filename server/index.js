@@ -506,24 +506,25 @@ app.get("/friends-list/:user_id", (req, res) => {
     });
 });
 
-app.post("/add-comment", (req, res) => {
-  const { user_id } = req.body.options;
-  const { trail_id } = req.body.options;
-  const { comment } = req.body.options;
+app.post("/add-comment", async (req, res) => {
+  try {
+    const { user_id } = req.body.options;
+    const { trail_id } = req.body.options;
+    const { comment } = req.body.options;
 
-  Comments.create({ user_id, trail_id, comment })
-  .then((trailComment) => {
-    Users.findAll({where: {_id: trailComment.user_id}})
-      .then((user) => {
-        console.log('user email at add', user)
-        trailComment.dataValues.username = user[0].email 
-        res.status(200).send([trailComment]);
-      })
-      .catch((err) => {
-        console.error(err, "Something went wrong with getting comments");
-        res.sendStatus(500);
-      });
-    })
+    const trailComment = await Comments.create({ user_id, trail_id, comment })
+    const user = await Users.findOne({where: {_id: trailComment.user_id}})
+  
+      if (user){
+        trailComment.dataValues.username = user.dataValues.email
+        console.log('trailComment', trailComment)
+        res.status(200).send([trailComment])
+      }
+      
+  } catch (err) {
+    console.error(err, "Something went wrong with getting comments");
+    res.sendStatus(500);
+  }
 });
 
 app.get("/comments-by-trail/:trail_id", async (req, res) => {
@@ -541,69 +542,19 @@ app.get("/comments-by-trail/:trail_id", async (req, res) => {
         console.error( err, 'something went wrong w getting user')
       }
     }));
-
-    console.log("trails ", trailComments);
-    res.status(200).send(trailComments);
+   
+    res.status(200).send(trailComments.reverse());
   } catch (err) {
     console.error(err, "Something went wrong with getting comments");
     res.sendStatus(500);
   }
 });
 
-//   .then((trailComments) => {
-      
-//       .then((result) => {
-//         console.log("trailComments w username", trailComment.dataValues.username = result.dataValues.email )
-//       })
-//       .catch((err) => console.error(err, "Something went wrong with getting comments"));
-//     }))
-//     console.log("trails ", trailComments)
-//     res.status(200).send(trailComments)
-//   })
-//   .catch((err) => {
-//     console.error(err, "Something went wrong with getting comments");
-//     res.sendStatus(500);
-//   });
-// });
- 
-  // const userIds = trailComments.map((comment) => comment.user_id);
-  // Users.findAll({where: {_id: userIds}})
-  //   .then((user) => {
-  //     trailComments.map((trailComment) => { 
-  //       for (let i = 0; i < userIds.length; i++){
-  //         if (trailComment.user_id === userIds[i]){
-  //           console.log(trailComment.user_id, userIds[i])
-  //           // for (let i = 0; i < user.length; i++) {
-  //             for (let key in user){
-  //               console.log(user[key], userIds[i])
-  //               if(user[key] === userIds[i]){
-  //                 console.log(trailComment.dataValues.username, user.email)
-  //                 return trailComment.dataValues.username = user.email 
-  //               }
-  //             }
-
-  //           //}
-  
-  //         } 
-  //       }
-  //     })
-  //     console.log(trailComments)
-  //     res.status(200).send(trailComments.reverse());
-  //   })
-  //   .catch((err) => {
-  //     console.error(err, "Something went wrong with getting comments");
-  //     res.sendStatus(500);
-  //   });
-  // })
-  // .catch((err) => console.error(err, "Getting comments went wrong"));
-  // });
-
 app.delete('/delete-comment/:user_id/:id/:trail_id', (req, res) => {
   const { user_id } = req.params;
   const { id } = req.params;
   const { trail_id } = req.params;
-  // console.log("req.params", req.params);
-
+  
   Comments.destroy({ 
     where: { 
       user_id: user_id,
@@ -623,6 +574,7 @@ app.delete('/delete-comment/:user_id/:id/:trail_id', (req, res) => {
 app.put("/update-like/:commentId", (req, res) => {
   const { commentId } = req.params;
   const { likeStatus } = req.body.options;
+  console.log('likeStatus', likeStatus)
 
   Comments.findOne({ where: { id: commentId } })
     .then(() => {
