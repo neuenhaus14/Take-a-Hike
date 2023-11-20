@@ -77,7 +77,7 @@ const Friends = ({userId}) => {
           <div id='result-elements' key={result._id}>
              <img src={`${result.picture}`} width="50" height="50"/> 
              <span>{result.fullName}</span> <br />
-             <span> {result.email.slice(0, 11)} </span>
+             <span> {result.email.slice(0, -10)} </span>
              <button type="button" onClick = {() => addFriends(result)}>
               Add Friend</button>
              <br /> 

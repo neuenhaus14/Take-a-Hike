@@ -515,6 +515,7 @@ app.post("/add-comment", (req, res) => {
   .then((trailComment) => {
     Users.findAll({where: {_id: trailComment.user_id}})
       .then((user) => {
+        console.log('user email at add', user)
         trailComment.dataValues.username = user[0].email 
         res.status(200).send([trailComment]);
       })
@@ -525,26 +526,77 @@ app.post("/add-comment", (req, res) => {
     })
 });
 
-app.get("/comments-by-trail/:trail_id", (req, res) => {
-  const { trail_id } = req.params;
+app.get("/comments-by-trail/:trail_id", async (req, res) => {
+  try {
+    const { trail_id } = req.params;
+    const trailComments = await Comments.findAll({ where: { trail_id } }) // getting us all trails
+  
+    await Promise.all(trailComments.map(async (trailComment) => {
+      try{
+        const user = await Users.findOne({where: {_id: trailComment.user_id}})
+        if (user) {
+          trailComment.dataValues.username = user.dataValues.email
+        }
+      } catch (err) {
+        console.error( err, 'something went wrong w getting user')
+      }
+    }));
 
-Comments.findAll({ where: { trail_id } })
-.then((trailComments) => {
-  const user = trailComments.map((comment) => comment.user_id);
-  Users.findAll({where: {_id: user}})
-    .then((user) => {
-        trailComments.map((trailComment) => { 
-        return trailComment.dataValues.username = user[0].email 
-      })
-      res.status(200).send(trailComments.reverse());
-    })
-    .catch((err) => {
-      console.error(err, "Something went wrong with getting comments");
-      res.sendStatus(500);
-    });
-  })
-  .catch((err) => console.error(err, "Getting comments went wrong"));
-  });
+    console.log("trails ", trailComments);
+    res.status(200).send(trailComments);
+  } catch (err) {
+    console.error(err, "Something went wrong with getting comments");
+    res.sendStatus(500);
+  }
+});
+
+//   .then((trailComments) => {
+      
+//       .then((result) => {
+//         console.log("trailComments w username", trailComment.dataValues.username = result.dataValues.email )
+//       })
+//       .catch((err) => console.error(err, "Something went wrong with getting comments"));
+//     }))
+//     console.log("trails ", trailComments)
+//     res.status(200).send(trailComments)
+//   })
+//   .catch((err) => {
+//     console.error(err, "Something went wrong with getting comments");
+//     res.sendStatus(500);
+//   });
+// });
+ 
+  // const userIds = trailComments.map((comment) => comment.user_id);
+  // Users.findAll({where: {_id: userIds}})
+  //   .then((user) => {
+  //     trailComments.map((trailComment) => { 
+  //       for (let i = 0; i < userIds.length; i++){
+  //         if (trailComment.user_id === userIds[i]){
+  //           console.log(trailComment.user_id, userIds[i])
+  //           // for (let i = 0; i < user.length; i++) {
+  //             for (let key in user){
+  //               console.log(user[key], userIds[i])
+  //               if(user[key] === userIds[i]){
+  //                 console.log(trailComment.dataValues.username, user.email)
+  //                 return trailComment.dataValues.username = user.email 
+  //               }
+  //             }
+
+  //           //}
+  
+  //         } 
+  //       }
+  //     })
+  //     console.log(trailComments)
+  //     res.status(200).send(trailComments.reverse());
+  //   })
+  //   .catch((err) => {
+  //     console.error(err, "Something went wrong with getting comments");
+  //     res.sendStatus(500);
+  //   });
+  // })
+  // .catch((err) => console.error(err, "Getting comments went wrong"));
+  // });
 
 app.delete('/delete-comment/:user_id/:id/:trail_id', (req, res) => {
   const { user_id } = req.params;
