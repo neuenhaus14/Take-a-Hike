@@ -110,12 +110,21 @@ app.get("/api/weather/:region/:selectDay", (req, res) => {
 
 // request handler for weatherForecasts table
 app.post('/api/weatherForecasts', (req, res) => {
-  const uniqueId = Math.floor(Math.random() * 200);
-  
-  // all deconstructed values are defined
-  const { userId, avgTemp, highTemp, lowTemp, condition, region, date } = req.body;
-  // change to create
-  console.log('new forecast in db', avgTemp);
+  const { userId, avgTemp, highTemp, lowTemp, condition, region, date, unique_id, rain } = req.body;
+  console.log()
+    WeatherForecast.create({
+      userId: userId,
+      unique_id: unique_id,
+      avgTemp: avgTemp,
+      highTemp: highTemp,
+      lowTemp: lowTemp,
+      rain: rain,
+      condition: condition,
+      region: region,
+      date: date
+    })
+    .then(created => res.status(201).send(created))
+    .then(err => console.log('Could not POST forecast', err));
 });
 
 ////////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
