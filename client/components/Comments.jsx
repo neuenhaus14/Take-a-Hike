@@ -28,6 +28,7 @@ const Comments = ({trail_id, user_id}) => {
     axios.post("/add-comment", { options: { user_id, trail_id, comment } })
     .then((response) => {
       console.log(response)
+      console.log('comments', comments)
       setComments(response.data.concat(comments))
       clearInput()
     })
