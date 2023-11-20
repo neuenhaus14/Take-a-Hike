@@ -1,102 +1,104 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import moment from "moment";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import moment from 'moment';
 
-
-const Comments = ({trail_id, user_id}) => {
+function Comments({ trail_id, user_id }) {
   const [comment, setComment] = useState('');
-  const [comments, setComments] = useState([])
+  const [comments, setComments] = useState([]);
   // const [commentsUsers, setCommentsUsers] = useState([]);
   const [likeStatus, setLikeStatus] = useState(false);
   const [commentValue, setCommentValue] = useState('');
 
-  //loads comments from database on page render
-  useEffect (() => {
+  // loads comments from database on page render
+  useEffect(() => {
     axios.get(`/comments-by-trail/${trail_id}`)
-    .then((response) => {
-      console.log('show comments response', response.data)
-      setComments(response.data)
-    })
-    .catch((err) => console.error(err));
-  }, [setComments])
+      .then((response) => {
+        console.log('show comments response', response.data);
+        setComments(response.data);
+      })
+      .catch((err) => console.error(err));
+  }, [setComments]);
 
+  // renders comments on page after enter/post button is clicked
+  const updateCommentList = () => {
+    axios.get(`/comments-by-trail/${trail_id}`)
+      .then((response) => {
+        setComments(response.data);
+      })
+      .catch((err) => console.error(err));
+  };
+
+  // clears the <input> after enter or button press
+  const clearInput = () => { setCommentValue(''); };
 
   // adds comment to database and immediately shows on page bc of state
   const addComment = () => {
-    console.log(user_id, trail_id)
-    if(user_id !== undefined){
-      axios.post("/add-comment", { options: { user_id, trail_id, comment } })
-      .then((response) => {
-        console.log(response)
-        console.log('comments', comments)
-        setComments(response.data.concat(comments))
-        clearInput()
-      })
-      .catch((err) => console.error(err));
+    console.log(user_id, trail_id);
+    if (user_id !== undefined) {
+      axios.post('/add-comment', { options: { user_id, trail_id, comment } })
+        .then((response) => {
+          console.log(response);
+          console.log('comments', comments);
+          setComments(response.data.concat(comments));
+          clearInput();
+        })
+        .catch((err) => console.error(err));
     }
-  }
+  };
 
   const updateLikes = (commentId) => {
     axios.put(`/update-like/${commentId}`, {
       options: {
         likeStatus: !likeStatus,
-      }
+      },
     })
-    .then(() => {
-      setLikeStatus(true);
-      console.log('comment has been liked!', likeStatus)
-    })
-    .catch((err) => console.error(err));
-  }
+      .then(() => {
+        setLikeStatus(!likeStatus);
+        console.log('Like status updated!', likeStatus);
+      })
+      .catch((err) => console.error(err));
+  };
 
+  // deletes the comments only by the userId owner
   const deleteComment = (id) => {
     axios.delete(`/delete-comment/${user_id}/${id}/${trail_id}`)
-    .then((response) => {
-      console.log("deleted", response)
-      updateCommentList();
-    })
-    .catch((err) => console.error(err))
-  }
+      .then((response) => {
+        console.log('deleted', response);
+        updateCommentList();
+      })
+      .catch((err) => console.error(err));
+  };
 
-  const updateCommentList = () => {
-    axios.get(`/comments-by-trail/${trail_id}`)
-    .then((response) => {
-      setComments(response.data)
-    })
-    .catch((err) => console.error(err));
-  }
- 
-  // clears the <input> after enter or button press
-  const clearInput = () => { setCommentValue('') }
-  
-  console.log('like status outside!', likeStatus)
+  console.log('like status outside!', likeStatus);
   return (
     <div>
       <div id="add-comments">
         <h3>COMMENTS</h3>
-        <input id='comment' type="text" placeholder="Share your experience!" value={commentValue}
-              onChange={(e) => {setComment(e.target.value); setCommentValue(e.target.value)}} 
-              onKeyUp={(e) => e.key === 'Enter' && addComment()} />
-        <button onClick = {() => {addComment(); clearInput()}}>Post</button>
-        </div>
+        <input
+          id="comment"
+          type="text"
+          placeholder="Share your experience!"
+          value={commentValue}
+          onChange={(e) => { setComment(e.target.value); setCommentValue(e.target.value); }}
+          onKeyUp={(e) => e.key === 'Enter' && addComment()}
+        />
+        <button type="button" onClick={() => { addComment(); clearInput(); }}>Post</button>
+      </div>
       <div id="render-comments">
-      { comments.map((comment, index) => 
-        <div id='comments' key={index}>
-          <span> <b>{comment.username.slice(0, -10)}: </b></span>
-          <span>{comment.comment}   </span> 
-          <button onClick = {() => updateLikes(comment.id)}>❤️</button>
-          <span>{comment.likes}</span>
-          <button onClick = {() => deleteComment(comment.id)}> 🗑️ </button> 
-          <p>{moment(comment.createdAt).format('ll')}</p>
-          <br />
-        </div>
-      )}  
+        { comments.map((com, index) => (
+          <div id="comments" key={index}>
+            <span><b> {comment.username.slice(0, -10)}</b></span>
+            <span> {comment.comment} </span>
+            <button type="button" onClick={() => updateLikes(comment.id)}>❤️</button>
+            <span>{comment.likes}</span>
+            <button type="button" onClick={() => deleteComment(comment.id)}> 🗑️ </button>
+            <p>{moment(comment.createdAt).format('ll')}</p>
+            <br />
+          </div>
+        ))}
       </div>
     </div>
-  )
-  
-
+  );
 }
 
-export default Comments
+export default Comments;
