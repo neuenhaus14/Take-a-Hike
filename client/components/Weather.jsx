@@ -21,11 +21,12 @@ const Weather = () => {
         const id = data._id;
         setUserId(id);
         axios.get(`/api/createTrip/${id}`)
-          .then(({ data }) => console.log(data))
+          .then(({ data }) => setTrips(data))
           .catch(err => console.error(err));
       })
       .catch(err => console.error(err));
   }, []);
+  console.log(trips);
 
   const getWeather = async (location, days) => {
      await axios.get(`/api/weather/${location}/${days}`)
