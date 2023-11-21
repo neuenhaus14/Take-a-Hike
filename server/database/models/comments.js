@@ -1,7 +1,7 @@
 // Import Dependencies
 const { DataTypes } = require('sequelize');
-const { db } = require('../index.js');
-const { Users } = require('./users.js');
+const { db } = require('../index');
+const { Users } = require('./users');
 
 // Create Schema
 const Comments = db.define('comments', {
@@ -18,7 +18,6 @@ const Comments = db.define('comments', {
     type: DataTypes.INTEGER,
   },
   comment: DataTypes.STRING,
-  likeStatus: DataTypes.BOOLEAN,
   likes: { type: DataTypes.INTEGER, defaultValue: 0 },
 
 });
