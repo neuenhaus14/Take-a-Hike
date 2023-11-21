@@ -517,7 +517,6 @@ app.post('/add-comment', async (req, res) => {
 
     if (user) {
       trailComment.dataValues.username = user.dataValues.email;
-      console.log('trailComment', trailComment);
       res.status(200).send([trailComment]);
     }
   } catch (err) {
@@ -571,35 +570,48 @@ app.delete('/delete-comment/:user_id/:id/:trail_id', (req, res) => {
     });
 });
 
+// app.put('/update-like/:commentId', (req, res) => {
+//   const { commentId } = req.params;
+//   const { likeStatus } = req.body;
+//   console.log('likeStatus', likeStatus);
+
+//   Comments.findOne({ where: { id: commentId } })
+//     .then((data) => {
+//       console.log('likeStat', data);
+//       if (likeStatus) {
+//         Comments.increment('likes', { where: { id: commentId } })
+//           .then((dataaa) => {
+//             console.log('added to likes', dataaa);
+//             res.sendStatus(201);
+//           })
+//           .catch((err) => console.error(err, 'added to likes went wrong'));
+//       } else {
+//         Comments.decrement('likes', { where: { id: commentId } })
+//           .then(() => {
+//             console.log('removed from likes');
+//             res.sendStatus(201);
+//           })
+//           .catch((err) => console.error(err, 'removed from went wrong'));
+//       }
+//     })
+//     .catch((err) => console.error(err, 'Updating like status went wrong'));
+// });
+
 app.put('/update-like/:commentId', (req, res) => {
   const { commentId } = req.params;
-  const { likeStatus } = req.body.options;
-  console.log('likeStatus', likeStatus);
+  const { likeStatus } = req.body;
 
-  Comments.findOne({ where: { id: commentId } })
-    .then(() => {
-      Comments.update({ likeStatus }, { where: { id: commentId } })
-        .then((likeStat) => {
-          console.log('likeStat', likeStat);
-          if (likeStat) {
-            Comments.increment('likes', { where: { id: commentId } })
-              .then(() => {
-                console.log('added to likes');
-                res.sendStatus(201);
-              })
-              .catch((err) => console.error(err, 'added to likes went wrong'));
-          } else {
-            Comments.decrement('likes', { where: { id: commentId } })
-              .then(() => {
-                console.log('removed from likes');
-                res.sendStatus(201);
-              })
-              .catch((err) => console.error(err, 'removed from went wrong'));
-          }
-        })
-        .catch((err) => console.error(err, 'Updating like status went wrong'));
+  const incrementValue = likeStatus ? 1 : -1;
+
+  Comments.increment('likes', { by: incrementValue, where: { id: commentId } })
+    .then((data) => {
+      console.log(commentId);
+      console.log(data);
+      const action = likeStatus ? 'added to' : 'removed from';
+      console.log(`${action} likes`);
+      res.sendStatus(201);
     })
-    .catch((err) => console.error(err, 'finding a comment went wrong'));
+    .catch((err) => console.error(err, 'added to likes went wrong'));
 });
 
 // launches the server from localhost on port 5555

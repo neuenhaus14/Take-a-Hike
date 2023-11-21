@@ -48,9 +48,7 @@ function Comments({ trail_id, user_id }) {
 
   const updateLikes = (commentId) => {
     axios.put(`/update-like/${commentId}`, {
-      options: {
-        likeStatus: !likeStatus,
-      },
+      likeStatus: !likeStatus,
     })
       .then(() => {
         setLikeStatus(!likeStatus);
@@ -69,7 +67,6 @@ function Comments({ trail_id, user_id }) {
       .catch((err) => console.error(err));
   };
 
-  console.log('like status outside!', likeStatus);
   return (
     <div>
       <div id="add-comments">
@@ -87,12 +84,12 @@ function Comments({ trail_id, user_id }) {
       <div id="render-comments">
         { comments.map((com, index) => (
           <div id="comments" key={index}>
-            <span><b> {comment.username.slice(0, -10)}</b></span>
-            <span> {comment.comment} </span>
-            <button type="button" onClick={() => updateLikes(comment.id)}>❤️</button>
-            <span>{comment.likes}</span>
-            <button type="button" onClick={() => deleteComment(comment.id)}> 🗑️ </button>
-            <p>{moment(comment.createdAt).format('ll')}</p>
+            <span><b> {com.username.slice(0, -10)}</b></span>
+            <span> {com.comment} </span>
+            <button type="button" onClick={() => updateLikes(com.id)}>❤️</button>
+            <span>{com.likes}</span>
+            <button type="button" onClick={() => deleteComment(com.id)}> 🗑️ </button>
+            <p>{moment(com.createdAt).format('ll')}</p>
             <br />
           </div>
         ))}
