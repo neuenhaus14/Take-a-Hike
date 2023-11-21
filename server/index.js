@@ -6,14 +6,14 @@ const path = require('path');
 const passport = require('passport');
 const dotenv = require('dotenv');
 const session = require('express-session');
-const { BirdList } = require('./database/models/birdList.js');
-const { BirdSightings } = require('./database/models/birdSightings.js');
+const { BirdList } = require('./database/models/birdList');
+const { BirdSightings } = require('./database/models/birdSightings');
 const { PackingLists } = require('./database/models/packingLists');
 const { PackingListItems } = require('./database/models/packingListItems');
 const { joinFriends } = require('./database/models/joinFriends');
 const { Comments } = require('./database/models/comments');
-const { Likes } = require('./database/models/comments');
-const { WeatherForecast } = require('./database/models/weatherForecast.js');
+const { Likes } = require('./database/models/likes');
+const { WeatherForecast } = require('./database/models/weatherForecast');
 
 // const { default: PackingList } = require("../client/components/PackingList");
 const router = express.Router();
@@ -674,22 +674,55 @@ app.delete('/delete-comment/:user_id/:id/:trail_id', (req, res) => {
     });
 });
 
-app.post('/update-like/:commentId/:userId', (req, res) => {
+app.put('/update-like/:commentId/:userId', (req, res) => {
   const { commentId } = req.params;
   const { userId } = req.params;
   const { likeStatus } = req.body;
+  console.log(commentId, userId, likeStatus);
 
-  Likes.create(
-    {
-      where: {
-        comment_id: commentId,
-        user_id: userId,
-        like: likeStatus,
-      },
-    },
-  )
-    .then()
-    .catch();
+  Likes.findOne({ where: { user_id: userId, comment_id: commentId } })
+    .then((likeEntry) => {
+      if (!likeEntry) {
+        Likes.create({
+          user_id: userId,
+          comment_id: commentId,
+          like: likeStatus,
+        })
+          .then((data) => {
+            console.log('successful creation', data);
+            res.status(200).send(data);
+          })
+          .catch(() => console.log('not successfully created'));
+      } else {
+        Likes.update({ like: likeStatus }, { where: { user_id: userId, comment_id: commentId } })
+          .then((data) => {
+            console.log('successful update', data);
+            res.status(200).send(data);
+          })
+          .catch(() => console.log('not successfully updated'));
+      }
+    })
+    .catch((err) => {
+      console.error('Could not post like', err);
+      res.sendStatus(500);
+    });
+
+  // Likes.update(
+  //   likeStatus,
+  //   {
+  //     where: {
+  //       user_id: userId,
+  //       comment_id: commentId,
+  //     },
+  //   },
+  // )
+  //   .then((data) => {
+  //     console.log('likes data', data);
+  //   })
+  //   .catch((err) => {
+  //     console.error('Could not post like', err);
+  //     res.sendStatus(500);
+  //   });
 });
 
 // app.put('/update-like/:commentId', (req, res) => {

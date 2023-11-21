@@ -52,27 +52,18 @@ function Comments({ trail_id, user_id }) {
   };
 
   const updateLikes = (com) => {
-    axios.post(`/update-like/${com.id}/${user_id}`, {
+    console.log(com.id, user_id, !likeStatus);
+    axios.put(`/update-like/${com.id}/${user_id}`, {
       likeStatus: !likeStatus,
     })
-      .then((response) => {
-        console.log('likes post res', response)
+      .then(() => {
+        console.log('likes post res');
         setLikeStatus(!likeStatus);
-        //setLikes(response.data);
-        //setLikes(com.likes);
+        // setLikes(response.data);
+        // setLikes(com.likes);
         console.log('Like status updated!', likeStatus);
       })
       .catch((err) => console.error(err));
-
-    // axios.put(`/update-like/${com.id}`, {
-    //   likeStatus: !likeStatus,
-    // })
-    //   .then(() => {
-    //     setLikeStatus(!likeStatus);
-    //     setLikes(com.likes);
-    //     console.log('Like status updated!', likeStatus);
-    //   })
-    //   .catch((err) => console.error(err));
   };
 
   // deletes the comments only by the userId owner
@@ -85,6 +76,7 @@ function Comments({ trail_id, user_id }) {
       .catch((err) => console.error(err));
   };
 
+  console.log(likeStatus)
   return (
     <div>
       <div id="add-comments">
