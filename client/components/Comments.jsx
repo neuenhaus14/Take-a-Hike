@@ -52,14 +52,14 @@ function Comments({ trail_id, user_id }) {
   };
 
   // gets the like count from the database to display on the like button
-  const getLikeCount = (com) => {
-    axios.get(`/get-likes/${com.id}`)
-      .then((response) => {
-        setLikes(response.data);
-        console.log('likes gotten', response);
-      })
-      .catch((err) => console.error(err));
-  };
+  // const getLikeCount = (com) => {
+  //   axios.get(`/get-likes/${com.id}`)
+  //     .then((response) => {
+  //       setLikes(response.data.like); // TODO: DECONSTRUCT AND ACCESS NUMBER AND FEED TO BUTTON
+  //       console.log('likes gotten', response.data.likeCount);
+  //     })
+  //     .catch((err) => console.error(err));
+  // };
 
   // updates likes in db by user so user can only like or dislike ONCE
   const updateLikes = (com) => {
@@ -67,10 +67,11 @@ function Comments({ trail_id, user_id }) {
     axios.put(`/update-like/${com.id}/${user_id}`, {
       likeStatus: !likeStatus,
     })
-      .then(() => {
-        console.log('likes post res');
+      .then((response) => {
+        console.log('likes post res', response);
+        const likes = response.data.likeCount;
         setLikeStatus(!likeStatus);
-        getLikeCount(com);
+        // getLikeCount(com);
         console.log('Like status updated!', likeStatus);
       })
       .catch((err) => console.error(err));
@@ -106,7 +107,7 @@ function Comments({ trail_id, user_id }) {
           <div id="comments" key={index}>
             <span><b> {com.username.slice(0, -10)}</b></span>
             <span> {com.comment} </span>
-            <button type="button" onClick={() => updateLikes(com)}>❤️ {com.likes}</button>
+            <button type="button" onClick={() => updateLikes(com)}>❤️ {likes}</button>
             <button type="button" onClick={() => deleteComment(com.id)}> 🗑️ </button>
             <p>{moment(com.createdAt).format('ll')}</p>
             <br />

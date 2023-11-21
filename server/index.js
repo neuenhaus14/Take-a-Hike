@@ -687,9 +687,15 @@ app.put('/update-like/:commentId/:userId', (req, res) => {
           comment_id: commentId,
           like: likeStatus,
         })
-          .then((data) => {
-            console.log('successful creation', data);
-            res.status(200).send(data);
+          .then(() => {
+            Likes.findAll({ where: { comment_id: commentId, like: true } })
+              .then((comments) => {
+                res.status(200).send({ likeCount: comments.length });
+              })
+              .catch((error) => {
+                console.error('Error getting likes:', error);
+                res.status(500).send('Internal Server Error');
+              });
           })
           .catch(() => {
             console.log('not successfully created');
@@ -697,9 +703,15 @@ app.put('/update-like/:commentId/:userId', (req, res) => {
           });
       } else {
         Likes.update({ like: likeStatus }, { where: { user_id: userId, comment_id: commentId } })
-          .then((data) => {
-            console.log('successful update', data);
-            res.status(200).send(data);
+          .then(() => {
+            Likes.findAll({ where: { comment_id: commentId, like: true } })
+              .then((comments) => {
+                res.status(200).send({ likeCount: comments.length });
+              })
+              .catch((error) => {
+                console.error('Error getting likes:', error);
+                res.status(500).send('Internal Server Error');
+              });
           })
           .catch(() => {
             console.log('not successfully updated');
@@ -713,18 +725,18 @@ app.put('/update-like/:commentId/:userId', (req, res) => {
     });
 });
 
-app.get('/get-likes/:commentId', (req, res) => {
-  const { commentId } = req.params;
+// app.get('/get-likes/:commentId', (req, res) => {
+//   const { commentId } = req.params;
 
-  Likes.findAll({ where: { comment_id: commentId, like: true } })
-    .then((comments) => {
-      res.status(200).send({ likeCount: comments.length });
-    })
-    .catch((error) => {
-      console.error('Error getting likes:', error);
-      res.status(500).send('Internal Server Error');
-    });
-});
+//   Likes.findAll({ where: { comment_id: commentId, like: true } })
+//     .then((comments) => {
+//       res.status(200).send({ likeCount: comments.length });
+//     })
+//     .catch((error) => {
+//       console.error('Error getting likes:', error);
+//       res.status(500).send('Internal Server Error');
+//     });
+// });
 
 // launches the server from localhost on port 5555
 app.listen(PORT, () => {
