@@ -16,6 +16,7 @@ const cors = require('cors');
 
 // const { default: PackingList } = require("../client/components/PackingList");
 const router = express.Router();
+const session = require('express-session');
 
 require('./middleware/auth');
 const { cloudinary } = require('./utils/coudinary');
