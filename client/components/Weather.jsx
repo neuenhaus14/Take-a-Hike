@@ -13,6 +13,19 @@ const Weather = () => {
   const [future, setFuture] = useState([]);
   const [region, setRegion] = useState(null);
   const [uniqueId, setUniqueId] = useState(null);
+  const [trips, setTrips] = useState([]);
+
+  useEffect(() => {
+    axios.get('/profile')
+      .then(({ data }) => {
+        const id = data._id;
+        setUserId(id);
+        axios.get(`/api/createTrip/${id}`)
+          .then(({ data }) => console.log(data))
+          .catch(err => console.error(err));
+      })
+      .catch(err => console.error(err));
+  }, []);
 
   const getWeather = async (location, days) => {
      await axios.get(`/api/weather/${location}/${days}`)
@@ -24,12 +37,6 @@ const Weather = () => {
     })
   };
 
-  useEffect(() => {
-    axios.get('/profile')
-      .then(({ data }) => {
-        setUserId(data._id);
-      })
-  }, []);
 
   const handleAdd = (e) => {
     e.preventDefault();

@@ -19,7 +19,7 @@ const cors = require('cors');
 const router = express.Router();
 
 
-const session = require("express-session");
+// const session = require("express-session");
 require("./middleware/auth.js");
 const { cloudinary } = require("./utils/coudinary");
 const { Users } = require("./database/models/users");
@@ -365,7 +365,18 @@ app.post('/profile/userTrips', (req, res) => {
         console.error(err, 'Something went wrong');
         res.sendStatus(500);
       });
-  })
+  });
+
+// GET all of the logged in user's trips (for weather component)
+app.get('/api/createTrip/:userId', (req, res) => {
+  const { userId } = req.params;
+  console.log(userId);
+  UserCreatedTrips.findAll({ where: { userId: userId } })
+    .then((response) => {
+      res.status(200);
+      res.send(response);
+    })
+});
 
 // using the UserTrips model, create a new entry in the userTrips table
 
