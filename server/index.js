@@ -1,17 +1,18 @@
-/* eslint-disable no-unused-vars */
-const axios = require('axios');
-const sequelize = require('sequelize');
-const express = require('express');
-const path = require('path');
-const passport = require('passport');
-const dotenv = require('dotenv');
-const session = require('express-session');
-const { BirdList } = require('./database/models/birdList');
-const { BirdSightings } = require('./database/models/birdSightings');
-const { PackingLists } = require('./database/models/packingLists');
-const { PackingListItems } = require('./database/models/packingListItems');
-const { joinFriends } = require('./database/models/joinFriends');
-const { Comments } = require('./database/models/comments');
+const axios = require("axios");
+const sequelize = require("sequelize");
+const express = require("express");
+const path = require("path");
+const passport = require("passport");
+const dotenv = require("dotenv");
+const { BirdList } = require("./database/models/birdList.js");
+const { BirdSightings } = require("./database/models/birdSightings.js");
+const { PackingLists } = require("./database/models/packingLists");
+const { PackingListItems } = require("./database/models/packingListItems");
+const { joinFriends } = require("./database/models/joinFriends");
+const { Comments } = require("./database/models/comments");
+const { WeatherForecast } = require('./database/models/weatherForecast.js');
+const cors = require('cors');
+
 
 // const { default: PackingList } = require("../client/components/PackingList");
 const router = express.Router();
@@ -32,6 +33,7 @@ const app = express();
 app.use(express.json()); // handles parsing content in the req.body from post/update requests
 app.use(express.static(distPath)); // Statically serves up client directory
 app.use(express.urlencoded({ extended: true })); // Parses url (allows arrays and objects)
+app.use(cors());
 app.use(
   session({
     secret: 'keyboard cat',
@@ -106,7 +108,30 @@ app.get('/api/weather/:region/:selectDay', (req, res) => {
     });
 });
 
+
+// request handler for weatherForecasts table
+app.post('/api/weatherForecasts', (req, res) => {
+  const { userId, avgTemp, highTemp, lowTemp, condition, region, date, unique_id, rain } = req.body;
+  console.log()
+    WeatherForecast.create({
+      userId: userId,
+      unique_id: unique_id,
+      avgTemp: avgTemp,
+      highTemp: highTemp,
+      lowTemp: lowTemp,
+      rain: rain,
+      condition: condition,
+      region: region,
+      date: date
+    })
+    .then(created => res.status(201).send(created))
+    .then(err => console.log('Could not POST forecast', err));
+});
+
+////////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
+
 /// /////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
+
 
 app.get('/api/google-maps-library', (req, res) => {
   try {

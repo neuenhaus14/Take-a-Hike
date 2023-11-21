@@ -4,7 +4,8 @@ const { Trails } = require("./models/trails.js");
 const { dummyParkData } = require("../../copyAPIparkData/dummyDataCopy.js");
 const { dummyUserData } = require("../../copyAPIparkData/dummyUserData.js");
 const { dummyFriendData } = require("../../copyAPIparkData/dummyFriendData.js");
-const { dummyCommentData } = require("../../copyAPIparkData/dummyCommentData.js")
+const { dummyCommentData } = require("../../copyAPIparkData/dummyCommentData.js");
+const { dummyWeather } = require('../../copyAPIparkData/dummyWeatherData.js');
 const { PackingLists } = require("./models/packingLists.js");
 const { PackingListItems } = require("./models/packingListItems.js");
 const { Users } = require("./models/users.js");
@@ -17,6 +18,7 @@ const { BirdSightings } = require("./models/birdSightings.js")
 const { Trips, UserTrips } = require("./models/userTrips.js");
 const { joinFriends } = require('./models/joinFriends');
 const { Comments } = require('./models/comments');
+const { WeatherForecast } = require('./models/weatherForecast.js');
 db.options.logging = false;
 
 const seedSqlize = () => {
@@ -117,7 +119,14 @@ const seedSqlize = () => {
         "\x1b[36m",
         "\nDatabase (MySQL): 'NationalParkCodes' table successfully created!"
       )
-    )  
+    )
+    .then(() => WeatherForecast.sync())
+    .then(() =>
+      console.log(
+        "\x1b[36m",
+        "\nDatabase (MySQL): 'WeatherForecasts' table successfully created!"
+      )
+    )
     .then(() => Promise.all(dummyUserData.map((txn) => Users.create(txn))))
     .then((arr) =>
       console.log(
@@ -163,6 +172,14 @@ const seedSqlize = () => {
       console.log(
         "\x1b[32m",
         `\nDatabase (MySQL): Successfully seeded birdList with ${arr.length} entries!\n`,
+        "\x1b[37m"
+      )
+    )
+    .then(() => Promise.all(dummyWeather.map(weather => WeatherForecast.create(weather))))
+    .then((arr) =>
+      console.log(
+        "\x1b[32m",
+        `\nDatabase (MySQL): Successfully seeded weatherForecasts with ${arr.length} entries!\n`,
         "\x1b[37m"
       )
     )
