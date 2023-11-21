@@ -54,7 +54,23 @@ const Trips = db.define("trips", {
             type: DataTypes.INTEGER,
             allowNull: true,
         },
-    });
+        tripName: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        tripDescription: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
+        tripLocation: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        tripRating: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        });
     //here, we define associations between the users and trips tables through the userTrips table
     // Users.belongsToMany(Trips, {through: UserTrips, foreignKey: "userId"});
     // Trips.belongsToMany(Users, {through: UserTrips, foreignKey: "tripId"});

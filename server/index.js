@@ -261,10 +261,14 @@ app.post('/api/packingListItems', (req, res) => {
           tripImage: null, //TODO:// update with user data
         })
           .then((data) => {
-            console.log('Successfully created trip', data.dataValues, 'user id', req.body.userId);
+            console.log('Successfully created trip', data.dataValues, 'user id', req.body);
             UserTrips.create({
               userId: req.body.userId,
               tripId: req.body.trail.id,
+              tripName: req.body.trail.name,
+              tripDescription: 'test description cause theya re all',
+              tripLocation: `${req.body.trail.city}, ${req.body.trail.region}` ,
+              tripRating: req.body.trail.rating
             })
               .then((data) => {
                 // console.log("LINE 63", data.dataValues);
@@ -285,14 +289,16 @@ app.post('/api/packingListItems', (req, res) => {
 
   app.get('/profile/userTrips/:userId', (req, res) => {
     console.log('Request user trips:', req.user);
-    const { userId } = req.params;
+    console.log('request user trips: params', req.params);
+    const { _id } = req.user;
+
     UserTrips.findAll({
       where: {
-        userId: userId,
+        userId: _id,
       },
     })
       .then((userTrips) => {
-        console.log('User trips:', userTrips);
+        // console.log('User trips:', userTrips);
         res.json(userTrips);
       })
       .catch((err) => {

@@ -28,8 +28,10 @@ const UserTrips = () => {
            {myTrips.map((trip) => {
                 return (
                      <div className="trip-card">
-                          <h1>{trip.userId}</h1>
-                          <p>{trip.tripId}</p>
+                          <h1>{trip.tripName}</h1>
+                          <p>Description: {trip.tripDescription}</p>
+                          <p>Location: {trip.tripLocation}</p>
+                          <p>Rating: {trip.tripRating}</p>
                      </div>
                 )
            })}
