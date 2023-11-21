@@ -16,7 +16,7 @@ const { BirdSightings } = require('./models/birdSightings.js');
 const { Trips, UserTrips } = require('./models/userTrips.js');
 const { joinFriends } = require('./models/joinFriends');
 const { Comments } = require('./models/comments');
-
+const { WeatherForecast } = require('./models/weatherForecast.js');
 db.options.logging = false;
 
 const seedSqlize = () => {
@@ -89,10 +89,19 @@ const seedSqlize = () => {
       "\nDatabase (MySQL): 'National Parks' table successfully created!",
     ))
     .then(() => NationalParkCodes.sync())
-    .then(() => console.log(
-      '\x1b[36m',
-      "\nDatabase (MySQL): 'NationalParkCodes' table successfully created!",
-    ))
+    .then(() =>
+      console.log(
+        "\x1b[36m",
+        "\nDatabase (MySQL): 'NationalParkCodes' table successfully created!"
+      )
+    )
+    .then(() => WeatherForecast.sync())
+    .then(() =>
+      console.log(
+        "\x1b[36m",
+        "\nDatabase (MySQL): 'WeatherForecasts' table successfully created!"
+      )
+    )
     .then(() => Promise.all(dummyUserData.map((txn) => Users.create(txn))))
     .then((arr) => console.log(
       '\x1b[32m',
@@ -112,25 +121,29 @@ const seedSqlize = () => {
       '\x1b[37m',
     ))
     .then(() => Promise.all(dummyParkData.map((txn) => Trails.create(txn))))
-    .then((arr) => console.log(
-      '\x1b[32m',
-      `\nDatabase (MySQL): Successfully seeded trails with ${arr.length} entries!\n`,
-      '\x1b[37m',
-    ))
-    // .then(() => {
-    //   const parkCodesData = Object.entries(parkCodes).map(([code, title]) => ({
-    //     code,
-    //     title,
-    //   }));
-    //   return NationalParkCodes.bulkCreate(parkCodesData);
-    // })
-    // .then(() => console.log(
-    //   '\x1b[32m',
-    //   '\nDatabase (MySQL): Successfully seeded nationalParkCodes!\n',
-    //   '\x1b[37m',
-    // ))
-    // .catch((err) => console.log(72, 'error', err))
-    // .then(process.exit);
+    .then((arr) =>
+      console.log(
+        "\x1b[32m",
+        `\nDatabase (MySQL): Successfully seeded trails with ${arr.length} entries!\n`,
+        "\x1b[37m"
+      )
+    )
+    .then(() =>{
+      const parkCodesData = Object.entries(parkCodes).map(([code, title]) =>({
+        code,
+        title,
+      }));
+      return NationalParkCodes.bulkCreate(parkCodesData);
+    })
+    .then(()=> 
+    console.log(
+      "\x1b[32m",
+      `\nDatabase (MySQL): Successfully seeded nationalParkCodes!\n`,
+      "\x1b[37m"
+    )
+    )
+    .catch(err => console.log(72, 'error', err))
+    .then(process.exit);
 };
 
 seedSqlize();
