@@ -1,18 +1,18 @@
-const axios = require("axios");
-const sequelize = require("sequelize");
-const express = require("express");
-const path = require("path");
-const passport = require("passport");
-const dotenv = require("dotenv");
-const { BirdList } = require("./database/models/birdList.js");
-const { BirdSightings } = require("./database/models/birdSightings.js");
-const { PackingLists } = require("./database/models/packingLists");
-const { PackingListItems } = require("./database/models/packingListItems");
-const { joinFriends } = require("./database/models/joinFriends");
-const { Comments } = require("./database/models/comments");
-const { WeatherForecast } = require('./database/models/weatherForecast.js');
-const cors = require('cors');
+const axios = require('axios');
+const sequelize = require('sequelize');
+const express = require('express');
 
+const path = require('path');
+const passport = require('passport');
+const dotenv = require('dotenv');
+const session = require('express-session');
+const { BirdList } = require('./database/models/birdList.js');
+const { BirdSightings } = require('./database/models/birdSightings.js');
+const { PackingLists } = require('./database/models/packingLists');
+const { PackingListItems } = require('./database/models/packingListItems');
+const { joinFriends } = require('./database/models/joinFriends');
+const { Comments } = require('./database/models/comments');
+const { WeatherForecast } = require('./database/models/weatherForecast.js');
 
 // const { default: PackingList } = require("../client/components/PackingList");
 const router = express.Router();
@@ -33,7 +33,6 @@ const app = express();
 app.use(express.json()); // handles parsing content in the req.body from post/update requests
 app.use(express.static(distPath)); // Statically serves up client directory
 app.use(express.urlencoded({ extended: true })); // Parses url (allows arrays and objects)
-app.use(cors());
 app.use(
   session({
     secret: 'keyboard cat',
@@ -108,30 +107,30 @@ app.get('/api/weather/:region/:selectDay', (req, res) => {
     });
 });
 
-
 // request handler for weatherForecasts table
 app.post('/api/weatherForecasts', (req, res) => {
-  const { userId, avgTemp, highTemp, lowTemp, condition, region, date, unique_id, rain } = req.body;
-  console.log()
-    WeatherForecast.create({
-      userId: userId,
-      unique_id: unique_id,
-      avgTemp: avgTemp,
-      highTemp: highTemp,
-      lowTemp: lowTemp,
-      rain: rain,
-      condition: condition,
-      region: region,
-      date: date
-    })
-    .then(created => res.status(201).send(created))
-    .then(err => console.log('Could not POST forecast', err));
+  const {
+    userId, avgTemp, highTemp, lowTemp, condition, region, date, unique_id, rain,
+  } = req.body;
+  console.log();
+  WeatherForecast.create({
+    userId,
+    unique_id,
+    avgTemp,
+    highTemp,
+    lowTemp,
+    rain,
+    condition,
+    region,
+    date,
+  })
+    .then((created) => res.status(201).send(created))
+    .then((err) => console.log('Could not POST forecast', err));
 });
-
-////////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
 
 /// /////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
 
+/// /////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
 
 app.get('/api/google-maps-library', (req, res) => {
   try {
@@ -329,9 +328,8 @@ app.get('/api/birdList', async (req, res) => {
   }
 });
 
-
-//get req sending bird name to sound API based off the rendered names
-app.get("/api/birdsounds/:birdName", async (req, res) => {
+// get req sending bird name to sound API based off the rendered names
+app.get('/api/birdsounds/:birdName', async (req, res) => {
   try {
     const { birdName } = req.params;
     const soundApiUrl = `https://xeno-canto.org/api/2/recordings?query=${encodeURIComponent(
@@ -383,9 +381,8 @@ app.get('/api/birdList/search', async (req, res) => {
   }
 });
 
-
-//GET req for wiki link for all rendered bird names
-app.get("/api/wiki/:birdName", async (req, res) => {
+// GET req for wiki link for all rendered bird names
+app.get('/api/wiki/:birdName', async (req, res) => {
   try {
     const { birdName } = req.params;
     const wikiApiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=info&inprop=url&titles=${encodeURIComponent(
@@ -412,64 +409,63 @@ app.get("/api/wiki/:birdName", async (req, res) => {
 /// ////////////////////////////////////////////////////////////////////////////
 /// ////////////////////////////////////////////////////Bird Sightings Routes
 
-
-//GET for checking the watchlist
-app.get("/api/birdsightings/watchlist", async (req, res) => {
+// GET for checking the watchlist
+app.get('/api/birdsightings/watchlist', async (req, res) => {
   try {
     const { bird_id, user_id } = req.query;
 
     const existingEntry = await BirdSightings.findOne({
       where: {
-        bird_id: bird_id,
-        user_id: user_id,
+        bird_id,
+        user_id,
       },
     });
 
     res.status(200).json({ inWatchlist: !!existingEntry });
   } catch (error) {
-    console.error("Error checking watchlist:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error checking watchlist:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-//POST for adding the bird to watch list
-app.post("/api/birdsightings/watchlist", async (req, res) => {
+// POST for adding the bird to watch list
+app.post('/api/birdsightings/watchlist', async (req, res) => {
   try {
     const { bird_id, user_id, addToWatchlist } = req.body;
-    console.log("bird sightings:", req.body);
+    console.log('bird sightings:', req.body);
 
     await BirdSightings.create({
-      bird_id: bird_id,
-      user_id: user_id,
+      bird_id,
+      user_id,
       inWatchlist: addToWatchlist,
     });
 
     res.sendStatus(200);
   } catch (error) {
-    console.error("Error updating watchlist:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error updating watchlist:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-//DELETE the bird from the watch list
-app.delete("/api/birdsightings/watchlist", async (req, res) => {
+// DELETE the bird from the watch list
+app.delete('/api/birdsightings/watchlist', async (req, res) => {
   try {
     const { bird_id, user_id, addToWatchlist } = req.body;
-    console.log("delete req body:", req.body);
+    console.log('delete req body:', req.body);
 
     if (addToWatchlist) {
-      //Check if the entry exists
+      // Check if the entry exists
       const existingEntry = await BirdSightings.findOne({
         where: {
-          bird_id: bird_id,
-          user_id: user_id,
+          bird_id,
+          user_id,
         },
       });
 
       if (!existingEntry) {
         await BirdSightings.create({
-          bird_id: bird_id,
-          user_id: user_id,
+          bird_id,
+          user_id,
           inWatchlist: true,
         });
       }
@@ -477,16 +473,16 @@ app.delete("/api/birdsightings/watchlist", async (req, res) => {
       // Remove from watchlist logic
       await BirdSightings.destroy({
         where: {
-          bird_id: bird_id,
-          user_id: user_id,
+          bird_id,
+          user_id,
         },
       });
     }
 
     res.status(200).json({ success: true });
   } catch (error) {
-    console.error("Error updating watchlist:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error updating watchlist:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
