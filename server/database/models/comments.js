@@ -1,7 +1,7 @@
 // Import Dependencies
-const { DataTypes } = require("sequelize");
-const { db } = require("../index.js");
-const { Users } = require("./users.js");
+const { DataTypes } = require('sequelize');
+const { db } = require('../index');
+const { Users } = require('./users');
 
 // Create Schema
 const Comments = db.define('comments', {
@@ -11,17 +11,15 @@ const Comments = db.define('comments', {
     primaryKey: true,
   },
   user_id: {
-    type: DataTypes.INTEGER, 
-    references: { model: Users, key: '_id' }, 
+    type: DataTypes.INTEGER,
+    references: { model: Users, key: '_id' },
   },
   trail_id: {
-    type: DataTypes.INTEGER, 
+    type: DataTypes.INTEGER,
   },
   comment: DataTypes.STRING,
-  likeStatus:DataTypes.BOOLEAN, 
-  likes: DataTypes.INTEGER, 
+  likes: { type: DataTypes.INTEGER, defaultValue: 0 },
 
-  
 });
 
 module.exports = {
