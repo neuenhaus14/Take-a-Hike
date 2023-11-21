@@ -54,12 +54,64 @@ const Trips = db.define("trips", {
             type: DataTypes.INTEGER,
             allowNull: true,
         },
-    });
-    //here, we define associations between the users and trips tables through the userTrips table
-    // Users.belongsToMany(Trips, {through: UserTrips, foreignKey: "userId"});
-    // Trips.belongsToMany(Users, {through: UserTrips, foreignKey: "tripId"});
+        tripName: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        tripDescription: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
+        tripLocation: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        tripRating: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        });
+    //need a table for user created trips
+    const UserCreatedTrips = db.define("userCreatedTrips", {
+        id: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        tripId: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        tripName: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        tripDescription: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
+        // tripLocation: { commented out but don't know if it should be included
+        //     type: DataTypes.STRING,
+        //     allowNull: true,
+        // },
+        beginDate: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        endDate: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+    })
+
 
     module.exports = {
         Trips,
         UserTrips,
+        UserCreatedTrips
     }
