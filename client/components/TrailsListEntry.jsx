@@ -11,7 +11,7 @@ const TrailsListEntry = ({ trail, userId }) => {
       trail: trail
     })
     .then((response) => {
-      console.log(response);
+      console.log('response from add trail',response);
     })
     .catch((err) => {
       console.error(err);

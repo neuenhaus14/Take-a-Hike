@@ -18,10 +18,17 @@ const cors = require('cors');
 // const { default: PackingList } = require("../client/components/PackingList");
 const router = express.Router();
 
-require('./middleware/auth');
-const { cloudinary } = require('./utils/coudinary');
-const { Users } = require('./database/models/users');
-const { UserTrips, Trips } = require('./database/models/userTrips');
+
+const session = require("express-session");
+require("./middleware/auth.js");
+const { cloudinary } = require("./utils/coudinary");
+const { Users } = require("./database/models/users");
+const { UserTrips, Trips, UserCreatedTrips } = require("./database/models/userTrips"); 
+
+dotenv.config({
+  path: path.resolve(__dirname, '../.env'),
+});
+
 
 // Set Distribution Path
 const { PORT } = process.env;
@@ -87,6 +94,7 @@ app.get('/logout', (req, res) => {
   });
 });
 
+
 app.get('/profile', (req, res) => {
   if (req.isAuthenticated()) {
     // console.log('/profile get user', req.user)
@@ -95,6 +103,7 @@ app.get('/profile', (req, res) => {
     res.send({});
   }
 });
+
 
 // request handler for weather api => FUNCTIONAL
 app.get('/api/weather/:region/:selectDay', (req, res) => {
@@ -262,40 +271,106 @@ app.post('/profile/userTrips', (req, res) => {
     if (existingTrip) {
       console.log('Trip already exists!');
       res.sendStatus(409);
-    } else {
-      Trips.create({
-        tripName: req.body.trail.name,
-        tripDescription: 'test description cause theya re all',
-        tripLocation: `${req.body.trail.city}, ${req.body.trail.region}`,
-        tripStartDate: null, // TODO:// update with user data
-        tripEndDate: null, // TODO:// update with user data
-        tripImage: null, // TODO:// update with user data
-      })
-        .then((data) => {
-          console.log('Successfully created trip', data.dataValues);
-          UserTrips.create({
-            userId: req.body.userId,
-            tripId: req.body.trail.id,
+      } else {
+        Trips.create({
+          tripName: req.body.trail.name,
+          tripDescription: 'test description cause theya re all',
+          tripLocation: `${req.body.trail.city}, ${req.body.trail.region}` ,
+          tripStartDate: null, //TODO:// update with user data
+          tripEndDate: null, //TODO:// update with user data
+          tripImage: null, //TODO:// update with user data
+        })
+          .then((data) => {
+            console.log('Successfully created trip', data.dataValues, 'user id', req.body);
+            UserTrips.create({
+              userId: req.body.userId,
+              tripId: req.body.trail.id,
+              tripName: req.body.trail.name,
+              tripDescription: 'test description cause theya re all',
+              tripLocation: `${req.body.trail.city}, ${req.body.trail.region}` ,
+              tripRating: req.body.trail.rating
+            })
+              .then((data) => {
+                // console.log("LINE 63", data.dataValues);
+                res.sendStatus(201);
+              })
+              .catch((err) => {
+                console.error(err, "Something went wrong");
+                res.sendStatus(500);
+              });
           })
-            .then(() => {
-              // console.log("LINE 63", data.dataValues);
+          .catch((err) => {
+            console.error(err, "Something went wrong");
+            res.sendStatus(500);
+          });
+      }
+    })
+  })
+
+  app.get('/profile/userTrips/:userId', (req, res) => {
+    console.log('Request user trips:', req.user);
+    console.log('request user trips: params', req.params);
+    const { _id } = req.user;
+
+    UserTrips.findAll({
+      where: {
+        userId: _id,
+      },
+    })
+      .then((userTrips) => {
+        // console.log('User trips:', userTrips);
+        res.json(userTrips);
+      })
+      .catch((err) => {
+        console.error('ERROR: ', err);
+        res.sendStatus(404);
+      });
+  });
+  //post req for usercreated trips
+  app.post('/api/createTrip', (req, res) => {
+    console.log('createTrip req.body', req.body);
+    const {userId, tripId, tripName, tripDescription, beginDate, endDate} = req.body;
+    console.log('userId', userId);
+    // first check to see if the usercreated trip exists
+    UserCreatedTrips.findOne({
+      where: {
+        userId: userId,
+        tripId: tripId,
+      },
+    })
+      .then((existingTrip) => {
+        if (existingTrip) {
+          console.log('Trip already exists!');
+          res.sendStatus(409);
+        } else {
+          UserCreatedTrips.create({
+            userId: userId,
+            tripId: tripId,
+            tripName: tripName,
+            tripDescription: tripDescription,
+            beginDate: beginDate,
+            endDate: endDate,
+          })
+            .then((data) => {
+              console.log('Successfully created trip', data.dataValues);
               res.sendStatus(201);
             })
             .catch((err) => {
               console.error(err, 'Something went wrong');
               res.sendStatus(500);
             });
-        })
-        .catch((err) => {
-          console.error(err, 'Something went wrong');
-          res.sendStatus(500);
-        });
-    }
-  });
-});
+        }
+      })
+      .catch((err) => {
+        console.error(err, 'Something went wrong');
+        res.sendStatus(500);
+      });
+  })
+
 // using the UserTrips model, create a new entry in the userTrips table
 
 /// ////////////////////////////////////////////////////////////////////////////
+
 
 /// ///////////////////////////////////////////////////////////Bird Sightings
 
