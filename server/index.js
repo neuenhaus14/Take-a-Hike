@@ -4,6 +4,7 @@ const express = require("express");
 const path = require("path");
 const passport = require("passport");
 const dotenv = require("dotenv");
+const session = require('express-session');
 const { BirdList } = require("./database/models/birdList.js");
 const { BirdSightings } = require("./database/models/birdSightings.js");
 const { PackingLists } = require("./database/models/packingLists");
@@ -16,7 +17,6 @@ const cors = require('cors');
 
 // const { default: PackingList } = require("../client/components/PackingList");
 const router = express.Router();
-const session = require('express-session');
 
 require('./middleware/auth');
 const { cloudinary } = require('./utils/coudinary');
