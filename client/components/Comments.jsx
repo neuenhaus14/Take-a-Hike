@@ -51,6 +51,17 @@ function Comments({ trail_id, user_id }) {
     }
   };
 
+  // gets the like count from the database to display on the like button
+  const getLikeCount = (com) => {
+    axios.get(`/get-likes/${com.id}`)
+      .then((response) => {
+        setLikes(response.data);
+        console.log('likes gotten', response);
+      })
+      .catch((err) => console.error(err));
+  };
+
+  // updates likes in db by user so user can only like or dislike ONCE
   const updateLikes = (com) => {
     console.log(com.id, user_id, !likeStatus);
     axios.put(`/update-like/${com.id}/${user_id}`, {
@@ -59,8 +70,7 @@ function Comments({ trail_id, user_id }) {
       .then(() => {
         console.log('likes post res');
         setLikeStatus(!likeStatus);
-        // setLikes(response.data);
-        // setLikes(com.likes);
+        getLikeCount(com);
         console.log('Like status updated!', likeStatus);
       })
       .catch((err) => console.error(err));
@@ -76,7 +86,7 @@ function Comments({ trail_id, user_id }) {
       .catch((err) => console.error(err));
   };
 
-  console.log(likeStatus)
+  console.log(likeStatus);
   return (
     <div>
       <div id="add-comments">

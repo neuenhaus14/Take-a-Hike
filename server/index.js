@@ -678,7 +678,6 @@ app.put('/update-like/:commentId/:userId', (req, res) => {
   const { commentId } = req.params;
   const { userId } = req.params;
   const { likeStatus } = req.body;
-  console.log(commentId, userId, likeStatus);
 
   Likes.findOne({ where: { user_id: userId, comment_id: commentId } })
     .then((likeEntry) => {
@@ -692,53 +691,40 @@ app.put('/update-like/:commentId/:userId', (req, res) => {
             console.log('successful creation', data);
             res.status(200).send(data);
           })
-          .catch(() => console.log('not successfully created'));
+          .catch(() => {
+            console.log('not successfully created');
+            res.sendStatus(404);
+          });
       } else {
         Likes.update({ like: likeStatus }, { where: { user_id: userId, comment_id: commentId } })
           .then((data) => {
             console.log('successful update', data);
             res.status(200).send(data);
           })
-          .catch(() => console.log('not successfully updated'));
+          .catch(() => {
+            console.log('not successfully updated');
+            res.sendStatus(404);
+          });
       }
     })
     .catch((err) => {
       console.error('Could not post like', err);
       res.sendStatus(500);
     });
-
-  // Likes.update(
-  //   likeStatus,
-  //   {
-  //     where: {
-  //       user_id: userId,
-  //       comment_id: commentId,
-  //     },
-  //   },
-  // )
-  //   .then((data) => {
-  //     console.log('likes data', data);
-  //   })
-  //   .catch((err) => {
-  //     console.error('Could not post like', err);
-  //     res.sendStatus(500);
-  //   });
 });
 
-// app.put('/update-like/:commentId', (req, res) => {
-//   const { commentId } = req.params;
-//   const { likeStatus } = req.body;
+app.get('/get-likes/:commentId', (req, res) => {
+  const { commentId } = req.params;
 
-//   const incrementValue = likeStatus ? 1 : -1;
-
-//   Comments.increment('likes', { by: incrementValue, where: { id: commentId } })
-//     .then(() => {
-//       const action = likeStatus ? 'added to' : 'removed from';
-//       console.log(`${action} likes`);
-//       res.sendStatus(201);
-//     })
-//     .catch((err) => console.error(err, 'added to likes went wrong'));
-// });
+  Likes.findAll({ where: { comment_id: commentId, like: true } })
+    .then((comments) => {
+      res.status(200).send({ likeCount: comments.length });
+    })
+    .catch((error) => {
+      console.error('Error getting likes:', error);
+      res.status(500).send('Internal Server Error');
+    });
+});
 
 // launches the server from localhost on port 5555
 app.listen(PORT, () => {
