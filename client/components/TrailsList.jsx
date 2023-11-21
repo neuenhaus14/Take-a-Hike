@@ -9,6 +9,7 @@ const TrailsList = ({ handleGetTrails, trailList, loading }) => {
   const [location, setLocation] = useState({ lat: "", lon: "" });
   const [address, setAddress] = useState("");
   const [mapsLibraryLoaded, setMapsLibraryLoaded] = useState(false);
+  const [isMounted, setIsMounted] = useState(true);
   // use loader data to pull in the current user to add a trail to their trails
   const userData = useLoaderData();
   const userId = userData._id
@@ -53,7 +54,8 @@ const TrailsList = ({ handleGetTrails, trailList, loading }) => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) =>{
-          setLocation({
+          if(isMounted){
+            setLocation({
             lat: position.coords.latitude,
             lon: position.coords.longitude
           });
@@ -61,6 +63,7 @@ const TrailsList = ({ handleGetTrails, trailList, loading }) => {
             lat: position.coords.latitude,
             lon: position.coords.longitude
           });
+        }
         },
         (err) =>{
           console.error('error in location grab: ', err);
@@ -93,7 +96,13 @@ const TrailsList = ({ handleGetTrails, trailList, loading }) => {
     e.preventDefault();
     handleGetTrails(location);
   };
-  
+
+  useEffect(() =>{
+    return () =>{
+      setIsMounted(false);
+    }
+  }, []);
+
   return (
     <div className="trails-list">
       <NavBar />

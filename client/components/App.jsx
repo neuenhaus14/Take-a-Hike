@@ -1,7 +1,7 @@
 // Import Dependencies
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Routes, Route, createHashRouter, createRoutesFromChildren, Link, Outlet, RouterProvider } from 'react-router-dom';
+import { Route, createHashRouter, createRoutesFromChildren, RouterProvider } from 'react-router-dom';
 
 // import './styles/main.css';
 import TrailsList from './TrailsList.jsx';
@@ -21,7 +21,7 @@ import Friends from './Friends.jsx';
 
 const App = () => {
   const [trailList, setTrailList] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loadingTrails, setLoadingTrail] = useState(false);
   const getUserLoader = async () => {
     try {
       const response = await axios.get('/profile');
@@ -32,9 +32,6 @@ const App = () => {
     }
   };
 
-
-
-
   useEffect(() => {
     if (localStorage.getItem('TrailList')) {
       const trails = JSON.parse(localStorage.getItem('TrailList'));
@@ -44,7 +41,7 @@ const App = () => {
 
   // were in trail list
   const handleGetTrails = (location) => {
-    setLoading(true);
+    setLoadingTrail(true);
     axios
       .get('/api/trailslist', {
         params: { lat: location.lat, lon: location.lon },
@@ -55,10 +52,13 @@ const App = () => {
         localStorage.setItem('TrailList', JSON.stringify(response.data.data));
       })
       .then(()=>{
-        setLoading(false);
+        setLoadingTrail(false);
       })
       .catch((err) => {
         console.error('ERROR: ', err);
+      })
+      .finally(() => {
+        setLoadingTrail(false);
       });
   };
 
@@ -69,7 +69,7 @@ const App = () => {
           path='trailslist'
           element={
             <TrailsList
-              loading={loading}
+              loading={loadingTrails}
               handleGetTrails={handleGetTrails}
               trailList={trailList}
               />
@@ -79,7 +79,7 @@ const App = () => {
         <Route path='/' element={<Login />} />
         <Route
           path='trailprofile/:id'
-          element={<TrailProfile trailList={trailList} />}
+          element={<TrailProfile trailList={trailList}/>} loader={getUserLoader}
         />
         <Route path='weather' element={<Weather />} />
         <Route path='quartermaster' element={<Quartermaster />} />

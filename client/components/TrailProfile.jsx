@@ -1,20 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Image } from 'cloudinary-react';
 import axios from 'axios';
-import { Fab } from '@mui/material';
+import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
-
+import Comments from "./Comments.jsx";
+import { useLoaderData } from 'react-router-dom';
 import PhotoPost from './PhotoPost.jsx';
 
 const preset = 'hikeimages';
 const cloudName = 'dbwbxubwi';
 
 const TrailProfile = ({ trailList }) => {
+  const userData = useLoaderData();
+  const userId = userData._id;
+  console.log(userId)
+  
   // console.log(trailList)
   const { id } = useParams();
   const displayTrail = trailList.find((trail) => trail.id == id);
+  const trailId = parseInt(id)
   // console.log(`TRAILPROFILE || LINE 11 || displayTrail`, displayTrail); // access params
+
+  // const getTrailId = trailList.map((trail) => setTrailId(trail.id))
 
   const [image, setImage] = useState('');
   const [trailImageURLs, setTrailImageURLs] = useState();
@@ -139,6 +146,7 @@ const TrailProfile = ({ trailList }) => {
           <a href={`${displayTrail.url}`} target="_blank">
             Trail Website
           </a>
+          <Comments trail_id={trailId} user_id={userId}/>
         </div>
         {/* </div> */}
         {/* <input type="file" onChange={(e) => setImage(e.target.files[0])} /> */}
@@ -168,7 +176,8 @@ const TrailProfile = ({ trailList }) => {
               </div>
             )) // </div>
           ) : (
-            <p src="https://i.gifer.com/ZZ5H.gif">Getting images</p>
+            <></>
+            // <p src="https://i.gifer.com/ZZ5H.gif">Getting images</p>
           )}
           {/* {trailImageURLs ? (
           // <div> div to house images for css styling
