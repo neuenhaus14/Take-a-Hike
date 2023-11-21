@@ -12,6 +12,7 @@ const { PackingLists } = require('./database/models/packingLists');
 const { PackingListItems } = require('./database/models/packingListItems');
 const { joinFriends } = require('./database/models/joinFriends');
 const { Comments } = require('./database/models/comments');
+const { Likes } = require('./database/models/comments');
 
 // const { default: PackingList } = require("../client/components/PackingList");
 const router = express.Router();
@@ -570,20 +571,38 @@ app.delete('/delete-comment/:user_id/:id/:trail_id', (req, res) => {
     });
 });
 
-app.put('/update-like/:commentId', (req, res) => {
+app.post('/update-like/:commentId/:userId', (req, res) => {
   const { commentId } = req.params;
+  const { userId } = req.params;
   const { likeStatus } = req.body;
 
-  const incrementValue = likeStatus ? 1 : -1;
-
-  Comments.increment('likes', { by: incrementValue, where: { id: commentId } })
-    .then(() => {
-      const action = likeStatus ? 'added to' : 'removed from';
-      console.log(`${action} likes`);
-      res.sendStatus(201);
-    })
-    .catch((err) => console.error(err, 'added to likes went wrong'));
+  Likes.create(
+    {
+      where: {
+        comment_id: commentId,
+        user_id: userId,
+        like: likeStatus,
+      },
+    },
+  )
+    .then()
+    .catch();
 });
+
+// app.put('/update-like/:commentId', (req, res) => {
+//   const { commentId } = req.params;
+//   const { likeStatus } = req.body;
+
+//   const incrementValue = likeStatus ? 1 : -1;
+
+//   Comments.increment('likes', { by: incrementValue, where: { id: commentId } })
+//     .then(() => {
+//       const action = likeStatus ? 'added to' : 'removed from';
+//       console.log(`${action} likes`);
+//       res.sendStatus(201);
+//     })
+//     .catch((err) => console.error(err, 'added to likes went wrong'));
+// });
 
 // launches the server from localhost on port 5555
 app.listen(PORT, () => {
