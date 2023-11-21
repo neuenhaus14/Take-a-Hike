@@ -75,10 +75,10 @@ const BirdingCheckList = () => {
       .catch((err) => console.error("ERROR:", err));
 
     // Fetch bird sightings from the server
-    axios
-      .get("/api/birdsightings")
-      .then((response) => setBirdSightings(response.data))
-      .catch((err) => console.error("ERROR:", err));
+    // axios
+    //   .get("/api/birdsightings")
+    //   .then((response) => setBirdSightings(response.data))
+    //   .catch((err) => console.error("ERROR:", err));
 
     // Fetch user profile
     axios
@@ -102,6 +102,9 @@ const BirdingCheckList = () => {
         `/api/birdList/search?state=${selectedState}&search=${birdSearch}`
       );
       setBirdList(response.data);
+
+      // clear the search input box
+      setBirdSearch("");
     } catch (error) {
       console.error("Error fetching bird list:", error.message);
     }

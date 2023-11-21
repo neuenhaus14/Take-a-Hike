@@ -304,7 +304,9 @@ app.get('/api/birdList', async (req, res) => {
   }
 });
 
-app.get('/api/birdsounds/:birdName', async (req, res) => {
+
+//get req sending bird name to sound API based off the rendered names
+app.get("/api/birdsounds/:birdName", async (req, res) => {
   try {
     const { birdName } = req.params;
     const soundApiUrl = `https://xeno-canto.org/api/2/recordings?query=${encodeURIComponent(
@@ -356,7 +358,9 @@ app.get('/api/birdList/search', async (req, res) => {
   }
 });
 
-app.get('/api/wiki/:birdName', async (req, res) => {
+
+//GET req for wiki link for all rendered bird names
+app.get("/api/wiki/:birdName", async (req, res) => {
   try {
     const { birdName } = req.params;
     const wikiApiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=info&inprop=url&titles=${encodeURIComponent(
@@ -383,6 +387,84 @@ app.get('/api/wiki/:birdName', async (req, res) => {
 /// ////////////////////////////////////////////////////////////////////////////
 /// ////////////////////////////////////////////////////Bird Sightings Routes
 
+
+//GET for checking the watchlist
+app.get("/api/birdsightings/watchlist", async (req, res) => {
+  try {
+    const { bird_id, user_id } = req.query;
+
+    const existingEntry = await BirdSightings.findOne({
+      where: {
+        bird_id: bird_id,
+        user_id: user_id,
+      },
+    });
+
+    res.status(200).json({ inWatchlist: !!existingEntry });
+  } catch (error) {
+    console.error("Error checking watchlist:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+//POST for adding the bird to watch list
+app.post("/api/birdsightings/watchlist", async (req, res) => {
+  try {
+    const { bird_id, user_id, addToWatchlist } = req.body;
+    console.log("bird sightings:", req.body);
+
+    await BirdSightings.create({
+      bird_id: bird_id,
+      user_id: user_id,
+      inWatchlist: addToWatchlist,
+    });
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error updating watchlist:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+//DELETE the bird from the watch list
+app.delete("/api/birdsightings/watchlist", async (req, res) => {
+  try {
+    const { bird_id, user_id, addToWatchlist } = req.body;
+    console.log("delete req body:", req.body);
+
+    if (addToWatchlist) {
+      //Check if the entry exists
+      const existingEntry = await BirdSightings.findOne({
+        where: {
+          bird_id: bird_id,
+          user_id: user_id,
+        },
+      });
+
+      if (!existingEntry) {
+        await BirdSightings.create({
+          bird_id: bird_id,
+          user_id: user_id,
+          inWatchlist: true,
+        });
+      }
+    } else {
+      // Remove from watchlist logic
+      await BirdSightings.destroy({
+        where: {
+          bird_id: bird_id,
+          user_id: user_id,
+        },
+      });
+    }
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("Error updating watchlist:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 // GET req for all birdSightings data
 app.get('/api/birdsightings', (req, res) => {
   BirdSightings.findAll()
@@ -399,7 +481,7 @@ app.get('/api/birdsightings', (req, res) => {
 app.post('/api/birdsightings', (req, res) => {
   // console.log('Line 231 - Back End Bird Sightings Post Request: ', req.body);
   BirdSightings.create({
-    bird_id: req.body.bird_id,
+    // bird_id: req.body.bird_id,
     user_id: req.body.user_id,
   })
     .then(() => {

@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
-const BirdProfile = ({ bird, userId, birdSightings }) => {
+const BirdProfile = ({ bird, userId }) => {
   const [wikiDetails, setWikiDetails] = useState({
     scientificUrl: null,
-    commonThumbnailUrl: null,
   });
+
   const [birdSounds, setBirdSounds] = useState([]);
   const [loading, setLoading] = useState(true);
   const birdSoundsLoaded = useRef(false);
+  const [inWatchlist, setInWatchlist] = useState(false);
 
   useEffect(() => {
     const fetchBirdDetails = async () => {
@@ -17,33 +18,15 @@ const BirdProfile = ({ bird, userId, birdSightings }) => {
           bird.scientificName.replace(/[^a-zA-Z0-9 ]/g, "")
         );
 
-        const commonSearchTerm = encodeURIComponent(
-          bird.commonName.replace(/[^a-zA-Z0-9 ]/g, "")
-        );
-
-        // Fetch Wikipedia details for scientific name including URL
         const scientificWikiApiUrl = `/api/wiki/${scientificSearchTerm}`;
         const scientificWikiResponse = await axios.get(scientificWikiApiUrl);
 
+        //get wiki link
         setWikiDetails({
           scientificUrl: scientificWikiResponse.data.scientificUrl,
         });
 
-        // // Fetch Wikipedia details for common name including thumbnail
-        // const commonWikiApiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=pageimages|pageterms&piprop=thumbnail&pithumbsize=200&titles=${commonSearchTerm}`;
-        // const commonWikiResponse = await axios.get(commonWikiApiUrl);
-
-        // const commonPages = commonWikiResponse.data.query.pages;
-        // const commonFirstPageId = Object.keys(commonPages)[1];
-        // const commonThumbnailUrl =
-        //   commonPages[commonFirstPageId]?.thumbnail?.source || null;
-
-        // setWikiDetails({
-        //   scientificUrl: scientificUrl,
-        //   // commonThumbnailUrl: commonThumbnailUrl,
-        // });
-
-        // Lazy load ??
+        //lazy load?
         if (!birdSoundsLoaded.current) {
           const soundApiUrl = `/api/birdsounds/${encodeURIComponent(
             bird.commonName
@@ -53,21 +36,77 @@ const BirdProfile = ({ bird, userId, birdSightings }) => {
           birdSoundsLoaded.current = true;
         }
 
-        // Set loading to false after the data is fetched
         setLoading(false);
       } catch (error) {
         console.error("Error fetching bird details:", error.message);
         setWikiDetails({
           scientificUrl: null,
-          commonThumbnailUrl: null,
         });
         setBirdSounds([]);
-        setLoading(false); // Set loading to false in case of an error
+        setLoading(false);
+      }
+    };
+
+    //need to check the watch list so only users watch will render
+    const checkWatchlist = async () => {
+      try {
+        const watchlistResponse = await axios.get(
+          "/api/birdsightings/watchlist",
+          {
+            params: {
+              bird_id: bird.commonName,
+              user_id: userId,
+            },
+          }
+        );
+
+        setInWatchlist(watchlistResponse.data.inWatchlist);
+      } catch (error) {
+        console.error("Error checking watchlist:", error.message);
       }
     };
 
     fetchBirdDetails();
-  }, [bird.scientificName, bird.commonName]);
+    checkWatchlist();
+  }, [bird.commonName, userId]);
+
+  //add to watch list
+  const addToWatchlist = async () => {
+    try {
+      const watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
+      watchlist.push(bird.commonName);
+      localStorage.setItem("watchlist", JSON.stringify(watchlist));
+
+      await axios.post("/api/birdsightings/watchlist", {
+        bird_id: bird.commonName,
+        user_id: userId,
+      });
+      setInWatchlist(true);
+    } catch (error) {
+      console.error("Error adding to watchlist:", error.message);
+    }
+  };
+
+  const removeFromWatchlist = async () => {
+    try {
+      const watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
+      const updatedWatchlist = watchlist.filter(
+        (name) => name !== bird.commonName
+      );
+      localStorage.setItem("watchlist", JSON.stringify(updatedWatchlist));
+
+      await axios.delete("/api/birdsightings/watchlist", {
+        data: {
+          bird_id: bird.commonName,
+          user_id: userId,
+          addToWatchlist: false,
+        },
+      });
+      setInWatchlist(false);
+    } catch (error) {
+      console.error("Error removing from watchlist:", error.message);
+    }
+  };
 
   return (
     <div
@@ -93,31 +132,15 @@ const BirdProfile = ({ bird, userId, birdSightings }) => {
             target="_blank"
             rel="noopener noreferrer"
             style={{ color: "#0066cc", textDecoration: "none" }}
-            id={`tooltip-${bird.scientificName}`}
-            data-tooltip={`Preview for ${bird.commonName}`}
           >
             {wikiDetails.scientificUrl}
           </a>
         </div>
       )}
-      {/* {wikiDetails.commonThumbnailUrl && (
-        <div className="card-content">
-          <img
-            src={wikiDetails.commonThumbnailUrl}
-            alt={bird.commonName}
-            style={{
-              width: "150px",
-              height: "150px",
-              border: "1px solid #665",
-            }}
-          />
-        </div>
-      )} */}
       {!loading && birdSounds.length > 0 && (
         <div className="card-content">
           <p>Bird Sounds:</p>
           <ul>
-            {/* render the sound bar once for each bird */}
             {birdSounds.length > 0 && (
               <li>
                 <audio controls>
@@ -139,6 +162,30 @@ const BirdProfile = ({ bird, userId, birdSightings }) => {
           <p>Observation Date: {bird.observationDate}</p>
         </div>
       )}
+      <div className="card-content">
+        {inWatchlist ? (
+          <input
+            type="submit"
+            value="Remove from Watchlist"
+            className="button is-danger is-rounded"
+            onClick={removeFromWatchlist}
+          />
+        ) : (
+          <input
+            type="submit"
+            value="Add to Watchlist"
+            className="button is-success is-rounded"
+            onClick={addToWatchlist}
+          />
+        )}
+      </div>
+      {/* <div className="card-content">
+        {inWatchlist ? (
+          <button onClick={removeFromWatchlist}>Remove from Watchlist</button>
+        ) : (
+          <button onClick={addToWatchlist}>Add to Watchlist</button>
+        )}
+      </div> */}
     </div>
   );
 };
