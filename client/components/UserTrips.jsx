@@ -3,38 +3,38 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation, useParams } from 'react-router-dom';
 const UserTrips = () => {
-    // grab trips and set trips hook
     const [myTrips, setMyTrips] = useState([]);
-    //define location so we can access state
-    const location = useLocation()
-    // destructure state from location, which is passed from UserProfile as a prop
+    const location = useLocation();
     const { state } = location;
     const { userId } = useParams();
-    // console.log('location state,', location);
-    // console.log('userId', userId);
-    // console.log('prop log', props);
+
     const getMyTrips = () => {
         axios.get(`/profile/userTrips/${userId}`)
             .then((trips) => {
-            console.log('trips', trips);
-            setMyTrips(trips.data);
-        });
+                setMyTrips(trips.data);
+            });
     }
+
     useEffect(() => {
         getMyTrips();
-    }, [])
+    }, []);
+
+    const handleTripSelect = (event) => {
+        const selectedTripId = event.target.value;
+        // Perform any action you want with the selected trip
+        console.log('Selected Trip ID:', selectedTripId);
+    }
+
     return (
         <div className="trips">
-           {myTrips.map((trip) => {
-                return (
-                     <div className="trip-card">
-                          <h1>{trip.tripName}</h1>
-                          <p>Description: {trip.tripDescription}</p>
-                          <p>Location: {trip.tripLocation}</p>
-                          <p>Rating: {trip.tripRating}</p>
-                     </div>
-                )
-           })}
+            <select onChange={handleTripSelect}>
+                <option value="">Select a trip</option>
+                {myTrips.map((trip) => (
+                    <option key={trip.tripId} value={trip.tripId}>
+                        {trip.tripName}
+                    </option>
+                ))}
+            </select>
         </div>
     )
 }

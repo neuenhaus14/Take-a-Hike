@@ -18,7 +18,7 @@ const session = require("express-session");
 require("./middleware/auth.js");
 const { cloudinary } = require("./utils/coudinary");
 const { Users } = require("./database/models/users");
-const { UserTrips, Trips } = require("./database/models/userTrips"); 
+const { UserTrips, Trips, UserCreatedTrips } = require("./database/models/userTrips"); 
 
 dotenv.config({
   path: path.resolve(__dirname, '../.env'),
@@ -306,7 +306,46 @@ app.post('/api/packingListItems', (req, res) => {
         res.sendStatus(404);
       });
   });
-  //using the UserTrips model, create a new entry in the userTrips table
+  //post req for usercreated trips
+  app.post('/api/createTrip', (req, res) => {
+    console.log('createTrip req.body', req.body);
+    const {userId, tripId, tripName, tripDescription, beginDate, endDate} = req.body;
+    console.log('userId', userId);
+    // first check to see if the usercreated trip exists
+    UserCreatedTrips.findOne({
+      where: {
+        userId: userId,
+        tripId: tripId,
+      },
+    })
+      .then((existingTrip) => {
+        if (existingTrip) {
+          console.log('Trip already exists!');
+          res.sendStatus(409);
+        } else {
+          UserCreatedTrips.create({
+            userId: userId,
+            tripId: tripId,
+            tripName: tripName,
+            tripDescription: tripDescription,
+            beginDate: beginDate,
+            endDate: endDate,
+          })
+            .then((data) => {
+              console.log('Successfully created trip', data.dataValues);
+              res.sendStatus(201);
+            })
+            .catch((err) => {
+              console.error(err, 'Something went wrong');
+              res.sendStatus(500);
+            });
+        }
+      })
+      .catch((err) => {
+        console.error(err, 'Something went wrong');
+        res.sendStatus(500);
+      });
+  })
 
 ///////////////////////////////////////////////////////////////////////////////
 

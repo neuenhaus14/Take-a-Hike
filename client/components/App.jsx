@@ -16,6 +16,7 @@ import UserTrips from './UserTrips.jsx';
 import BirdProfile from './BirdProfile.jsx';
 import TripCreator from './TripCreator.jsx';
 import Weather from './Weather.jsx';
+import Friends from './Friends.jsx';
 
 
 const App = () => {
@@ -89,7 +90,7 @@ const App = () => {
             <Route path='packing-list' element={<PackingList />} />
             <Route path='trails-list' element={<TrailsList />} />
             </Route>
-          <Route path='bird-profile' element={<BirdProfile />} />
+          <Route path='friends/:userId' element={<Friends />} />
           </Route>
       </Route>
     )
