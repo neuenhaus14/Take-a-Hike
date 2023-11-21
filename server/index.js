@@ -12,6 +12,7 @@ const { PackingListItems } = require("./database/models/packingListItems");
 const { joinFriends } = require("./database/models/joinFriends");
 const { Comments } = require("./database/models/comments");
 const { WeatherForecast } = require('./database/models/weatherForecast.js');
+const { joinWeatherCreateTrips } = require('./database/models/joinWeatherCreateTrips.js');
 const cors = require('cors');
 
 
@@ -23,7 +24,7 @@ const router = express.Router();
 require("./middleware/auth.js");
 const { cloudinary } = require("./utils/coudinary");
 const { Users } = require("./database/models/users");
-const { UserTrips, Trips, UserCreatedTrips } = require("./database/models/userTrips"); 
+const { UserTrips, Trips, UserCreatedTrips } = require("./database/models/userTrips");
 
 dotenv.config({
   path: path.resolve(__dirname, '../.env'),
@@ -367,6 +368,8 @@ app.post('/profile/userTrips', (req, res) => {
       });
   });
 
+////////////////// REQUEST HANDLERS WORKING IN WEATHER COMPONENT ///////////////
+
 // GET all of the logged in user's trips (for weather component)
 app.get('/api/createTrip/:userId', (req, res) => {
   const { userId } = req.params;
@@ -377,6 +380,11 @@ app.get('/api/createTrip/:userId', (req, res) => {
       res.send(response);
     })
 });
+
+// POST the weather forecast id and user id to joinWeatherCreateTable
+app.post('/api/joinWeatherCreateTrips', (req, res) => {
+  console.log('REQUEST', req.body);
+})
 
 // using the UserTrips model, create a new entry in the userTrips table
 

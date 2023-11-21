@@ -91,6 +91,9 @@ const Weather = () => {
             <select value={selectDay} onChange={handleValue}>
               {days.map((day, index) => <option key={index}>{day}</option>)}
             </select>
+            <select>
+              {trips.map(trip => <option key={}></option>)}
+            </select>
           </div>
         </div>
         <input
