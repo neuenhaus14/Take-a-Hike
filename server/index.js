@@ -123,20 +123,19 @@ app.get('/api/weather/:region/:selectDay', (req, res) => {
 // request handler for weatherForecasts table
 app.post('/api/weatherForecasts', (req, res) => {
   const { userId, avgTemp, highTemp, lowTemp, condition, region, date, unique_id, rain } = req.body;
-  console.log()
-    WeatherForecast.create({
-      userId: userId,
-      unique_id: unique_id,
-      avgTemp: avgTemp,
-      highTemp: highTemp,
-      lowTemp: lowTemp,
-      rain: rain,
-      condition: condition,
-      region: region,
-      date: date
-    })
-    .then(created => res.status(201).send(created))
-    .then(err => console.log('Could not POST forecast', err));
+  WeatherForecast.create({
+    userId: userId,
+    unique_id: unique_id,
+    avgTemp: avgTemp,
+    highTemp: highTemp,
+    lowTemp: lowTemp,
+    rain: rain,
+    condition: condition,
+    region: region,
+    date: date
+  })
+    .then((created) => res.status(201).send(created))
+    .then((err) => console.log('Could not POST forecast', err));
 });
 
 ////////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
@@ -373,23 +372,28 @@ app.post('/profile/userTrips', (req, res) => {
 // GET all of the logged in user's trips (for weather component)
 app.get('/api/createTrip/:userId', (req, res) => {
   const { userId } = req.params;
-  console.log(userId);
   UserCreatedTrips.findAll({ where: { userId: userId } })
     .then((response) => {
       res.status(200);
       res.send(response);
     })
+    .catch((err) => console.error(err));
 });
 
 // POST the weather forecast id and user id to joinWeatherCreateTable
 app.post('/api/joinWeatherCreateTrips', (req, res) => {
-  console.log('REQUEST', req.body);
-})
+  const { userId, tripId, unique_id } = req.params;
+  // userId and tripId and unique_id
+  joinWeatherCreateTrips.findAll({ where: { userId: userId, tripId: tripId, unique_id: unique_id } })
+    .then((info) => {
+      console.log('INFORMATION', info);
+    })
+    .catch((err) => console.error(err));
+});
 
 // using the UserTrips model, create a new entry in the userTrips table
 
 /// ////////////////////////////////////////////////////////////////////////////
-
 
 /// ///////////////////////////////////////////////////////////Bird Sightings
 
@@ -478,7 +482,6 @@ app.get('/api/birdList/search', async (req, res) => {
   }
 });
 
-
 //GET req for wiki link for all rendered bird names
 app.get("/api/wiki/:birdName", async (req, res) => {
   try {
@@ -506,7 +509,6 @@ app.get("/api/wiki/:birdName", async (req, res) => {
 
 /// ////////////////////////////////////////////////////////////////////////////
 /// ////////////////////////////////////////////////////Bird Sightings Routes
-
 
 //GET for checking the watchlist
 app.get("/api/birdsightings/watchlist", async (req, res) => {

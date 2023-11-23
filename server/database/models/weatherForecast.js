@@ -1,52 +1,52 @@
 const { DataTypes } = require('sequelize');
-const { db } = require('../index.js');
-const { Users } = require('./users.js');
+const { db } = require('../index');
+const { Users } = require('./users');
 
 //weather forecast schema
 const WeatherForecast = db.define('weatherForecasts', {
-  _id: {
+  id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
   },
   userId: {
     type: DataTypes.INTEGER,
-    allowNull: true
+    allowNull: true,
   },
   unique_id: {
     type: DataTypes.INTEGER,
-    allowNull: true
+    allowNull: true,
   },
   avgTemp: {
     type: DataTypes.INTEGER,
-    allowNull: true
+    allowNull: true,
   },
   highTemp: {
     type: DataTypes.INTEGER,
-    allowNull: true
+    allowNull: true,
   },
   lowTemp: {
     type: DataTypes.INTEGER,
-    allowNull: true
+    allowNull: true,
   },
   rain: {
     type: DataTypes.INTEGER,
-    allowNull: true},
+    allowNull: true,
+  },
   condition: {
     type: DataTypes.STRING,
-    allowNull: true
+    allowNull: true,
   },
   region: {
     type: DataTypes.STRING,
-    allowNull: true
+    allowNull: true,
   },
   date: {
     type: DataTypes.STRING,
-    allowNull: true
-  }
+    allowNull: true,
+  },
 });
 
 module.exports = {
-  WeatherForecast
-}
+  WeatherForecast,
+};
