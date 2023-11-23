@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 /* eslint-disable no-shadow */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable array-callback-return */
@@ -20,7 +21,8 @@ const Weather = () => {
   const [uniqueId, setUniqueId] = useState(null);
   const [trips, setTrips] = useState([]);
   const [singleTripId, setSingleTripId] = useState(null);
-  console.log(singleTripId);
+
+  const message = 'Trip and forecast selections required';
 
   useEffect(() => {
     axios.get('/profile')
@@ -46,7 +48,7 @@ const Weather = () => {
         setUniqueId(Math.floor(Math.random() * 200));
       });
   };
-  console.log(trips);
+  console.log('current', userId, singleTripId, uniqueId);
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -54,7 +56,7 @@ const Weather = () => {
     future
       ? future.map((weather) => {
         axios.post('/api/weatherForecasts', {
-          userId,
+          userId: userId,
           unique_id: uniqueId,
           avgTemp: Math.floor(weather.day.avgtemp_f),
           highTemp: Math.floor(weather.day.maxtemp_f),
@@ -65,11 +67,15 @@ const Weather = () => {
           date: `${weather.date.slice(5, weather.date.length)}-${weather.date.slice(0, 4)}`,
         })
           .then(({ data }) => {
-            console.log('data', data);
-            // axios.post('api/joinWeatherCreateTrips', {
-            //   userId: userId,
-            //   tripId: 
-            // })
+            console.log('weather', data);
+            axios.post('/api/joinWeatherCreateTrips', {
+              userId: userId,
+              tripId: singleTripId,
+              unique_id: uniqueId,
+              weatherId: data.id,
+            })
+              .then(({ data }) => console.log('data', data))
+              .catch((err) => console.error(err));
           })
           .catch((err) => console.error('Could not POST forecast to database', err));
       }) : null;
@@ -106,7 +112,7 @@ const Weather = () => {
             <select value={selectDay} onChange={handleValue}>
               {days.map((day, index) => <option key={index}>{day}</option>)}
             </select>
-            <lavel className="label" htmlFor="trips">Select your trip!</lavel>
+            <label className="label" htmlFor="trips">Select your trip!</label>
             <select
               name="trips"
               placeholder="Select your trip!"

@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /* eslint-disable object-shorthand */
 const axios = require("axios");
 const sequelize = require("sequelize");
@@ -133,7 +134,7 @@ app.post('/api/weatherForecasts', (req, res) => {
     rain: rain,
     condition: condition,
     region: region,
-    date: date
+    date: date,
   })
     .then((created) => res.status(201).send(created))
     .then((err) => console.log('Could not POST forecast', err));
@@ -142,7 +143,6 @@ app.post('/api/weatherForecasts', (req, res) => {
 ////////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
 
 /// /////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
-
 
 app.get('/api/google-maps-library', (req, res) => {
   try {
@@ -383,11 +383,21 @@ app.get('/api/createTrip/:userId', (req, res) => {
 
 // POST the weather forecast id and user id to joinWeatherCreateTable
 app.post('/api/joinWeatherCreateTrips', (req, res) => {
-  const { userId, tripId, unique_id } = req.params;
+  const { userId, tripId, unique_id, weatherId } = req.body;
+  console.log(req.body);
   // userId and tripId and unique_id
-  joinWeatherCreateTrips.findAll({ where: { userId: userId, tripId: tripId, unique_id: unique_id } })
-    .then((info) => {
-      console.log('INFORMATION', info);
+  joinWeatherCreateTrips.findOne({ where: { userId: userId, tripId: tripId, unique_id: unique_id, weatherId: weatherId } })
+    .then((found) => {
+      if (!found) {
+        joinWeatherCreateTrips.create({
+          userId: userId,
+          tripId: tripId,
+          unique_id: unique_id,
+          weatherId: weatherId,
+        })
+          .then((results) => res.status(201).send(results))
+          .catch((err) => console.error(err));
+      }
     })
     .catch((err) => console.error(err));
 });
