@@ -1,3 +1,4 @@
+/* eslint-disable object-shorthand */
 const axios = require("axios");
 const sequelize = require("sequelize");
 const express = require("express");

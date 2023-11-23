@@ -8,7 +8,7 @@ import WeatherForecast from './WeatherForecast';
 
 const days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 // TODO: weather already saved to db with created trip id => get with Daniel on how we want that rendered on the profile
-// finish join table, render dropdown for created trips
+// LAST: handle requests for saving data to the join table
 
 const Weather = () => {
   const [userId, setUserId] = useState(null);
@@ -19,6 +19,8 @@ const Weather = () => {
   const [region, setRegion] = useState(null);
   const [uniqueId, setUniqueId] = useState(null);
   const [trips, setTrips] = useState([]);
+  const [singleTripId, setSingleTripId] = useState(null);
+  console.log(singleTripId);
 
   useEffect(() => {
     axios.get('/profile')
@@ -26,12 +28,14 @@ const Weather = () => {
         const id = data._id;
         setUserId(id);
         axios.get(`/api/createTrip/${id}`)
-          .then((response) => setTrips(response.data))
+          .then((response) => {
+            setTrips(response.data);
+            setSingleTripId(response.data[0].tripId);
+          })
           .catch((err) => console.error(err));
       })
       .catch((err) => console.error(err));
   }, []);
-  console.log(trips);
 
   const getWeather = async (location, days) => {
     await axios.get(`/api/weather/${location}/${days}`)
@@ -42,6 +46,7 @@ const Weather = () => {
         setUniqueId(Math.floor(Math.random() * 200));
       });
   };
+  console.log(trips);
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -59,7 +64,13 @@ const Weather = () => {
           region,
           date: `${weather.date.slice(5, weather.date.length)}-${weather.date.slice(0, 4)}`,
         })
-          .then(({ data }) => console.log('sent to db', data))
+          .then(({ data }) => {
+            console.log('data', data);
+            // axios.post('api/joinWeatherCreateTrips', {
+            //   userId: userId,
+            //   tripId: 
+            // })
+          })
           .catch((err) => console.error('Could not POST forecast to database', err));
       }) : null;
   };
@@ -95,8 +106,14 @@ const Weather = () => {
             <select value={selectDay} onChange={handleValue}>
               {days.map((day, index) => <option key={index}>{day}</option>)}
             </select>
-            <select value="Select a trip">
-              {trips.map((trip) => <option key={trip.id}>{trip.tripName}</option>)}
+            <lavel className="label" htmlFor="trips">Select your trip!</lavel>
+            <select
+              name="trips"
+              placeholder="Select your trip!"
+              onChange={(e) => setSingleTripId(e.target.value)}
+            >
+              <option value="">Select a Trip</option>
+              {trips.map((trip) => <option value={trip.tripId} key={trip.tripId}>{trip.tripName}</option>)}
             </select>
           </div>
         </div>
