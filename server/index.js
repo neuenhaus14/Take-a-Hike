@@ -6,6 +6,7 @@ const path = require('path');
 const passport = require('passport');
 const dotenv = require('dotenv');
 const session = require('express-session');
+const { ConnectingAirportsOutlined } = require('@mui/icons-material');
 const { BirdList } = require('./database/models/birdList');
 const { BirdSightings } = require('./database/models/birdSightings');
 const { PackingLists } = require('./database/models/packingLists');
@@ -690,7 +691,16 @@ app.put('/update-like/:commentId/:userId', (req, res) => {
           .then(() => {
             Likes.findAll({ where: { comment_id: commentId, like: true } })
               .then((comments) => {
-                res.status(200).send({ likeCount: comments.length });
+                console.log('comments in first', comments);
+                Comments.update({ likes: comments.length }, { where: { id: commentId } })
+                  .then(() => {
+                    console.log('success');
+                    res.sendStatus(200);
+                  })
+                  .catch((error) => {
+                    console.error('Error updating comment:', error);
+                    res.status(500).send('Internal Server Error');
+                  });
               })
               .catch((error) => {
                 console.error('Error getting likes:', error);
@@ -706,7 +716,16 @@ app.put('/update-like/:commentId/:userId', (req, res) => {
           .then(() => {
             Likes.findAll({ where: { comment_id: commentId, like: true } })
               .then((comments) => {
-                res.status(200).send({ likeCount: comments.length });
+                console.log('comments in second', comments);
+                Comments.update({ likes: comments.length }, { where: { id: commentId } })
+                  .then(() => {
+                    console.log('success');
+                    res.sendStatus(200);
+                  })
+                  .catch((error) => {
+                    console.error('Error updating comment:', error);
+                    res.status(500).send('Internal Server Error');
+                  });
               })
               .catch((error) => {
                 console.error('Error getting likes:', error);
