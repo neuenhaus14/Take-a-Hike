@@ -5,10 +5,10 @@ import moment from 'moment';
 function Comments({ trail_id, user_id }) {
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([]);
-  // const [commentsUsers, setCommentsUsers] = useState([]);
   const [likeStatus, setLikeStatus] = useState(false);
   const [commentValue, setCommentValue] = useState('');
-  // const [likes, setLikes] = useState(0);
+
+  const trailId = parseInt(trail_id, 10);
 
   // loads comments from database on page render
   useEffect(() => {
@@ -47,33 +47,21 @@ function Comments({ trail_id, user_id }) {
     }
   };
 
-  // gets the like count from the database to display on the like button
-  // const getLikeCount = (com) => {
-  //   axios.get(`/get-likes/${com.id}`)
-  //     .then((response) => {
-  //       setLikes(response.data.like); // TODO: DECONSTRUCT AND ACCESS NUMBER AND FEED TO BUTTON
-  //       console.log('likes gotten', response.data.likeCount);
-  //     })
-  //     .catch((err) => console.error(err));
-  // };
-
   // updates likes in db by user so user can only like or dislike ONCE
   const updateLikes = (comId) => {
     console.log(comId, user_id, !likeStatus);
-    axios.put(`/update-like/${comId}/${user_id}`, {
-      likeStatus: !likeStatus,
-    })
+    axios.put(`/update-like/${comId}/${user_id}`)
       .then(() => {
-        setLikeStatus(!likeStatus);
+        // setLikeStatus(!likeStatus);
         updateCommentList();
-        console.log('Like status updated!', likeStatus);
+        console.log('Like status updated!');
       })
       .catch((err) => console.error(err));
   };
 
   // deletes the comments only by the userId owner
   const deleteComment = (id) => {
-    axios.delete(`/delete-comment/${user_id}/${id}/${trail_id}`)
+    axios.delete(`/delete-comment/${user_id}/${id}/${trailId}`)
       .then((response) => {
         console.log('deleted', response);
         updateCommentList();
@@ -81,7 +69,6 @@ function Comments({ trail_id, user_id }) {
       .catch((err) => console.error(err));
   };
 
-  console.log(comments);
   return (
     <div>
       <div id="add-comments">

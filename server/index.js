@@ -678,7 +678,7 @@ app.delete('/delete-comment/:user_id/:id/:trail_id', (req, res) => {
 app.put('/update-like/:commentId/:userId', (req, res) => {
   const { commentId } = req.params;
   const { userId } = req.params;
-  const { likeStatus } = req.body;
+  // const { likeStatus } = req.body;
 
   Likes.findOne({ where: { user_id: userId, comment_id: commentId } })
     .then((likeEntry) => {
@@ -686,7 +686,7 @@ app.put('/update-like/:commentId/:userId', (req, res) => {
         Likes.create({
           user_id: userId,
           comment_id: commentId,
-          like: likeStatus,
+          like: true,
         })
           .then(() => {
             Likes.findAll({ where: { comment_id: commentId, like: true } })
@@ -712,7 +712,8 @@ app.put('/update-like/:commentId/:userId', (req, res) => {
             res.sendStatus(404);
           });
       } else {
-        Likes.update({ like: likeStatus }, { where: { user_id: userId, comment_id: commentId } })
+        console.log(likeEntry);
+        Likes.update({ like: !likeEntry.like }, { where: { user_id: userId, comment_id: commentId } })
           .then(() => {
             Likes.findAll({ where: { comment_id: commentId, like: true } })
               .then((comments) => {
