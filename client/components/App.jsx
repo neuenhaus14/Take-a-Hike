@@ -1,7 +1,9 @@
 // Import Dependencies
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Route, createHashRouter, createRoutesFromChildren, RouterProvider } from 'react-router-dom';
+import {
+  Route, createHashRouter, createRoutesFromChildren, RouterProvider, 
+} from 'react-router-dom';
 
 // import './styles/main.css';
 import TrailsList from './TrailsList.jsx';
@@ -11,12 +13,13 @@ import UserProfile from './UserProfile.jsx';
 import BirdingCheckList from './BirdingCheckList.jsx';
 import PackingList from './PackingList.jsx';
 import Login from './Login.jsx';
-
 import UserTrips from './UserTrips.jsx';
 import BirdProfile from './BirdProfile.jsx';
 import TripCreator from './TripCreator.jsx';
 import Weather from './Weather.jsx';
-
+import NationalParksList from './nationalParksList';
+import NationalParkProfile from './nationalParksListProfile.jsx';
+import Friends from './Friends.jsx';
 
 const App = () => {
   const [trailList, setTrailList] = useState([]);
@@ -50,7 +53,7 @@ const App = () => {
         // add data to local storage
         localStorage.setItem('TrailList', JSON.stringify(response.data.data));
       })
-      .then(()=>{
+      .then(() => {
         setLoadingTrail(false);
       })
       .catch((err) => {
@@ -65,44 +68,51 @@ const App = () => {
     createRoutesFromChildren(
       <Route>
         <Route
-          path='trailslist'
-          element={
+          path="trailslist"
+          element={(
             <TrailsList
               loading={loadingTrails}
               handleGetTrails={handleGetTrails}
               trailList={trailList}
-              />
-            }
-            loader={getUserLoader}
             />
-        <Route path='/' element={<Login />} />
-        <Route
-          path='trailprofile/:id'
-          element={<TrailProfile trailList={trailList}/>} loader={getUserLoader}
+          )}
+          loader={getUserLoader}
         />
-        <Route path='weather' element={<Weather />} />
-        <Route path='quartermaster' element={<Quartermaster />} />
-        <Route path='birdingchecklist' element={<BirdingCheckList />} />
-        <Route path='profile' element={<UserProfile />} loader={getUserLoader}>
-          <Route path='user-trips' element={<UserTrips />} />
-          <Route path='trip-creator' element={<TripCreator />}>
-            <Route path='packing-list' element={<PackingList />} />
-            <Route path='trails-list' element={<TrailsList />} />
-            </Route>
-          <Route path='bird-profile' element={<BirdProfile />} />
+        <Route path="/" element={<Login />} />
+        <Route
+          path="trailprofile/:id"
+          element={<TrailProfile trailList={trailList} />}
+          loader={getUserLoader}
+        />
+        <Route
+          path="nationalParkProfile/:id"
+          element={<NationalParkProfile />}
+        />
+        <Route path="hiking-trails" element={<NationalParksList />} />
+        <Route path="weather" element={<Weather />} />
+        <Route path="quartermaster" element={<Quartermaster />} />
+        <Route path="birdingchecklist" element={<BirdingCheckList />} />
+        <Route path="profile" element={<UserProfile />} loader={getUserLoader}>
+          <Route path="user-trips" element={<UserTrips />} />
+          <Route path="trip-creator" element={<TripCreator />}>
+            <Route path="packing-list" element={<PackingList />} />
+            <Route path="trails-list" element={<TrailsList />} />
+            <Route path="friends/:userId" element={<Friends />} />
           </Route>
-      </Route>
-    )
+          <Route path="bird-profile" element={<BirdProfile />} />
+        </Route>
+      </Route>,
+    ),
   );
 
   return (
-    <div className='app'>
-      <div className='app__header'>
+    <div className="app">
+      <div className="app__header">
         <img
-          className='app__logo'
-          src='https://res.cloudinary.com/dbwbxubwi/image/upload/v1649015216/Parc%20des%20Familles%20Trail%20by%20NOMAMBO/qoej8fkfe2og2gkdkpmn.png'
+          className="app__logo"
+          src="https://res.cloudinary.com/dbwbxubwi/image/upload/v1649015216/Parc%20des%20Familles%20Trail%20by%20NOMAMBO/qoej8fkfe2og2gkdkpmn.png"
         />
-        <h1 className='Header app__header' alignment='center'>
+        <h1 className="Header app__header" alignment="center">
           Trail Feathers
         </h1>
       </div>

@@ -1,9 +1,19 @@
 // Import Dependencies
-const { DataTypes } = require("sequelize");
-const { db } = require("../index.js");
+const { DataTypes } = require('sequelize');
+const { db } = require('../index');
 
 // Create Schema/Model
-const NationalParks = db.define("parks", {
+const NationalParkCodes = db.define('park_codes', {
+  code: {
+    type: DataTypes.STRING,
+    primaryKey: true,
+  },
+  title: {
+    type: DataTypes.STRING(85),
+  },
+});
+
+const NationalParks = db.define('parks', {
   _id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -13,35 +23,29 @@ const NationalParks = db.define("parks", {
     type: DataTypes.STRING,
   },
   latitude: {
-    type: DataTypes.DECIMAL,
+    type: DataTypes.DECIMAL(10, 7),
   },
   longitude: {
-    type: DataTypes.DECIMAL,
+    type: DataTypes.DECIMAL(10, 7),
   },
   image: { 
-    type: DataTypes.STRING 
-},
+    type: DataTypes.STRING, 
+  },
   parkCode: { 
-    type: DataTypes.STRING(6)
-},
+    type: DataTypes.STRING(6),
+    references: {
+      model: NationalParkCodes,
+      key: 'code',
+    },
+  },
   description: { 
-    type: DataTypes.TEXT
-},
+    type: DataTypes.TEXT,
+  },
   link: {
-    type: DataTypes.STRING
-  }
+    type: DataTypes.STRING,
+  },
 });
-
-const NationalParkCodes = db.define("parkCodes", {
-  code: {
-        type: DataTypes.STRING,
-        primaryKey: true,
-      },
-  title: {
-        type: DataTypes.STRING(85),
-      },
-})
-
+NationalParks.belongsTo(NationalParkCodes, { foreignKey: 'parkCode' });
 // Export Schema
 module.exports = {
   NationalParks,
