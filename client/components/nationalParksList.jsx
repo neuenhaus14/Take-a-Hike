@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
+import axios from 'axios';
 import NationalParksEntry from './nationalParksEntry';
 import NavBar from './NavBar';
 
@@ -8,7 +9,7 @@ const NationalParksList = () => {
   const [address, setAddress] = useState('');
   const [mapsLibraryLoaded, setMapsLibraryLoaded] = useState(false);
   const [nationalParkList, setNationalParkList] = useState([]);
-  const [loadingParks, SetLoadingParks] = useState(false);
+  const [loadingParks, setLoadingParks] = useState(false);
 
   useEffect(() => {
     const initMap = () => setMapsLibraryLoaded(true);
@@ -38,12 +39,39 @@ const NationalParksList = () => {
   }, []);
 
   const handleGetNationalParks = () => {
-    console.log('TO DO');
+    setLoadingParks(true);
+    axios.get('/parksInRadius', {
+      params: {
+        lat: location.lat,
+        long: location.lon,
+      },
+    })
+      .then((response) => {
+        setNationalParkList(response.data);
+        console.log(response);
+      })
+      .catch((err) => {
+        console.error('error in axios get parks in radius: ', err);
+      })
+      .then(() => {
+        setLoadingParks(false);
+      });
   };
 
   const handleLocationInput = (e) => {
     const { name, value } = e.target;
     setLocation((location) => ({ ...location, [name]: value, [name]: value }));
+  };
+
+  const updateParksTable = async () => {
+    try {
+      const response = await axios.get('/nationalParksGetAndSave');
+      if (response.status === 200) {
+        console.log('table updated');
+      } else { console.log('error updating'); }
+    } catch (err) {
+      console.error('error updating:', err);
+    }
   };
 
   const userLocationGrab = () => {
@@ -87,7 +115,10 @@ const NationalParksList = () => {
 
   const handleSubmitLocation = (e) => {
     e.preventDefault();
-    handleGetNationalParks(location);
+    handleGetNationalParks({
+      lat: location.lat,
+      lon: location.lon,
+    });
   };
 
   return (
@@ -106,6 +137,15 @@ const NationalParksList = () => {
             align="center"
           >
             Use Current Location
+          </button>
+        </div>
+        <div className="button-wrapper" align="center">
+          <button
+            onClick={updateParksTable}
+            type="button"
+            className="button is-info is-rounded"
+            align="center"
+          >update table test
           </button>
         </div>
       </form>
@@ -212,7 +252,13 @@ const NationalParksList = () => {
               </div>
             )
             : null}
-          {/* // nationalParkList.map((nationalPark) => <NationalParksEntry nationalPark={nationalPark} key={nationalPark.id} />) */}
+          {nationalParkList && nationalParkList.length > 0 
+          && nationalParkList.map((nationalPark) => (
+            <NationalParksEntry
+              nationalPark={nationalPark} 
+              key={nationalPark._id}
+            />
+          ))}
         </div>
       </div>
     </div>

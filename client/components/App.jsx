@@ -19,6 +19,7 @@ import BirdProfile from './BirdProfile.jsx';
 import TripCreator from './TripCreator.jsx';
 import Weather from './Weather.jsx';
 import NationalParksList from './nationalParksList';
+import NationalParkProfile from './nationalParksListProfile.jsx';
 
 const App = () => {
   const [trailList, setTrailList] = useState([]);
@@ -82,6 +83,10 @@ const App = () => {
           path="trailprofile/:id"
           element={<TrailProfile trailList={trailList} />}
           loader={getUserLoader}
+        />
+        <Route
+          path="nationalParkProfile/:id"
+          element={<NationalParkProfile />}
         />
         <Route path="hiking-trails" element={<NationalParksList />} />
         <Route path="weather" element={<Weather />} />

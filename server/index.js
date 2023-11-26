@@ -20,7 +20,7 @@ require('./middleware/auth.js');
 const { cloudinary } = require('./utils/coudinary');
 const { Users } = require('./database/models/users');
 const { UserTrips, Trips } = require('./database/models/userTrips');
-const { NationalParks } = require('./database/models/nationalParks.js');
+const { NationalParks, NationalParkCodes } = require('./database/models/nationalParks.js');
 
 // Set Distribution Path
 const PORT = process.env.PORT || 5555;
@@ -566,6 +566,10 @@ app.put('/update-like/:commentId', (req, res) => {
 
 app.get('/nationalParksGetAndSave', async (req, res) => {
   try {
+    await NationalParks.destroy({
+      truncate: true,
+      cascade: false,
+    });
     const response = await axios.get(
       `https://developer.nps.gov/api/v1/places?q=hiking&limit=1840&api_key=${process.env.NATIONAL_PARKS_API_KEY}`,
     );
@@ -592,6 +596,33 @@ app.get('/nationalParksGetAndSave', async (req, res) => {
     res.sendStatus(200);
   } catch (err) {
     console.error('error fetching and saving parks', err);
+    res.sendStatus(500);
+  }
+});
+
+app.get('/parksInRadius', async (req, res) => {
+  const { lat, long } = req.query;
+  console.log('lat, long', lat, long);
+  const radius = 100;
+  const haversine = `(3959 * acos(
+    cos(radians(${lat})) * cos(radians(latitude)) *
+    cos(radians(longitude) - radians(${long})) + sin (radians(${lat})) * 
+      sin(radians(latitude))
+  ))`;
+  try {
+    const parksInRadius = await NationalParks.findAll({
+      attributes: {
+        include: [
+          [sequelize.literal(haversine), 'distance'],
+          [sequelize.literal('(SELECT title FROM park_codes WHERE park_codes.code = parks.parkCode)'), 'parkTitle']
+        ],
+      },
+      where: sequelize.where(sequelize.literal(haversine), '<=', radius),
+      order: sequelize.literal('distance'),
+    });
+    res.send(parksInRadius);
+  } catch (err) {
+    console.error('error finding parks in radius: ', err);
     res.sendStatus(500);
   }
 });

@@ -98,17 +98,6 @@ const TrailsList = ({ handleGetTrails, trailList, loading }) => {
     handleGetTrails(location);
   };
 
-  const updateParksTable = async () => {
-    try {
-      const response = await axios.get('/nationalParksGetAndSave');
-      if (response.status === 200) {
-        console.log('table updated');
-      } else { console.log('error updating'); }
-    } catch (err) {
-      console.error('error updating:', err);
-    }
-  };
-
   useEffect(() => {
     return () => {
       setIsMounted(false);
@@ -122,15 +111,6 @@ const TrailsList = ({ handleGetTrails, trailList, loading }) => {
         <h1 className="profile-card">
           Find a trail near you! 
         </h1>
-        <div className="button-wrapper" align="center">
-          <button
-            onClick={updateParksTable}
-            type="button"
-            className="button is-info is-rounded"
-            align="center"
-          >update table test
-          </button>
-        </div>
         <div className="button-wrapper" align="center">
           <button
             onClick={userLocationGrab}

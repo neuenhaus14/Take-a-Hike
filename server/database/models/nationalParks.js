@@ -3,6 +3,16 @@ const { DataTypes } = require('sequelize');
 const { db } = require('../index');
 
 // Create Schema/Model
+const NationalParkCodes = db.define('park_codes', {
+  code: {
+    type: DataTypes.STRING,
+    primaryKey: true,
+  },
+  title: {
+    type: DataTypes.STRING(85),
+  },
+});
+
 const NationalParks = db.define('parks', {
   _id: {
     type: DataTypes.INTEGER,
@@ -23,6 +33,10 @@ const NationalParks = db.define('parks', {
   },
   parkCode: { 
     type: DataTypes.STRING(6),
+    references: {
+      model: NationalParkCodes,
+      key: 'code',
+    },
   },
   description: { 
     type: DataTypes.TEXT,
@@ -31,17 +45,7 @@ const NationalParks = db.define('parks', {
     type: DataTypes.STRING,
   },
 });
-
-const NationalParkCodes = db.define('parkCodes', {
-  code: {
-    type: DataTypes.STRING,
-    primaryKey: true,
-  },
-  title: {
-    type: DataTypes.STRING(85),
-  },
-});
-
+NationalParks.belongsTo(NationalParkCodes, { foreignKey: 'parkCode' });
 // Export Schema
 module.exports = {
   NationalParks,
