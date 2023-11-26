@@ -8,19 +8,21 @@ const NationalParksEntry = ({ nationalPark }) => {
   };
 
   return (
-    <button type="button" className="profile-card" onClick={handleClick}>
-      <div className="list-item-card">
-        <img src={nationalPark.image} alt="nationalPark._id" />
-        <h3>{nationalPark.title}</h3>
-        <div className="info-group">
-          <p>
-            Park:
-            {nationalPark.parkTitle}
-          </p>
+    <div className="profile-card">
+      <button type="button" onClick={handleClick}>
+        <div className="list-item-card">
+          <img src={nationalPark.image} alt="nationalPark._id" />
+          <h3>{nationalPark.title}</h3>
+          <div className="info-group">
+            <p>
+              Park:
+              {nationalPark.parkTitle}
+            </p>
+          </div>
+          <div className="info-group" />
         </div>
-        <div className="info-group" />
-      </div>
-    </button>
+      </button>
+    </div>
   );
 };
 

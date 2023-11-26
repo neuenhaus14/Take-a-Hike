@@ -10,7 +10,7 @@ const NationalParksList = () => {
   const [mapsLibraryLoaded, setMapsLibraryLoaded] = useState(false);
   const [nationalParkList, setNationalParkList] = useState([]);
   const [loadingParks, setLoadingParks] = useState(false);
-
+  
   useEffect(() => {
     const initMap = () => setMapsLibraryLoaded(true);
 
@@ -37,9 +37,21 @@ const NationalParksList = () => {
       setMapsLibraryLoaded(false);
     };
   }, []);
-
+  
+  const updateParksTable = async () => {
+    try {
+      const response = await axios.get('/nationalParksGetAndSave');
+      if (response.status === 200) {
+        console.log('table updated');
+      } else { console.log('error updating'); }
+    } catch (err) {
+      console.error('error updating:', err);
+    }
+  };
+  
   const handleGetNationalParks = () => {
     setLoadingParks(true);
+    // updateParksTable();
     axios.get('/parksInRadius', {
       params: {
         lat: location.lat,
@@ -61,17 +73,6 @@ const NationalParksList = () => {
   const handleLocationInput = (e) => {
     const { name, value } = e.target;
     setLocation((location) => ({ ...location, [name]: value, [name]: value }));
-  };
-
-  const updateParksTable = async () => {
-    try {
-      const response = await axios.get('/nationalParksGetAndSave');
-      if (response.status === 200) {
-        console.log('table updated');
-      } else { console.log('error updating'); }
-    } catch (err) {
-      console.error('error updating:', err);
-    }
   };
 
   const userLocationGrab = () => {
@@ -137,15 +138,6 @@ const NationalParksList = () => {
             align="center"
           >
             Use Current Location
-          </button>
-        </div>
-        <div className="button-wrapper" align="center">
-          <button
-            onClick={updateParksTable}
-            type="button"
-            className="button is-info is-rounded"
-            align="center"
-          >update table test
           </button>
         </div>
       </form>

@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import Fab from '@mui/material/Fab';
+import React from 'react';
 import { useLocation } from 'react-router-dom';
 import he from 'he';
 
@@ -9,11 +8,6 @@ const NationalParkProfile = () => {
   const description = he.decode(nationalPark.description);
   return (
     <div className="trails">
-      <Fab
-        className="fab"
-        color="primary"
-        size="large"
-      />
       <figure className="profile-card">
         <img src={nationalPark.image} alt="nationalPark._id" />
         <div className="post__header">

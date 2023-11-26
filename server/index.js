@@ -6,6 +6,7 @@ const path = require('path');
 const passport = require('passport');
 const dotenv = require('dotenv');
 const session = require('express-session');
+const { compileFunction } = require('vm');
 const { BirdList } = require('./database/models/birdList.js');
 const { BirdSightings } = require('./database/models/birdSightings.js');
 const { PackingLists } = require('./database/models/packingLists');
@@ -566,10 +567,13 @@ app.put('/update-like/:commentId', (req, res) => {
 
 app.get('/nationalParksGetAndSave', async (req, res) => {
   try {
-    await NationalParks.destroy({
-      truncate: true,
-      cascade: false,
-    });
+    const count = await NationalParks.count();
+    if (count >= 1) {
+      await NationalParks.destroy({
+        truncate: true,
+        cascade: false,
+      });
+    }
     const response = await axios.get(
       `https://developer.nps.gov/api/v1/places?q=hiking&limit=1840&api_key=${process.env.NATIONAL_PARKS_API_KEY}`,
     );
@@ -614,7 +618,7 @@ app.get('/parksInRadius', async (req, res) => {
       attributes: {
         include: [
           [sequelize.literal(haversine), 'distance'],
-          [sequelize.literal('(SELECT title FROM park_codes WHERE park_codes.code = parks.parkCode)'), 'parkTitle']
+          [sequelize.literal('(SELECT title FROM park_codes WHERE park_codes.code = parks.parkCode)'), 'parkTitle'],
         ],
       },
       where: sequelize.where(sequelize.literal(haversine), '<=', radius),
