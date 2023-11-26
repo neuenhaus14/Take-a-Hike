@@ -11,6 +11,7 @@ const { PackingListItems } = require("./database/models/packingListItems");
 const { joinFriends } = require("./database/models/joinFriends");
 const { Comments } = require("./database/models/comments");
 const { WeatherForecast } = require('./database/models/weatherForecast.js');
+const {NationalParks} = require('./database/models/nationalParks.js')
 const cors = require('cors');
 
 
@@ -92,7 +93,6 @@ app.get('/logout', (req, res) => {
     });
   });
 });
-
 
 app.get('/profile', (req, res) => {
   if (req.isAuthenticated()) {
@@ -766,6 +766,72 @@ app.put('/update-like/:commentId', (req, res) => {
     })
     .catch((err) => console.error(err, 'added to likes went wrong'));
 });
+
+app.get('/nationalParksGetAndSave', async (req, res) => {
+  try {
+    const count = await NationalParks.count();
+    if (count >= 1) {
+      await NationalParks.destroy({
+        truncate: true,
+        cascade: false,
+      });
+    }
+    const response = await axios.get(
+      `https://developer.nps.gov/api/v1/places?q=hiking&limit=1840&api_key=${process.env.NATIONAL_PARKS_API_KEY}`,
+    );
+    const unfilteredData = response.data.data;
+    const mappedParkData = unfilteredData
+      .filter((item) => (item.tags 
+      && item.tags.some((tag) => tag.toLowerCase() === 'trailhead')) 
+      || (item.amenities 
+      && item.amenities.some((amenity) => amenity.toLowerCase() === 'trailhead')))
+      .filter((item) => item.relatedParks?.[0]?.parkCode)
+      .map((item) => ({
+        title: item.title,
+        latitude: item.latitude || null,
+        longitude: item.longitude || null,
+        image: item.images[0].url || null,
+        parkCode: item.relatedParks[0].parkCode || null,
+        description: item.bodyText || null,
+        link: item.url || null,
+      }));
+      
+    await NationalParks.bulkCreate(mappedParkData);
+    console.log('Parks data successfully saved to database');
+
+    res.sendStatus(200);
+  } catch (err) {
+    console.error('error fetching and saving parks', err);
+    res.sendStatus(500);
+  }
+});
+
+app.get('/parksInRadius', async (req, res) => {
+  const { lat, long } = req.query;
+  console.log('lat, long', lat, long);
+  const radius = 100;
+  const haversine = `(3959 * acos(
+    cos(radians(${lat})) * cos(radians(latitude)) *
+    cos(radians(longitude) - radians(${long})) + sin (radians(${lat})) * 
+      sin(radians(latitude))
+  ))`;
+  try {
+    const parksInRadius = await NationalParks.findAll({
+      attributes: {
+        include: [
+          [sequelize.literal(haversine), 'distance'],
+          [sequelize.literal('(SELECT title FROM park_codes WHERE park_codes.code = parks.parkCode)'), 'parkTitle'],
+        ],
+      },
+      where: sequelize.where(sequelize.literal(haversine), '<=', radius),
+      order: sequelize.literal('distance'),
+    });
+    res.send(parksInRadius);
+  } catch (err) {
+    console.error('error finding parks in radius: ', err);
+    res.sendStatus(500);
+  }
+})
 
 // launches the server from localhost on port 5555
 app.listen(PORT, () => {

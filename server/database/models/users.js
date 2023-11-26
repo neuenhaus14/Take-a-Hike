@@ -1,16 +1,16 @@
 // Import Dependencies
-const { DataTypes } = require("sequelize");
-const { db } = require("../index.js");
+const { DataTypes } = require('sequelize');
+const { db } = require('../index.js');
 
 // Create Schema
-const Users = db.define("users", {
+const Users = db.define('users', {
   googleId: {
     type: DataTypes.STRING,
     allowNull: true,
   },
   fullName: { 
     type: DataTypes.STRING(80), 
-    allowNull: false 
+    allowNull: false, 
   },
   // birdSightingsArray: {
   //   type: DataTypes.ARRAY(DataTypes.STRING),
