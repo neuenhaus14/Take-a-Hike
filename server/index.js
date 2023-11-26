@@ -1,28 +1,39 @@
-const axios = require('axios');
-const sequelize = require('sequelize');
-const express = require('express');
-
-const path = require('path');
-const passport = require('passport');
-const dotenv = require('dotenv');
+/* eslint-disable camelcase */
+/* eslint-disable object-shorthand */
+const axios = require("axios");
+const sequelize = require("sequelize");
+const express = require("express");
+const path = require("path");
+const passport = require("passport");
+const dotenv = require("dotenv");
 const session = require('express-session');
-const { ConnectingAirportsOutlined } = require('@mui/icons-material');
-const { BirdList } = require('./database/models/birdList');
-const { BirdSightings } = require('./database/models/birdSightings');
-const { PackingLists } = require('./database/models/packingLists');
-const { PackingListItems } = require('./database/models/packingListItems');
-const { joinFriends } = require('./database/models/joinFriends');
-const { Comments } = require('./database/models/comments');
-const { Likes } = require('./database/models/likes');
-const { WeatherForecast } = require('./database/models/weatherForecast');
+const { BirdList } = require("./database/models/birdList.js");
+const { BirdSightings } = require("./database/models/birdSightings.js");
+const { PackingLists } = require("./database/models/packingLists");
+const { PackingListItems } = require("./database/models/packingListItems");
+const { joinFriends } = require("./database/models/joinFriends");
+const { Comments } = require("./database/models/comments");
+const { WeatherForecast } = require('./database/models/weatherForecast.js');
+const { joinWeatherCreateTrips } = require('./database/models/joinWeatherCreateTrips.js');
+
+const {NationalParks} = require('./database/models/nationalParks.js')
+const cors = require('cors');
+
 
 // const { default: PackingList } = require("../client/components/PackingList");
 const router = express.Router();
 
-require('./middleware/auth');
-const { cloudinary } = require('./utils/coudinary');
-const { Users } = require('./database/models/users');
-const { UserTrips, Trips } = require('./database/models/userTrips');
+
+// const session = require("express-session");
+require("./middleware/auth.js");
+const { cloudinary } = require("./utils/coudinary");
+const { Users } = require("./database/models/users");
+const { UserTrips, Trips, UserCreatedTrips } = require("./database/models/userTrips");
+
+dotenv.config({
+  path: path.resolve(__dirname, '../.env'),
+});
+
 
 // Set Distribution Path
 const { PORT } = process.env;
@@ -96,6 +107,7 @@ app.get('/profile', (req, res) => {
   }
 });
 
+
 // request handler for weather api => FUNCTIONAL
 app.get('/api/weather/:region/:selectDay', (req, res) => {
   const { region, selectDay } = req.params;
@@ -111,20 +123,17 @@ app.get('/api/weather/:region/:selectDay', (req, res) => {
 
 // request handler for weatherForecasts table
 app.post('/api/weatherForecasts', (req, res) => {
-  const {
-    userId, avgTemp, highTemp, lowTemp, condition, region, date, unique_id, rain,
-  } = req.body;
-  console.log();
+  const { userId, avgTemp, highTemp, lowTemp, condition, region, date, unique_id, rain } = req.body;
   WeatherForecast.create({
-    userId,
-    unique_id,
-    avgTemp,
-    highTemp,
-    lowTemp,
-    rain,
-    condition,
-    region,
-    date,
+    userId: userId,
+    unique_id: unique_id,
+    avgTemp: avgTemp,
+    highTemp: highTemp,
+    lowTemp: lowTemp,
+    rain: rain,
+    condition: condition,
+    region: region,
+    date: date,
   })
     .then((created) => res.status(201).send(created))
     .then((err) => console.log('Could not POST forecast', err));
@@ -262,37 +271,136 @@ app.post('/profile/userTrips', (req, res) => {
     if (existingTrip) {
       console.log('Trip already exists!');
       res.sendStatus(409);
-    } else {
-      Trips.create({
-        tripName: req.body.trail.name,
-        tripDescription: 'test description cause theya re all',
-        tripLocation: `${req.body.trail.city}, ${req.body.trail.region}`,
-        tripStartDate: null, // TODO:// update with user data
-        tripEndDate: null, // TODO:// update with user data
-        tripImage: null, // TODO:// update with user data
-      })
-        .then((data) => {
-          console.log('Successfully created trip', data.dataValues);
-          UserTrips.create({
-            userId: req.body.userId,
-            tripId: req.body.trail.id,
+      } else {
+        Trips.create({
+          tripName: req.body.trail.name,
+          tripDescription: 'test description cause theya re all',
+          tripLocation: `${req.body.trail.city}, ${req.body.trail.region}` ,
+          tripStartDate: null, //TODO:// update with user data
+          tripEndDate: null, //TODO:// update with user data
+          tripImage: null, //TODO:// update with user data
+        })
+          .then((data) => {
+            console.log('Successfully created trip', data.dataValues, 'user id', req.body);
+            UserTrips.create({
+              userId: req.body.userId,
+              tripId: req.body.trail.id,
+              tripName: req.body.trail.name,
+              tripDescription: 'test description cause theya re all',
+              tripLocation: `${req.body.trail.city}, ${req.body.trail.region}` ,
+              tripRating: req.body.trail.rating
+            })
+              .then((data) => {
+                // console.log("LINE 63", data.dataValues);
+                res.sendStatus(201);
+              })
+              .catch((err) => {
+                console.error(err, "Something went wrong");
+                res.sendStatus(500);
+              });
           })
-            .then(() => {
-              // console.log("LINE 63", data.dataValues);
+          .catch((err) => {
+            console.error(err, "Something went wrong");
+            res.sendStatus(500);
+          });
+      }
+    })
+  })
+
+  app.get('/profile/userTrips/:userId', (req, res) => {
+    console.log('Request user trips:', req.user);
+    console.log('request user trips: params', req.params);
+    const { _id } = req.user;
+
+    UserTrips.findAll({
+      where: {
+        userId: _id,
+      },
+    })
+      .then((userTrips) => {
+        // console.log('User trips:', userTrips);
+        res.json(userTrips);
+      })
+      .catch((err) => {
+        console.error('ERROR: ', err);
+        res.sendStatus(404);
+      });
+  });
+  //post req for usercreated trips
+  app.post('/api/createTrip', (req, res) => {
+    console.log('createTrip req.body', req.body);
+    const {userId, tripId, tripName, tripDescription, beginDate, endDate} = req.body;
+    console.log('userId', userId);
+    // first check to see if the usercreated trip exists
+    UserCreatedTrips.findOne({
+      where: {
+        userId: userId,
+        tripId: tripId,
+      },
+    })
+      .then((existingTrip) => {
+        if (existingTrip) {
+          console.log('Trip already exists!');
+          res.sendStatus(409);
+        } else {
+          UserCreatedTrips.create({
+            userId: userId,
+            tripId: tripId,
+            tripName: tripName,
+            tripDescription: tripDescription,
+            beginDate: beginDate,
+            endDate: endDate,
+          })
+            .then((data) => {
+              console.log('Successfully created trip', data.dataValues);
               res.sendStatus(201);
             })
             .catch((err) => {
               console.error(err, 'Something went wrong');
               res.sendStatus(500);
             });
-        })
-        .catch((err) => {
-          console.error(err, 'Something went wrong');
-          res.sendStatus(500);
-        });
-    }
+        }
+      })
+      .catch((err) => {
+        console.error(err, 'Something went wrong');
+        res.sendStatus(500);
+      });
   });
+
+////////////////// REQUEST HANDLERS WORKING IN WEATHER COMPONENT ///////////////
+
+// GET all of the logged in user's trips (for weather component)
+app.get('/api/createTrip/:userId', (req, res) => {
+  const { userId } = req.params;
+  UserCreatedTrips.findAll({ where: { userId: userId } })
+    .then((response) => {
+      res.status(200);
+      res.send(response);
+    })
+    .catch((err) => console.error(err));
 });
+
+// POST the weather forecast id and user id to joinWeatherCreateTable
+app.post('/api/joinWeatherCreateTrips', (req, res) => {
+  const { userId, tripId, unique_id, weatherId } = req.body;
+  console.log(req.body);
+  // userId and tripId and unique_id
+  joinWeatherCreateTrips.findOne({ where: { userId: userId, tripId: tripId, unique_id: unique_id, weatherId: weatherId } })
+    .then((found) => {
+      if (!found) {
+        joinWeatherCreateTrips.create({
+          userId: userId,
+          tripId: tripId,
+          unique_id: unique_id,
+          weatherId: weatherId,
+        })
+          .then((results) => res.status(201).send(results))
+          .catch((err) => console.error(err));
+      }
+    })
+    .catch((err) => console.error(err));
+});
+
 // using the UserTrips model, create a new entry in the userTrips table
 
 /// ////////////////////////////////////////////////////////////////////////////
@@ -383,8 +491,8 @@ app.get('/api/birdList/search', async (req, res) => {
   }
 });
 
-// GET req for wiki link for all rendered bird names
-app.get('/api/wiki/:birdName', async (req, res) => {
+//GET req for wiki link for all rendered bird names
+app.get("/api/wiki/:birdName", async (req, res) => {
   try {
     const { birdName } = req.params;
     const wikiApiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=info&inprop=url&titles=${encodeURIComponent(
@@ -411,8 +519,8 @@ app.get('/api/wiki/:birdName', async (req, res) => {
 /// ////////////////////////////////////////////////////////////////////////////
 /// ////////////////////////////////////////////////////Bird Sightings Routes
 
-// GET for checking the watchlist
-app.get('/api/birdsightings/watchlist', async (req, res) => {
+//GET for checking the watchlist
+app.get("/api/birdsightings/watchlist", async (req, res) => {
   try {
     const { bird_id, user_id } = req.query;
 
@@ -739,24 +847,74 @@ app.put('/update-like/:commentId/:userId', (req, res) => {
           });
       }
     })
-    .catch((err) => {
-      console.error('Could not post like', err);
-      res.sendStatus(500);
-    });
+    .catch((err) => console.error(err, 'added to likes went wrong'));
 });
 
-// app.get('/get-likes/:commentId', (req, res) => {
-//   const { commentId } = req.params;
+app.get('/nationalParksGetAndSave', async (req, res) => {
+  try {
+    const count = await NationalParks.count();
+    if (count >= 1) {
+      await NationalParks.destroy({
+        truncate: true,
+        cascade: false,
+      });
+    }
+    const response = await axios.get(
+      `https://developer.nps.gov/api/v1/places?q=hiking&limit=1840&api_key=${process.env.NATIONAL_PARKS_API_KEY}`,
+    );
+    const unfilteredData = response.data.data;
+    const mappedParkData = unfilteredData
+      .filter((item) => (item.tags 
+      && item.tags.some((tag) => tag.toLowerCase() === 'trailhead')) 
+      || (item.amenities 
+      && item.amenities.some((amenity) => amenity.toLowerCase() === 'trailhead')))
+      .filter((item) => item.relatedParks?.[0]?.parkCode)
+      .map((item) => ({
+        title: item.title,
+        latitude: item.latitude || null,
+        longitude: item.longitude || null,
+        image: item.images[0].url || null,
+        parkCode: item.relatedParks[0].parkCode || null,
+        description: item.bodyText || null,
+        link: item.url || null,
+      }));
+      
+    await NationalParks.bulkCreate(mappedParkData);
+    console.log('Parks data successfully saved to database');
 
-//   Likes.findAll({ where: { comment_id: commentId, like: true } })
-//     .then((comments) => {
-//       res.status(200).send({ likeCount: comments.length });
-//     })
-//     .catch((error) => {
-//       console.error('Error getting likes:', error);
-//       res.status(500).send('Internal Server Error');
-//     });
-// });
+    res.sendStatus(200);
+  } catch (err) {
+    console.error('error fetching and saving parks', err);
+    res.sendStatus(500);
+  }
+});
+
+app.get('/parksInRadius', async (req, res) => {
+  const { lat, long } = req.query;
+  console.log('lat, long', lat, long);
+  const radius = 100;
+  const haversine = `(3959 * acos(
+    cos(radians(${lat})) * cos(radians(latitude)) *
+    cos(radians(longitude) - radians(${long})) + sin (radians(${lat})) * 
+      sin(radians(latitude))
+  ))`;
+  try {
+    const parksInRadius = await NationalParks.findAll({
+      attributes: {
+        include: [
+          [sequelize.literal(haversine), 'distance'],
+          [sequelize.literal('(SELECT title FROM park_codes WHERE park_codes.code = parks.parkCode)'), 'parkTitle'],
+        ],
+      },
+      where: sequelize.where(sequelize.literal(haversine), '<=', radius),
+      order: sequelize.literal('distance'),
+    });
+    res.send(parksInRadius);
+  } catch (err) {
+    console.error('error finding parks in radius: ', err);
+    res.sendStatus(500);
+  }
+})
 
 // launches the server from localhost on port 5555
 app.listen(PORT, () => {

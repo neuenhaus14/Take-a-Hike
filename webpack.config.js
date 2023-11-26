@@ -1,6 +1,13 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
+
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
+const srcDir = path.resolve(__dirname, "client");
+const distDir = path.resolve(__dirname, "dist");
+const BundleAnalyzerPlugin =
+  require("webpack-bundle-analyzer").BundleAnalyzerPlugin
+
+
 
 module.exports = {
   mode: 'production',
@@ -42,6 +49,10 @@ module.exports = {
       inject: 'body',
     }),
     new NodePolyfillPlugin(),
+
+    new BundleAnalyzerPlugin()
+
+
   ],
   resolve: {
     fallback: {

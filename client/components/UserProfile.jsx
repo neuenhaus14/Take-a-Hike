@@ -1,23 +1,27 @@
-import React from "react";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { Outlet, Link } from "react-router-dom";
-import Friends from "./Friends.jsx";
-
-import NavBar from "./NavBar.jsx";
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { Outlet, Link, useLoaderData } from 'react-router-dom';
 import TripCreator from './TripCreator.jsx';
-import { useLoaderData } from 'react-router-dom';
+import Friends from './Friends.jsx';
+
+import NavBar from './NavBar.jsx';
 
 const UserProfile = () => {
-  const [profileName, setProfileName] = useState("");
-  const [picture, setPicture] = useState("");
-  const [email, setEmail] = useState("");
+  const [profileName, setProfileName] = useState('');
+  const [picture, setPicture] = useState('');
+  const [email, setEmail] = useState('');
+  const [myTrips, setMyTrips] = useState([]);
+  const [showOutlet, setShowOutlet] = useState(false);
+
+  const handleButtonClick = () => {
+    setShowOutlet(true);
+  };
 
   const userData = useLoaderData();
   const userId = userData._id;
 
   useEffect(() => {
-    axios.get("/profile").then((profile) => {
+    axios.get('/profile').then((profile) => {
       const user = profile.data;
       //console.log(user);
       setProfileName(user.fullName);
@@ -30,17 +34,33 @@ const UserProfile = () => {
     <div className="profile-card">
       <NavBar />
       <h1>Welcome {profileName}</h1>
-      <a href={picture}></a>
+      <a href={picture} />
       <p>{email}</p>
       <div className="outlet">
-        <Link to="/profile/user-trips">My Trips</Link> |  
-        <Link to="/profile/trip-creator">Create a Trip</Link> |
-        <Link to="/profile/bird-profile">Bird Lists</Link> | 
-        <Outlet />
+        {/* set link to user trips and make the click conditionally render the outlet */}
+        <Link to={`/profile/user-trips/${userId}`}>
+          <button type="button" onClick={() => { handleButtonClick(); }}>
+            My Trips
+          </button>  
+        </Link>
+        {/* set link to trip - creator and make the click conditionally render the outlet */}
+        <Link to={`/profile/trip-creator/${userId}`}>
+          <button type="button" onClick={() => { handleButtonClick(); }}>
+            Create a Trip
+          </button>
+        </Link>
+        {/* set link to friends and make the click conditionally render the outlet */}
+        <Link to={`/profile/friends/${userId}`}>
+          <button type="button" onClick={() => { handleButtonClick(); }}>
+            Friends
+          </button> 
+        </Link>
+        {/* conditional outlet render based on clicks */}
+        {showOutlet ? (
+          <Outlet />)
+          : (<div />)}
       </div>
-      <div>
-        <Friends userId={userId}/>
-      </div>
+      
     </div>
   );
 
