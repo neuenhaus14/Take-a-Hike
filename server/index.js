@@ -17,7 +17,6 @@ const { WeatherForecast } = require('./database/models/weatherForecast.js');
 const { joinWeatherCreateTrips } = require('./database/models/joinWeatherCreateTrips.js');
 
 const {NationalParks} = require('./database/models/nationalParks.js')
-const cors = require('cors');
 
 
 // const { default: PackingList } = require("../client/components/PackingList");
@@ -46,7 +45,6 @@ const app = express();
 app.use(express.json()); // handles parsing content in the req.body from post/update requests
 app.use(express.static(distPath)); // Statically serves up client directory
 app.use(express.urlencoded({ extended: true })); // Parses url (allows arrays and objects)
-app.use(cors());
 app.use(
   session({
     secret: 'keyboard cat',
@@ -122,7 +120,6 @@ app.get('/api/weather/:region/:selectDay', (req, res) => {
     });
 });
 
-
 // request handler for weatherForecasts table
 app.post('/api/weatherForecasts', (req, res) => {
   const { userId, avgTemp, highTemp, lowTemp, condition, region, date, unique_id, rain } = req.body;
@@ -141,7 +138,7 @@ app.post('/api/weatherForecasts', (req, res) => {
     .then((err) => console.log('Could not POST forecast', err));
 });
 
-////////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
+/// /////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
 
 /// /////////////////////////////////////EXTERNAL TRAIL API ROUTE/////////////////////////////////////////
 
@@ -440,9 +437,8 @@ app.get('/api/birdList', async (req, res) => {
   }
 });
 
-
-//get req sending bird name to sound API based off the rendered names
-app.get("/api/birdsounds/:birdName", async (req, res) => {
+// get req sending bird name to sound API based off the rendered names
+app.get('/api/birdsounds/:birdName', async (req, res) => {
   try {
     const { birdName } = req.params;
     const soundApiUrl = `https://xeno-canto.org/api/2/recordings?query=${encodeURIComponent(
@@ -529,56 +525,56 @@ app.get("/api/birdsightings/watchlist", async (req, res) => {
 
     const existingEntry = await BirdSightings.findOne({
       where: {
-        bird_id: bird_id,
-        user_id: user_id,
+        bird_id,
+        user_id,
       },
     });
 
     res.status(200).json({ inWatchlist: !!existingEntry });
   } catch (error) {
-    console.error("Error checking watchlist:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error checking watchlist:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-//POST for adding the bird to watch list
-app.post("/api/birdsightings/watchlist", async (req, res) => {
+// POST for adding the bird to watch list
+app.post('/api/birdsightings/watchlist', async (req, res) => {
   try {
     const { bird_id, user_id, addToWatchlist } = req.body;
-    console.log("bird sightings:", req.body);
+    console.log('bird sightings:', req.body);
 
     await BirdSightings.create({
-      bird_id: bird_id,
-      user_id: user_id,
+      bird_id,
+      user_id,
       inWatchlist: addToWatchlist,
     });
 
     res.sendStatus(200);
   } catch (error) {
-    console.error("Error updating watchlist:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error updating watchlist:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-//DELETE the bird from the watch list
-app.delete("/api/birdsightings/watchlist", async (req, res) => {
+// DELETE the bird from the watch list
+app.delete('/api/birdsightings/watchlist', async (req, res) => {
   try {
     const { bird_id, user_id, addToWatchlist } = req.body;
-    console.log("delete req body:", req.body);
+    console.log('delete req body:', req.body);
 
     if (addToWatchlist) {
-      //Check if the entry exists
+      // Check if the entry exists
       const existingEntry = await BirdSightings.findOne({
         where: {
-          bird_id: bird_id,
-          user_id: user_id,
+          bird_id,
+          user_id,
         },
       });
 
       if (!existingEntry) {
         await BirdSightings.create({
-          bird_id: bird_id,
-          user_id: user_id,
+          bird_id,
+          user_id,
           inWatchlist: true,
         });
       }
@@ -586,16 +582,16 @@ app.delete("/api/birdsightings/watchlist", async (req, res) => {
       // Remove from watchlist logic
       await BirdSightings.destroy({
         where: {
-          bird_id: bird_id,
-          user_id: user_id,
+          bird_id,
+          user_id,
         },
       });
     }
 
     res.status(200).json({ success: true });
   } catch (error) {
-    console.error("Error updating watchlist:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error updating watchlist:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
@@ -786,17 +782,69 @@ app.delete('/delete-comment/:user_id/:id/:trail_id', (req, res) => {
     });
 });
 
-app.put('/update-like/:commentId', (req, res) => {
+app.put('/update-like/:commentId/:userId', (req, res) => {
   const { commentId } = req.params;
-  const { likeStatus } = req.body;
+  const { userId } = req.params;
+  // const { likeStatus } = req.body;
 
-  const incrementValue = likeStatus ? 1 : -1;
-
-  Comments.increment('likes', { by: incrementValue, where: { id: commentId } })
-    .then(() => {
-      const action = likeStatus ? 'added to' : 'removed from';
-      console.log(`${action} likes`);
-      res.sendStatus(201);
+  Likes.findOne({ where: { user_id: userId, comment_id: commentId } })
+    .then((likeEntry) => {
+      if (!likeEntry) {
+        Likes.create({
+          user_id: userId,
+          comment_id: commentId,
+          like: true,
+        })
+          .then(() => {
+            Likes.findAll({ where: { comment_id: commentId, like: true } })
+              .then((comments) => {
+                console.log('comments in first', comments);
+                Comments.update({ likes: comments.length }, { where: { id: commentId } })
+                  .then(() => {
+                    console.log('success');
+                    res.sendStatus(200);
+                  })
+                  .catch((error) => {
+                    console.error('Error updating comment:', error);
+                    res.status(500).send('Internal Server Error');
+                  });
+              })
+              .catch((error) => {
+                console.error('Error getting likes:', error);
+                res.status(500).send('Internal Server Error');
+              });
+          })
+          .catch(() => {
+            console.log('not successfully created');
+            res.sendStatus(404);
+          });
+      } else {
+        console.log(likeEntry);
+        Likes.update({ like: !likeEntry.like }, { where: { user_id: userId, comment_id: commentId } })
+          .then(() => {
+            Likes.findAll({ where: { comment_id: commentId, like: true } })
+              .then((comments) => {
+                console.log('comments in second', comments);
+                Comments.update({ likes: comments.length }, { where: { id: commentId } })
+                  .then(() => {
+                    console.log('success');
+                    res.sendStatus(200);
+                  })
+                  .catch((error) => {
+                    console.error('Error updating comment:', error);
+                    res.status(500).send('Internal Server Error');
+                  });
+              })
+              .catch((error) => {
+                console.error('Error getting likes:', error);
+                res.status(500).send('Internal Server Error');
+              });
+          })
+          .catch(() => {
+            console.log('not successfully updated');
+            res.sendStatus(404);
+          });
+      }
     })
     .catch((err) => console.error(err, 'added to likes went wrong'));
 });
