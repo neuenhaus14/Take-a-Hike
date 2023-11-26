@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import moment from 'moment';
 
-function Comments({ trail_id, user_id }) {
+const Comments = ({ trail_id, user_id }) => {
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([]);
   const [likeStatus, setLikeStatus] = useState(false);

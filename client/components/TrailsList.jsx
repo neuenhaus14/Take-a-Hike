@@ -1,12 +1,14 @@
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy } from 'react';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import { useLoaderData } from 'react-router-dom';
 import axios from 'axios';
-import TrailsListEntry from './TrailsListEntry';
-import NavBar from './NavBar';
+// import TrailsListEntry from './TrailsListEntry';
+// import NavBar from './NavBar';
+const TrailsListEntry = lazy(() => import('./TrailsListEntry'));
+const NavBar = lazy(() => import('./NavBar'));
 
 const TrailsList = ({ handleGetTrails, trailList, loading }) => {
   const [location, setLocation] = useState({ lat: '', lon: '' });

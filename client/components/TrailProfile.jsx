@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy } from 'react';
 import { useParams, useLoaderData } from 'react-router-dom';
 import axios from 'axios';
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
-import NavBar from './NavBar.jsx';
-import Comments from './Comments.jsx';
-import PhotoPost from './PhotoPost.jsx';
+
+const NavBar = lazy(() => import('./NavBar'));
+const Comments = lazy(() => import('./Comments'));
+const PhotoPost = lazy(() => import('./PhotoPost'));
 
 const preset = 'hikeimages';
 const cloudName = 'dbwbxubwi';
