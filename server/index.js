@@ -11,6 +11,7 @@ const { PackingListItems } = require("./database/models/packingListItems");
 const { joinFriends } = require("./database/models/joinFriends");
 const { Comments } = require("./database/models/comments");
 const { WeatherForecast } = require('./database/models/weatherForecast.js');
+const {NationalParks} = require('./database/models/nationalParks.js')
 const cors = require('cors');
 
 

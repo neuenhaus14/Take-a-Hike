@@ -51,7 +51,7 @@ const NationalParksList = () => {
   
   const handleGetNationalParks = () => {
     setLoadingParks(true);
-    // updateParksTable();
+    updateParksTable();
     axios.get('/parksInRadius', {
       params: {
         lat: location.lat,
