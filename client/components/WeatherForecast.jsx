@@ -5,9 +5,7 @@ const WeatherForecast = ({ forecast }) => {
 
   return (
     <div>
-      <div>
-        <p className="current-date">{date}</p>
-      </div>
+      <p className="current-date"><strong>{date}</strong></p>
       <div className="weather-conditions">
         <div className="info-container-top">
           <span className="weather-info"> Average: {Math.floor(forecast.day.avgtemp_f)} °F</span>

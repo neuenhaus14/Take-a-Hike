@@ -20,6 +20,8 @@ const { joinFriends } = require('./models/joinFriends');
 const { Comments } = require('./models/comments');
 const { WeatherForecast } = require('./models/weatherForecast.js');
 
+const { joinWeatherCreateTrips } = require('./models/joinWeatherCreateTrips.js');
+
 db.options.logging = false;
 
 const seedSqlize = () => {
@@ -98,6 +100,21 @@ const seedSqlize = () => {
       '\x1b[36m',
       '\nDatabase (MySQL): \'National Parks\' table successfully created!',
     ))      
+    .then(() => WeatherForecast.sync())
+    .then(() =>
+      console.log(
+        "\x1b[36m",
+        "\nDatabase (MySQL): 'WeatherForecasts' table successfully created!"
+      )
+    )
+    .then(() => joinWeatherCreateTrips.sync())
+    .then(() => {
+      console.log(
+        "\x1b[36m",
+        "\nDatabase (MySQL): 'joinWeatherCreateTrips' table successfully created!"
+      )
+    })
+
     .then(() => Promise.all(dummyUserData.map((txn) => Users.create(txn))))
     .then((arr) => console.log(
       '\x1b[32m',
