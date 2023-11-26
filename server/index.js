@@ -17,7 +17,6 @@ const { WeatherForecast } = require('./database/models/weatherForecast.js');
 const { joinWeatherCreateTrips } = require('./database/models/joinWeatherCreateTrips.js');
 
 const {NationalParks} = require('./database/models/nationalParks.js')
-const cors = require('cors');
 
 
 // const { default: PackingList } = require("../client/components/PackingList");
