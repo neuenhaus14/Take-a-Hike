@@ -1,25 +1,27 @@
-
-import React, { useState, useEffect, } from "react";
-import TrailsListEntry from "./TrailsListEntry.jsx";
-import NavBar from './NavBar.jsx';
-import PlacesAutocomplete, {geocodeByAddress, getLatLng} from "react-places-autocomplete"
-import { useLoaderData } from "react-router-dom";
+/* eslint-disable react/no-unknown-property */
+/* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable react/jsx-props-no-spreading */
+import React, { useState, useEffect } from 'react';
+import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
+import { useLoaderData } from 'react-router-dom';
+import axios from 'axios';
+import TrailsListEntry from './TrailsListEntry';
+import NavBar from './NavBar';
 
 const TrailsList = ({ handleGetTrails, trailList, loading }) => {
-  const [location, setLocation] = useState({ lat: "", lon: "" });
-  const [address, setAddress] = useState("");
+  const [location, setLocation] = useState({ lat: '', lon: '' });
+  const [address, setAddress] = useState('');
   const [mapsLibraryLoaded, setMapsLibraryLoaded] = useState(false);
   const [isMounted, setIsMounted] = useState(true);
   // use loader data to pull in the current user to add a trail to their trails
   const userData = useLoaderData();
-  const userId = userData._id
+  const userId = userData._id;
   console.log('user id', userId);
 
-
-  useEffect(()=>{
+  useEffect(() => {
     const initMap = () => setMapsLibraryLoaded(true);
 
-    const fetchMapsURL = async () =>{
+    const fetchMapsURL = async () => {
       try {
         const response = await fetch('/api/google-maps-library');
         const url = await response.text();
@@ -38,7 +40,7 @@ const TrailsList = ({ handleGetTrails, trailList, loading }) => {
     };
     window.initMap = initMap;
     fetchMapsURL();
-    return () =>{
+    return () => {
       setMapsLibraryLoaded(false);
     };
   }, []);
@@ -50,36 +52,35 @@ const TrailsList = ({ handleGetTrails, trailList, loading }) => {
     });
   };
 
-  const userLocationGrab = () =>{
+  const userLocationGrab = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) =>{
-          if(isMounted){
+        (position) => {
+          if (isMounted) {
             setLocation({
-            lat: position.coords.latitude,
-            lon: position.coords.longitude
-          });
-          handleGetTrails({
-            lat: position.coords.latitude,
-            lon: position.coords.longitude
-          });
-        }
+              lat: position.coords.latitude,
+              lon: position.coords.longitude,
+            });
+            handleGetTrails({
+              lat: position.coords.latitude,
+              lon: position.coords.longitude,
+            });
+          }
         },
-        (err) =>{
+        (err) => {
           console.error('error in location grab: ', err);
-        }
+        },
       );
     } else {
       console.error('geolocation not supported');
     }
-    
   };
 
-  const handleSelect = (selectedAddress) =>{
+  const handleSelect = (selectedAddress) => {
     geocodeByAddress(selectedAddress)
       .then((results) => getLatLng(results[0]))
-      .then((latLng) =>{
-        setLocation({lat: latLng.lat, lon: latLng.lng});
+      .then((latLng) => {
+        setLocation({ lat: latLng.lat, lon: latLng.lng });
         setAddress(selectedAddress);
       })
 
@@ -88,8 +89,8 @@ const TrailsList = ({ handleGetTrails, trailList, loading }) => {
       });
   };
 
-  const handleChange = (address) =>{
-    setAddress(address);
+  const handleChange = (addr) => {
+    setAddress(addr);
   };
 
   const handleSubmitLocation = (e) => {
@@ -97,10 +98,10 @@ const TrailsList = ({ handleGetTrails, trailList, loading }) => {
     handleGetTrails(location);
   };
 
-  useEffect(() =>{
-    return () =>{
+  useEffect(() => {
+    return () => {
       setIsMounted(false);
-    }
+    };
   }, []);
 
   return (
@@ -108,9 +109,8 @@ const TrailsList = ({ handleGetTrails, trailList, loading }) => {
       <NavBar />
       <form className="box">
         <h1 className="profile-card">
-        Find a trail near you! 
+          Find a trail near you! 
         </h1>
-        
         <div className="button-wrapper" align="center">
           <button
             onClick={userLocationGrab}
@@ -127,52 +127,55 @@ const TrailsList = ({ handleGetTrails, trailList, loading }) => {
         </div>
         <div className="field" key="places-autocomplete-wrapper">
 
-          {mapsLibraryLoaded && 
-          <>
-            <label className="label">Address</label>
-            <PlacesAutocomplete
-              value={address}
-              onChange={handleChange}
-              onSelect={handleSelect}
-            >
-              {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
-                <div>
-                  <input
-                    {...getInputProps({
-                      placeholder: 'Search Places ...',
-                      className: 'card',
-                    })}
-                  />
-                  <div className="autocomplete-dropdown-container">
-                    {loading && <div>Loading...</div>}
-                    {suggestions.map((suggestion) => {
-                      const className = suggestion.active
-                        ? 'suggestion-item--active'
-                        : 'suggestion-item';
-                      const style = suggestion.active
-                        ? { backgroundColor: '#fafafa', cursor: 'pointer' }
-                        : { backgroundColor: '#ffffff', cursor: 'pointer' };
-                      return (
-                        <div 
-                          {...getSuggestionItemProps(suggestion, {
-                            className,
-                            style,
-                          })}
-                          key={suggestion.placeId}
-                        >
-                          <span>{suggestion.description}</span>
-                        </div>
-                      );
-                    })}
+          {mapsLibraryLoaded 
+          && (
+            <>
+              <label className="label">Address</label>
+              <PlacesAutocomplete
+                value={address}
+                onChange={handleChange}
+                onSelect={handleSelect}
+              >
+                {({
+                  getInputProps, suggestions, getSuggestionItemProps, 
+                }) => (
+                  <div>
+                    <input
+                      {...getInputProps({
+                        placeholder: 'Search Places ...',
+                        className: 'card',
+                      })}
+                    />
+                    <div className="autocomplete-dropdown-container">
+                      {loading && <div>Loading...</div>}
+                      {suggestions.map((suggestion) => {
+                        const className = suggestion.active
+                          ? 'suggestion-item--active'
+                          : 'suggestion-item';
+                        const style = suggestion.active
+                          ? { backgroundColor: '#fafafa', cursor: 'pointer' }
+                          : { backgroundColor: '#ffffff', cursor: 'pointer' };
+                        return (
+                          <div 
+                            {...getSuggestionItemProps(suggestion, {
+                              className,
+                              style,
+                            })}
+                            key={suggestion.placeId}
+                          >
+                            <span>{suggestion.description}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
-            </PlacesAutocomplete>
-            <div>
-              <h5>-OR SEARCH BY-</h5>
-            </div>
-          </>
-          }
+                )}
+              </PlacesAutocomplete>
+              <div>
+                <h5>-OR SEARCH BY-</h5>
+              </div>
+            </>
+          )}
         </div>
         <div className="field">
           <label className="label">Latitude</label>
@@ -200,12 +203,9 @@ const TrailsList = ({ handleGetTrails, trailList, loading }) => {
               name="lon"
             />
           </div>
-        </div>
-
-        
+        </div>    
         <div className="button-container" align="center">
           <input
-        
             type="submit"
             value="Search Location"
             className="button is-info is-rounded"
@@ -215,13 +215,14 @@ const TrailsList = ({ handleGetTrails, trailList, loading }) => {
       <div className="trails">
         <div className="trail-table">
           {loading 
-            ? 
-            <div className="list-item-card">
-              <div className="spinner">
-                <img align="center" src='./LoaderSpinner.gif'/>
+            ? (
+              <div className="list-item-card">
+                <div className="spinner">
+                  <img align="center" src="./LoaderSpinner.gif" alt="loading..." />
+                </div>
               </div>
-            </div> :
-            trailList.map((trail) => {
+            )
+            : trailList.map((trail) => {
               return <TrailsListEntry trail={trail} userId={userId} key={trail.id} />;
             })}
 
