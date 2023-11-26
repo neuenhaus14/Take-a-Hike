@@ -223,7 +223,7 @@ const TrailsList = ({ handleGetTrails, trailList, loading }) => {
               </div>
             )
             : trailList.map((trail) => {
-              return <TrailsListEntry trail={trail} key={trail.id} />;
+              return <TrailsListEntry trail={trail} userId={userId} key={trail.id} />;
             })}
 
         </div>

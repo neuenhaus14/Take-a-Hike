@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const mysql = require('mysql2/promise');
 const { db } = require('./index.js');
 const { Trails } = require('./models/trails.js');
@@ -18,6 +19,29 @@ const { Trips, UserTrips } = require('./models/userTrips.js');
 const { joinFriends } = require('./models/joinFriends');
 const { Comments } = require('./models/comments');
 
+=======
+const mysql = require("mysql2/promise");
+const { db } = require("./index.js");
+const { Trails } = require("./models/trails.js");
+const { dummyParkData } = require("../../copyAPIparkData/dummyDataCopy.js");
+const { dummyUserData } = require("../../copyAPIparkData/dummyUserData.js");
+const { dummyFriendData } = require("../../copyAPIparkData/dummyFriendData.js");
+const { dummyCommentData } = require("../../copyAPIparkData/dummyCommentData.js");
+const { dummyWeather } = require('../../copyAPIparkData/dummyWeatherData.js');
+const { PackingLists } = require("./models/packingLists.js");
+const { PackingListItems } = require("./models/packingListItems.js");
+const { Users } = require("./models/users.js");
+const {NationalParks, NationalParkCodes} = require("./models/nationalParks.js")
+const parkCodes = require("./data/parkCodes.json");
+const birdsOfLA = require("./data/eBirdData.js")
+const { BirdList } = require("./models/birdList.js")
+const { BirdSightings } = require("./models/birdSightings.js")
+//import new models to seed
+const { Trips, UserTrips, UserCreatedTrips } = require("./models/userTrips.js");
+const { joinFriends } = require('./models/joinFriends');
+const { Comments } = require('./models/comments');
+const { WeatherForecast } = require('./models/weatherForecast.js');
+>>>>>>> 186a6a00ea7ce8adaccc844452b027a4f9f03fc2
 db.options.logging = false;
 
 const seedSqlize = () => {
@@ -40,10 +64,26 @@ const seedSqlize = () => {
       '\nDatabase (MySQL): \'Trips\' table successfully created!',
     ))
     .then(() => UserTrips.sync())
+<<<<<<< HEAD
     .then(() => console.log(
       '\x1b[36m',
       '\nDatabase (MySQL): \'UserTrips\' table successfully created!',
     ))
+=======
+    .then(() =>
+      console.log(
+        "\x1b[36m",
+        "\nDatabase (MySQL): 'UserTrips' table successfully created!"
+      )
+    )
+    .then(() => UserCreatedTrips.sync())
+    .then(() =>
+      console.log(
+        "\x1b[36m",
+        "\nDatabase (MySQL): 'UserCreatedTrips' table successfully created!"
+      )
+    )
+>>>>>>> 186a6a00ea7ce8adaccc844452b027a4f9f03fc2
     .then(() => PackingLists.sync())
     .then(() => console.log(
       '\x1b[36m',
@@ -82,6 +122,7 @@ const seedSqlize = () => {
       '\nDatabase (MySQL): \'Comments\' table successfully created!',
     ))
     .then(() => NationalParkCodes.sync())
+<<<<<<< HEAD
     .then(() => console.log(
       '\x1b[36m',
       '\nDatabase (MySQL): \'NationalParkCodes\' table successfully created!',
@@ -91,6 +132,21 @@ const seedSqlize = () => {
       '\x1b[36m',
       '\nDatabase (MySQL): \'National Parks\' table successfully created!',
     ))      
+=======
+    .then(() =>
+      console.log(
+        "\x1b[36m",
+        "\nDatabase (MySQL): 'NationalParkCodes' table successfully created!"
+      )
+    )
+    .then(() => WeatherForecast.sync())
+    .then(() =>
+      console.log(
+        "\x1b[36m",
+        "\nDatabase (MySQL): 'WeatherForecasts' table successfully created!"
+      )
+    )
+>>>>>>> 186a6a00ea7ce8adaccc844452b027a4f9f03fc2
     .then(() => Promise.all(dummyUserData.map((txn) => Users.create(txn))))
     .then((arr) => console.log(
       '\x1b[32m',
@@ -122,6 +178,7 @@ const seedSqlize = () => {
       '\x1b[37m',
     ))
     .then(() => Promise.all(birdsOfLA.map((bird) => BirdList.create(bird))))
+<<<<<<< HEAD
     .then((arr) => console.log(
       '\x1b[32m',
       `\nDatabase (MySQL): Successfully seeded birdList with ${arr.length} entries!\n`,
@@ -129,6 +186,25 @@ const seedSqlize = () => {
     ))
     .then(() => {
       const parkCodesData = Object.entries(parkCodes).map(([code, title]) => ({
+=======
+    .then((arr) =>
+      console.log(
+        "\x1b[32m",
+        `\nDatabase (MySQL): Successfully seeded birdList with ${arr.length} entries!\n`,
+        "\x1b[37m"
+      )
+    )
+    .then(() => Promise.all(dummyWeather.map(weather => WeatherForecast.create(weather))))
+    .then((arr) =>
+      console.log(
+        "\x1b[32m",
+        `\nDatabase (MySQL): Successfully seeded weatherForecasts with ${arr.length} entries!\n`,
+        "\x1b[37m"
+      )
+    )
+    .then(() =>{
+      const parkCodesData = Object.entries(parkCodes).map(([code, title]) =>({
+>>>>>>> 186a6a00ea7ce8adaccc844452b027a4f9f03fc2
         code,
         title,
       }));

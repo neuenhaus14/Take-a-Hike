@@ -21,6 +21,7 @@ module.exports = {
         "ecmaVersion": "latest",
         "sourceType": "module"
     },
+
     rules: {
         'eol-last': 'error',
         // Indentation
@@ -88,5 +89,14 @@ module.exports = {
         'react/jsx-one-expression-per-line' : 0,
         'import/no-extraneous-dependencies': 0,
         'jsx-a11y/click-events-have-key-events': 0,
-      }
+        "no-console": 0,
+        "max-len": 0,
+        "camelcase": 0,
+        "no-param-reassign": 0,
+        "react/prop-types": 0,
+        "react/no-array-index-key": 0,
+        "react/jsx-one-expression-per-line": 0,
+        "no-underscore-dangle": 0,  
     }
+    }
+

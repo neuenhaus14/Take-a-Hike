@@ -13,13 +13,13 @@ import UserProfile from './UserProfile.jsx';
 import BirdingCheckList from './BirdingCheckList.jsx';
 import PackingList from './PackingList.jsx';
 import Login from './Login.jsx';
-
 import UserTrips from './UserTrips.jsx';
 import BirdProfile from './BirdProfile.jsx';
 import TripCreator from './TripCreator.jsx';
 import Weather from './Weather.jsx';
 import NationalParksList from './nationalParksList';
 import NationalParkProfile from './nationalParksListProfile.jsx';
+import Friends from './Friends.jsx';
 
 const App = () => {
   const [trailList, setTrailList] = useState([]);
@@ -97,6 +97,7 @@ const App = () => {
           <Route path="trip-creator" element={<TripCreator />}>
             <Route path="packing-list" element={<PackingList />} />
             <Route path="trails-list" element={<TrailsList />} />
+            <Route path="friends/:userId" element={<Friends />} />
           </Route>
           <Route path="bird-profile" element={<BirdProfile />} />
         </Route>
