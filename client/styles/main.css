@@ -271,6 +271,8 @@ body {
 
 /* WEATHER COMPONENT */
 .current-forecast, .current-date {
+  color: black;
+  font-size: 16px;
   text-align: center;
   margin: auto;
   padding-bottom: 10px;
@@ -282,21 +284,24 @@ body {
   border: 1px solid lightgray;
   margin-bottom: 25px;
   text-align: center;
-  border-radius: 3px;
+  border-radius: 4px;
+  border: solid darkgrey 1px;
 }
 .info-container-top {
-  padding-top: 5px;
+  padding-top: 10px;
+  padding-bottom: 5px;
 }
 
 .info-container-bottom {
-  padding-bottom: 5px;
+  padding-bottom: 10px;
+  padding-top: 5px;
 }
 
 .weather-info {
   margin-left: 20px;
   margin-right: 20px;
   font-weight: 500;
-  font-family: "New Century Schoolbook";
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .add-to-trip{
@@ -304,8 +309,50 @@ body {
   margin-right: 10px;
 }
 
-/*.future-forecast {*/
-  
+.weather-field {
+  display: inline-block;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.weather-select {
+  position: relative;
+  width: 165px;
+  margin-top: 5px;
+  border-radius: 7px;
+  border: solid dodgerblue 2px;
+  height: 30px;
+}
+
+.weather-box {
+  text-align: center;
+  background-color: #e6e6e6;
+  width: 100%;
+  border: solid black 2px;
+}
+
+.weather-submit1 {
+  display: inline-block;
+  margin-right: 30px;
+  margin-top: 10px;
+}
+
+.weather-submit2 {
+  display: inline-block;
+  margin-top: 10px;
+  margin-left: 35px;
+}
+
+.weather-explanation {
+  font-weight: bolder;
+  margin-bottom: 15px;
+  color: black;
+  font-size: 19px;
+}
+
+.weather-text {
+  padding: 7px;
+}
 
 .spinner img{
   display: block;

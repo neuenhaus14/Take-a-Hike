@@ -1,18 +1,21 @@
-const axios = require('axios');
-const sequelize = require('sequelize');
-const express = require('express');
-
-const path = require('path');
-const passport = require('passport');
-const dotenv = require('dotenv');
+/* eslint-disable camelcase */
+/* eslint-disable object-shorthand */
+const axios = require("axios");
+const sequelize = require("sequelize");
+const express = require("express");
+const path = require("path");
+const passport = require("passport");
+const dotenv = require("dotenv");
 const session = require('express-session');
-const { BirdList } = require('./database/models/birdList.js');
-const { BirdSightings } = require('./database/models/birdSightings.js');
-const { PackingLists } = require('./database/models/packingLists');
-const { PackingListItems } = require('./database/models/packingListItems');
-const { joinFriends } = require('./database/models/joinFriends');
-const { Comments } = require('./database/models/comments');
+const { BirdList } = require("./database/models/birdList.js");
+const { BirdSightings } = require("./database/models/birdSightings.js");
+const { PackingLists } = require("./database/models/packingLists");
+const { PackingListItems } = require("./database/models/packingListItems");
+const { joinFriends } = require("./database/models/joinFriends");
+const { Comments } = require("./database/models/comments");
 const { WeatherForecast } = require('./database/models/weatherForecast.js');
+const { joinWeatherCreateTrips } = require('./database/models/joinWeatherCreateTrips.js');
+
 const {NationalParks} = require('./database/models/nationalParks.js')
 const cors = require('cors');
 
@@ -21,11 +24,11 @@ const cors = require('cors');
 const router = express.Router();
 
 
-const session = require("express-session");
+// const session = require("express-session");
 require("./middleware/auth.js");
 const { cloudinary } = require("./utils/coudinary");
 const { Users } = require("./database/models/users");
-const { UserTrips, Trips, UserCreatedTrips } = require("./database/models/userTrips"); 
+const { UserTrips, Trips, UserCreatedTrips } = require("./database/models/userTrips");
 
 dotenv.config({
   path: path.resolve(__dirname, '../.env'),
@@ -120,20 +123,17 @@ app.get('/api/weather/:region/:selectDay', (req, res) => {
 
 // request handler for weatherForecasts table
 app.post('/api/weatherForecasts', (req, res) => {
-  const {
-    userId, avgTemp, highTemp, lowTemp, condition, region, date, unique_id, rain,
-  } = req.body;
-  console.log();
+  const { userId, avgTemp, highTemp, lowTemp, condition, region, date, unique_id, rain } = req.body;
   WeatherForecast.create({
-    userId,
-    unique_id,
-    avgTemp,
-    highTemp,
-    lowTemp,
-    rain,
-    condition,
-    region,
-    date,
+    userId: userId,
+    unique_id: unique_id,
+    avgTemp: avgTemp,
+    highTemp: highTemp,
+    lowTemp: lowTemp,
+    rain: rain,
+    condition: condition,
+    region: region,
+    date: date,
   })
     .then((created) => res.status(201).send(created))
     .then((err) => console.log('Could not POST forecast', err));
@@ -365,12 +365,45 @@ app.post('/profile/userTrips', (req, res) => {
         console.error(err, 'Something went wrong');
         res.sendStatus(500);
       });
-  })
+  });
+
+////////////////// REQUEST HANDLERS WORKING IN WEATHER COMPONENT ///////////////
+
+// GET all of the logged in user's trips (for weather component)
+app.get('/api/createTrip/:userId', (req, res) => {
+  const { userId } = req.params;
+  UserCreatedTrips.findAll({ where: { userId: userId } })
+    .then((response) => {
+      res.status(200);
+      res.send(response);
+    })
+    .catch((err) => console.error(err));
+});
+
+// POST the weather forecast id and user id to joinWeatherCreateTable
+app.post('/api/joinWeatherCreateTrips', (req, res) => {
+  const { userId, tripId, unique_id, weatherId } = req.body;
+  console.log(req.body);
+  // userId and tripId and unique_id
+  joinWeatherCreateTrips.findOne({ where: { userId: userId, tripId: tripId, unique_id: unique_id, weatherId: weatherId } })
+    .then((found) => {
+      if (!found) {
+        joinWeatherCreateTrips.create({
+          userId: userId,
+          tripId: tripId,
+          unique_id: unique_id,
+          weatherId: weatherId,
+        })
+          .then((results) => res.status(201).send(results))
+          .catch((err) => console.error(err));
+      }
+    })
+    .catch((err) => console.error(err));
+});
 
 // using the UserTrips model, create a new entry in the userTrips table
 
 /// ////////////////////////////////////////////////////////////////////////////
-
 
 /// ///////////////////////////////////////////////////////////Bird Sightings
 
@@ -458,8 +491,8 @@ app.get('/api/birdList/search', async (req, res) => {
   }
 });
 
-// GET req for wiki link for all rendered bird names
-app.get('/api/wiki/:birdName', async (req, res) => {
+//GET req for wiki link for all rendered bird names
+app.get("/api/wiki/:birdName", async (req, res) => {
   try {
     const { birdName } = req.params;
     const wikiApiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=info&inprop=url&titles=${encodeURIComponent(
@@ -486,8 +519,8 @@ app.get('/api/wiki/:birdName', async (req, res) => {
 /// ////////////////////////////////////////////////////////////////////////////
 /// ////////////////////////////////////////////////////Bird Sightings Routes
 
-// GET for checking the watchlist
-app.get('/api/birdsightings/watchlist', async (req, res) => {
+//GET for checking the watchlist
+app.get("/api/birdsightings/watchlist", async (req, res) => {
   try {
     const { bird_id, user_id } = req.query;
 
