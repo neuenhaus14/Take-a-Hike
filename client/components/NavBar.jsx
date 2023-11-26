@@ -27,7 +27,7 @@ const NavBar = () => {
         }}
       >
         |{' '}
-        <Link to="/trailslist">Trails List</Link> |{' '}
+        <Link to="/trailslist">Bike Trails</Link> |{' '}
         {/* <Link to="/trailprofile/1">Trail Profile</Link> |{' '} */}
         <Link to="/weather">Weather</Link> |{' '}
         <Link to="/quartermaster">Quartermaster</Link> |{' '}

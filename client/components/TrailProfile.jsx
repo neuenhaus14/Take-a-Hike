@@ -3,6 +3,7 @@ import { useParams, useLoaderData } from 'react-router-dom';
 import axios from 'axios';
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
+import NavBar from './NavBar.jsx';
 import Comments from './Comments.jsx';
 import PhotoPost from './PhotoPost.jsx';
 
@@ -107,7 +108,7 @@ const TrailProfile = ({ trailList }) => {
       >
         UPLOAD PHOTOS
       </button> */}
-
+      
       <Fab
         className="fab"
         // style={{ marginTop: 200 }}
@@ -120,6 +121,9 @@ const TrailProfile = ({ trailList }) => {
           }}
         />
       </Fab>
+      <nav>
+        <NavBar />
+      </nav>
       {/* ////////////////////////// */}
       <figure className="profile-card">
         <img src={`${displayTrail.thumbnail}`} />

@@ -97,9 +97,8 @@ const App = () => {
           <Route path="trip-creator" element={<TripCreator />}>
             <Route path="packing-list" element={<PackingList />} />
             <Route path="trails-list" element={<TrailsList />} />
-            <Route path="friends/:userId" element={<Friends />} />
           </Route>
-          <Route path="bird-profile" element={<BirdProfile />} />
+          <Route path="friends/:userId" element={<Friends />} />
         </Route>
       </Route>,
     ),
