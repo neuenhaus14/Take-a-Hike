@@ -17,7 +17,6 @@ const { WeatherForecast } = require('./database/models/weatherForecast.js');
 const { joinWeatherCreateTrips } = require('./database/models/joinWeatherCreateTrips.js');
 
 const {NationalParks} = require('./database/models/nationalParks.js')
-const cors = require('cors');
 
 
 // const { default: PackingList } = require("../client/components/PackingList");
@@ -783,17 +782,69 @@ app.delete('/delete-comment/:user_id/:id/:trail_id', (req, res) => {
     });
 });
 
-app.put('/update-like/:commentId', (req, res) => {
+app.put('/update-like/:commentId/:userId', (req, res) => {
   const { commentId } = req.params;
-  const { likeStatus } = req.body;
+  const { userId } = req.params;
+  // const { likeStatus } = req.body;
 
-  const incrementValue = likeStatus ? 1 : -1;
-
-  Comments.increment('likes', { by: incrementValue, where: { id: commentId } })
-    .then(() => {
-      const action = likeStatus ? 'added to' : 'removed from';
-      console.log(`${action} likes`);
-      res.sendStatus(201);
+  Likes.findOne({ where: { user_id: userId, comment_id: commentId } })
+    .then((likeEntry) => {
+      if (!likeEntry) {
+        Likes.create({
+          user_id: userId,
+          comment_id: commentId,
+          like: true,
+        })
+          .then(() => {
+            Likes.findAll({ where: { comment_id: commentId, like: true } })
+              .then((comments) => {
+                console.log('comments in first', comments);
+                Comments.update({ likes: comments.length }, { where: { id: commentId } })
+                  .then(() => {
+                    console.log('success');
+                    res.sendStatus(200);
+                  })
+                  .catch((error) => {
+                    console.error('Error updating comment:', error);
+                    res.status(500).send('Internal Server Error');
+                  });
+              })
+              .catch((error) => {
+                console.error('Error getting likes:', error);
+                res.status(500).send('Internal Server Error');
+              });
+          })
+          .catch(() => {
+            console.log('not successfully created');
+            res.sendStatus(404);
+          });
+      } else {
+        console.log(likeEntry);
+        Likes.update({ like: !likeEntry.like }, { where: { user_id: userId, comment_id: commentId } })
+          .then(() => {
+            Likes.findAll({ where: { comment_id: commentId, like: true } })
+              .then((comments) => {
+                console.log('comments in second', comments);
+                Comments.update({ likes: comments.length }, { where: { id: commentId } })
+                  .then(() => {
+                    console.log('success');
+                    res.sendStatus(200);
+                  })
+                  .catch((error) => {
+                    console.error('Error updating comment:', error);
+                    res.status(500).send('Internal Server Error');
+                  });
+              })
+              .catch((error) => {
+                console.error('Error getting likes:', error);
+                res.status(500).send('Internal Server Error');
+              });
+          })
+          .catch(() => {
+            console.log('not successfully updated');
+            res.sendStatus(404);
+          });
+      }
     })
     .catch((err) => console.error(err, 'added to likes went wrong'));
 });

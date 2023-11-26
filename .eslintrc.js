@@ -98,6 +98,8 @@ module.exports = {
         "react/jsx-one-expression-per-line": 0,
 
         "no-underscore-dangle": 0,  
+        "no-unused-vars": 0,
+        "no-plusplus": 0
     }
     }
 
