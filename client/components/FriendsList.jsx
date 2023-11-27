@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 
 const FriendsList = ({ friends, userId, updateFriendList }) => {
-  const currentUser = userId;
+  const currentUser = userId.userId;
 
   const removeFriends = (friend) => {
     console.log('friend', friend);

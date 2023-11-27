@@ -15,6 +15,7 @@ const { joinFriends } = require('./database/models/joinFriends');
 const { Comments } = require('./database/models/comments');
 const { WeatherForecast } = require('./database/models/weatherForecast.js');
 const { joinWeatherCreateTrips } = require('./database/models/joinWeatherCreateTrips.js');
+const { Likes } = require('./database/models/likes.js')
 
 const { NationalParks } = require('./database/models/nationalParks.js');
 
@@ -52,9 +53,9 @@ app.use(
 );
 
 if (process.env.ENV === 'prod') {
-  const HOST = 'ec2-18-217-195-221.us-east-2.compute.amazonaws.com';
+  var HOST = 'ec2-18-217-195-221.us-east-2.compute.amazonaws.com';
 } else {
-  const HOST = 'localhost';
+  var HOST = 'localhost';
 }
 // Reorder passport.session() to come after session()
 app.use(passport.initialize());

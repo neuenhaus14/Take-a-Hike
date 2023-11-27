@@ -73,7 +73,7 @@ const TripCreator = () => {
       <h1> Trip Creator</h1>
       <div className="trip-creator-dropdown">
         {/* onchange invokes handleTripSelect */}
-        <select onChange={handleTripSelect}>
+        <select className="trips-select is-info" onChange={handleTripSelect}>
           <option value="">Select a trip</option>
           {/* map through the userTrails from useEffect grab to populate options for drop down */}
           {userTrails.map((trip) => (
@@ -87,6 +87,7 @@ const TripCreator = () => {
         <input 
           type="text" 
           placeholder="Name your trip!"
+          className="trips-select is-info"
           id="created-trip-name"
           value={tripName}
           onChange={(event) => {
@@ -98,6 +99,7 @@ const TripCreator = () => {
         <input 
           type="text" 
           placeholder="Description for your trip!"
+          className="trips-select is-info"
           id="created-trip-description"
           // trip description with a val of the tripDescription state, hook into it on change and set it 
           value={tripDescription}
