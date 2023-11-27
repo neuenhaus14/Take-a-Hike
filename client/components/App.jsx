@@ -89,6 +89,7 @@ const App = () => {
         <Route
           path="nationalParkProfile/:id"
           element={<NationalParkProfile />}
+          loader={getUserLoader}
         />
         <Route path="hiking-trails" element={<NationalParksList />} />
         <Route path="weather" element={<Weather />} />
