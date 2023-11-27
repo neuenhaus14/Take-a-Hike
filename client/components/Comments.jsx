@@ -5,10 +5,10 @@ import moment from 'moment';
 function Comments({ trail_id, user_id }) {
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([]);
-  // const [commentsUsers, setCommentsUsers] = useState([]);
   const [likeStatus, setLikeStatus] = useState(false);
   const [commentValue, setCommentValue] = useState('');
-  const [likes, setLikes] = useState(0);
+
+  const trailId = parseInt(trail_id, 10);
 
   // loads comments from database on page render
   useEffect(() => {
@@ -19,10 +19,6 @@ function Comments({ trail_id, user_id }) {
       })
       .catch((err) => console.error(err));
   }, [setComments]);
-
-  useEffect(() => {
-    console.log(likes);
-  }, [setLikes]);
 
   // renders comments on page after enter/post button is clicked
   const updateCommentList = () => {
@@ -51,21 +47,21 @@ function Comments({ trail_id, user_id }) {
     }
   };
 
-  const updateLikes = (com) => {
-    axios.put(`/update-like/${com.id}`, {
-      likeStatus: !likeStatus,
-    })
+  // updates likes in db by user so user can only like or dislike ONCE
+  const updateLikes = (comId) => {
+    console.log(comId, user_id, !likeStatus);
+    axios.put(`/update-like/${comId}/${user_id}`)
       .then(() => {
-        setLikeStatus(!likeStatus);
-        setLikes(com.likes);
-        console.log('Like status updated!', likeStatus);
+        // setLikeStatus(!likeStatus);
+        updateCommentList();
+        console.log('Like status updated!');
       })
       .catch((err) => console.error(err));
   };
 
   // deletes the comments only by the userId owner
   const deleteComment = (id) => {
-    axios.delete(`/delete-comment/${user_id}/${id}/${trail_id}`)
+    axios.delete(`/delete-comment/${user_id}/${id}/${trailId}`)
       .then((response) => {
         console.log('deleted', response);
         updateCommentList();
@@ -92,7 +88,7 @@ function Comments({ trail_id, user_id }) {
           <div id="comments" key={index}>
             <span><b> {com.username.slice(0, -10)}</b></span>
             <span> {com.comment} </span>
-            <button type="button" onClick={() => updateLikes(com)}>❤️ {com.likes}</button>
+            <button id="likeButton" type="button" value={com.id} onClick={(e) => updateLikes(e.target.value)}>❤️ {com.likes}</button>
             <button type="button" onClick={() => deleteComment(com.id)}> 🗑️ </button>
             <p>{moment(com.createdAt).format('ll')}</p>
             <br />
