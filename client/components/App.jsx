@@ -1,25 +1,27 @@
 // Import Dependencies
-import React, { useState, useEffect } from 'react';
+import React, {
+  useState, useEffect, lazy, Suspense, 
+} from 'react';
 import axios from 'axios';
 import {
   Route, createHashRouter, createRoutesFromChildren, RouterProvider, 
 } from 'react-router-dom';
 
-// import './styles/main.css';
-import TrailsList from './TrailsList.jsx';
-import Quartermaster from './Quartermaster.jsx';
-import TrailProfile from './TrailProfile.jsx';
-import UserProfile from './UserProfile.jsx';
-import BirdingCheckList from './BirdingCheckList.jsx';
-import PackingList from './PackingList.jsx';
-import Login from './Login.jsx';
-import UserTrips from './UserTrips.jsx';
-import BirdProfile from './BirdProfile.jsx';
-import TripCreator from './TripCreator.jsx';
-import Weather from './Weather.jsx';
-import NationalParksList from './nationalParksList';
-import NationalParkProfile from './nationalParksListProfile.jsx';
-import Friends from './Friends.jsx';
+const TrailsList = lazy(() => import('./TrailsList'));
+const Quartermaster = lazy(() => import('./Quartermaster'));
+const TrailProfile = lazy(() => import('./TrailProfile'));
+const UserProfile = lazy(() => import('./UserProfile'));
+const BirdingCheckList = lazy(() => import('./BirdingCheckList'));
+const PackingList = lazy(() => import('./PackingList'));
+const Login = lazy(() => import('./Login'));
+const UserTrips = lazy(() => import('./UserTrips'));
+const BirdProfile = lazy(() => import('./BirdProfile'));
+const TripCreator = lazy(() => import('./TripCreator'));
+const Weather = lazy(() => import('./Weather'));
+const NationalParksList = lazy(() => import('./nationalParksList'));
+const NationalParkProfile = lazy(() => import('./nationalParksListProfile'));
+const Friends = lazy(() => import('./Friends'));
+const UserBirdChecklist = lazy(() => import('./UserBirdChecklist'));
 
 const App = () => {
   const [trailList, setTrailList] = useState([]);
@@ -87,17 +89,19 @@ const App = () => {
         <Route
           path="nationalParkProfile/:id"
           element={<NationalParkProfile />}
+          loader={getUserLoader}
         />
         <Route path="hiking-trails" element={<NationalParksList />} />
         <Route path="weather" element={<Weather />} />
         <Route path="quartermaster" element={<Quartermaster />} />
         <Route path="birdingchecklist" element={<BirdingCheckList />} />
         <Route path="profile" element={<UserProfile />} loader={getUserLoader}>
-          <Route path="user-trips" element={<UserTrips />} />
-          <Route path="trip-creator" element={<TripCreator />}>
-            <Route path="packing-list" element={<PackingList />} />
-            <Route path="trails-list" element={<TrailsList />} />
+          <Route path="user-trips/:userId" element={<UserTrips />} />
+          <Route path="trip-creator/:userId" element={<TripCreator />}>
+            <Route path="packing-list/:userId" element={<PackingList />} />
+            <Route path="trails-list/:userId" element={<TrailsList />} />
           </Route>
+          <Route path="bird-checklist/:userId" element={<UserBirdChecklist />} />
           <Route path="friends/:userId" element={<Friends />} />
         </Route>
       </Route>,
@@ -115,7 +119,9 @@ const App = () => {
           Trail Feathers
         </h1>
       </div>
-      <RouterProvider router={router} />
+      <Suspense fallback={<div>Loading...</div>}>
+        <RouterProvider router={router} />
+      </Suspense>
     </div>
   );
 };

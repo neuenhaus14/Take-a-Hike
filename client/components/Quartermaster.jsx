@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy } from "react";
 import axios from "axios";
 import { Link, Outlet } from "react-router-dom";
-import PackingList from "./PackingList.jsx";
-import NavBar from './NavBar.jsx';
 //mport UserProfile from "./UserProfile.jsx";
+const PackingList = lazy(() => import('./PackingList'));
+const NavBar = lazy(() => import('./NavBar'));
 
 const Quartermaster = () => {
   // assign the state variable to an object with listName and items, and array

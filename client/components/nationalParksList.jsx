@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy } from 'react';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import axios from 'axios';
-import NationalParksEntry from './nationalParksEntry';
-import NavBar from './NavBar';
+
+const NationalParksEntry = lazy(() => import('./nationalParksEntry'));
+const NavBar = lazy(() => import('./NavBar'));
 
 const NationalParksList = () => {
   const [location, setLocation] = useState({ lat: '', lon: '' });
@@ -10,10 +11,10 @@ const NationalParksList = () => {
   const [mapsLibraryLoaded, setMapsLibraryLoaded] = useState(false);
   const [nationalParkList, setNationalParkList] = useState([]);
   const [loadingParks, setLoadingParks] = useState(false);
+  const [isMounted, setIsMounted] = useState(true);
   
   useEffect(() => {
     const initMap = () => setMapsLibraryLoaded(true);
-
     const fetchMapsURL = async () => {
       try {
         const response = await fetch('/api/google-maps-library');
@@ -48,41 +49,45 @@ const NationalParksList = () => {
       console.error('error updating:', err);
     }
   };
-  
-  const handleGetNationalParks = () => {
-    setLoadingParks(true);
+
+  useEffect(() => {
     updateParksTable();
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
+
+  const handleGetNationalParks = (loc) => {
+    setLoadingParks(true);
     axios.get('/parksInRadius', {
-      params: {
-        lat: location.lat,
-        long: location.lon,
-      },
+      params: { lat: loc.lat, long: loc.lon },
     })
       .then((response) => {
         setNationalParkList(response.data);
-        console.log(response);
+        localStorage.setItem('nationalParkData', JSON.stringify(response.data));
       })
       .catch((err) => {
         console.error('error in axios get parks in radius: ', err);
       })
-      .then(() => {
+      .finally(() => {
         setLoadingParks(false);
       });
   };
 
   const handleLocationInput = (e) => {
     const { name, value } = e.target;
-    setLocation((location) => ({ ...location, [name]: value, [name]: value }));
+    setLocation((loc) => ({ ...loc, [name]: value }));
   };
 
   const userLocationGrab = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setLocation({
+          setLocation((previousLoc) => ({
+            ...previousLoc,
             lat: position.coords.latitude,
             lon: position.coords.longitude,
-          });
+          }));
           handleGetNationalParks({
             lat: position.coords.latitude,
             lon: position.coords.longitude,
@@ -110,8 +115,8 @@ const NationalParksList = () => {
       });
   };
 
-  const handleChange = (address) => {
-    setAddress(address);
+  const handleChange = (addr) => {
+    setAddress(addr);
   };
 
   const handleSubmitLocation = (e) => {
@@ -121,6 +126,19 @@ const NationalParksList = () => {
       lon: location.lon,
     });
   };
+
+  useEffect(() => {
+    const pastList = localStorage.getItem('nationalParkData');
+    if (pastList) {
+      setNationalParkList(JSON.parse(pastList));
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
 
   return (
     <div className="trails-list">

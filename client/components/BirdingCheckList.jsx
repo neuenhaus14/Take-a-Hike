@@ -1,68 +1,69 @@
 // Import Dependencies
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import NavBar from "./NavBar.jsx";
-import BirdProfile from "./BirdProfile.jsx";
+import React, { useEffect, useState, lazy } from 'react';
+import axios from 'axios';
+
+const NavBar = lazy(() => import('./NavBar'));
+const BirdProfile = lazy(() => import('./BirdProfile'));
 
 const BirdingCheckList = () => {
-  const [birdSearch, setBirdSearch] = useState("");
+  const [birdSearch, setBirdSearch] = useState('');
   const [birdList, setBirdList] = useState([]);
   const [userId, setUserId] = useState();
-  const [userName, setUserName] = useState("");
+  const [userName, setUserName] = useState('');
   const [birdSightings, setBirdSightings] = useState([]);
-  const [selectedState, setSelectedState] = useState("LA");
+  const [selectedState, setSelectedState] = useState('LA');
 
   const states = [
-    "AL",
-    "AK",
-    "AZ",
-    "AR",
-    "CA",
-    "CO",
-    "CT",
-    "DE",
-    "FL",
-    "GA",
-    "HI",
-    "ID",
-    "IL",
-    "IN",
-    "IA",
-    "KS",
-    "KY",
-    "LA",
-    "ME",
-    "MD",
-    "MA",
-    "MI",
-    "MN",
-    "MS",
-    "MO",
-    "MT",
-    "NE",
-    "NV",
-    "NH",
-    "NJ",
-    "NM",
-    "NY",
-    "NC",
-    "ND",
-    "OH",
-    "OK",
-    "OR",
-    "PA",
-    "RI",
-    "SC",
-    "SD",
-    "TN",
-    "TX",
-    "UT",
-    "VT",
-    "VA",
-    "WA",
-    "WV",
-    "WI",
-    "WY",
+    'AL',
+    'AK',
+    'AZ',
+    'AR',
+    'CA',
+    'CO',
+    'CT',
+    'DE',
+    'FL',
+    'GA',
+    'HI',
+    'ID',
+    'IL',
+    'IN',
+    'IA',
+    'KS',
+    'KY',
+    'LA',
+    'ME',
+    'MD',
+    'MA',
+    'MI',
+    'MN',
+    'MS',
+    'MO',
+    'MT',
+    'NE',
+    'NV',
+    'NH',
+    'NJ',
+    'NM',
+    'NY',
+    'NC',
+    'ND',
+    'OH',
+    'OK',
+    'OR',
+    'PA',
+    'RI',
+    'SC',
+    'SD',
+    'TN',
+    'TX',
+    'UT',
+    'VT',
+    'VA',
+    'WA',
+    'WV',
+    'WI',
+    'WY',
   ];
 
   useEffect(() => {
@@ -72,7 +73,7 @@ const BirdingCheckList = () => {
       .then((response) => {
         setBirdList(response.data);
       })
-      .catch((err) => console.error("ERROR:", err));
+      .catch((err) => console.error('ERROR:', err));
 
     // Fetch bird sightings from the server
     // axios
@@ -82,13 +83,13 @@ const BirdingCheckList = () => {
 
     // Fetch user profile
     axios
-      .get("/profile")
+      .get('/profile')
       .then((profile) => {
         const user = profile.data;
         setUserId(user._id);
         setUserName(user.fullName);
       })
-      .catch((err) => console.error("ERROR:", err));
+      .catch((err) => console.error('ERROR:', err));
   }, [selectedState]);
 
   const handleBirdSearchInput = (event) => setBirdSearch(event.target.value);
@@ -99,14 +100,14 @@ const BirdingCheckList = () => {
     try {
       // Fetch bird list from the server based on the search input and selected state
       const response = await axios.get(
-        `/api/birdList/search?state=${selectedState}&search=${birdSearch}`
+        `/api/birdList/search?state=${selectedState}&search=${birdSearch}`,
       );
       setBirdList(response.data);
 
       // clear the search input box
-      setBirdSearch("");
+      setBirdSearch('');
     } catch (error) {
-      console.error("Error fetching bird list:", error.message);
+      console.error('Error fetching bird list:', error.message);
     }
   };
 

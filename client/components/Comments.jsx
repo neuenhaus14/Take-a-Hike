@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import moment from 'moment';
 
-function Comments({ trail_id, user_id }) {
+const Comments = ({ trail_id, user_id }) => {
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([]);
   const [likeStatus, setLikeStatus] = useState(false);
   const [commentValue, setCommentValue] = useState('');
 
-  const trailId = parseInt(trail_id, 10);
+  const trailId = parseInt(trail_id);
 
   // loads comments from database on page render
   useEffect(() => {

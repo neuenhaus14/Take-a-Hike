@@ -7,14 +7,20 @@ require('dotenv').config();
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const { Users } = require('../database/models/users.js');
-const PORT = process.env.PORT;
 
+const { PORT } = process.env;
+
+if (process.env.ENV === 'prod') {
+  var HOST = 'ec2-18-217-195-221.us-east-2.compute.amazonaws.com';
+} else {
+  var HOST = 'localhost';
+}
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: `http://localhost:${PORT}/auth/google/callback`,
+      callbackURL: `http://${HOST}:${PORT}/auth/google/callback`,
       passReqToCallback: true,
     },
     async (req, accessToken, refreshToken, profile, done) => {
@@ -40,8 +46,8 @@ passport.use(
           console.error('Error logging on', err);
           return done(err);
         });
-    }
-  )
+    },
+  ),
 );
 
 passport.serializeUser((user, done) => {
@@ -51,4 +57,3 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((user, done) => {
   done(null, user);
 });
-

@@ -1,8 +1,9 @@
 // Import Dependencies
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, lazy } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import FriendsList from './FriendsList';
+
+const FriendsList = lazy(() => import('./FriendsList'));
 
 // Create Functional Component
 const Friends = () => {

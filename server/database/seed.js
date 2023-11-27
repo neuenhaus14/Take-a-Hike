@@ -11,7 +11,7 @@ const { PackingListItems } = require('./models/packingListItems.js');
 const { Users } = require('./models/users.js');
 const { NationalParks, NationalParkCodes } = require('./models/nationalParks.js');
 const parkCodes = require('./data/parkCodes.json');
-const birdsOfLA = require('./data/eBirdData.js');
+// const birdsOfLA = require('./data/eBirdData.js');
 const { BirdList } = require('./models/birdList.js');
 const { BirdSightings } = require('./models/birdSightings.js');
 //import new models to seed
@@ -19,7 +19,7 @@ const { Trips, UserTrips, UserCreatedTrips } = require('./models/userTrips.js');
 const { joinFriends } = require('./models/joinFriends');
 const { Comments } = require('./models/comments');
 const { WeatherForecast } = require('./models/weatherForecast.js');
-
+const { Likes } = require('./models/likes.js');
 const { joinWeatherCreateTrips } = require('./models/joinWeatherCreateTrips.js');
 
 db.options.logging = false;
@@ -101,18 +101,23 @@ const seedSqlize = () => {
       '\nDatabase (MySQL): \'National Parks\' table successfully created!',
     ))      
     .then(() => WeatherForecast.sync())
-    .then(() =>
-      console.log(
-        "\x1b[36m",
-        "\nDatabase (MySQL): 'WeatherForecasts' table successfully created!"
-      )
-    )
+    .then(() => console.log(
+      '\x1b[36m',
+      '\nDatabase (MySQL): \'WeatherForecasts\' table successfully created!',
+    ))
     .then(() => joinWeatherCreateTrips.sync())
     .then(() => {
       console.log(
-        "\x1b[36m",
-        "\nDatabase (MySQL): 'joinWeatherCreateTrips' table successfully created!"
-      )
+        '\x1b[36m',
+        '\nDatabase (MySQL): \'joinWeatherCreateTrips\' table successfully created!',
+      );
+    })
+    .then(() => Likes.sync())
+    .then(() => {
+      console.log(
+        '\x1b[36m',
+        '\nDatabase (MySQL): \'Likes\' table successfully created!',
+      );
     })
 
     .then(() => Promise.all(dummyUserData.map((txn) => Users.create(txn))))
@@ -137,18 +142,6 @@ const seedSqlize = () => {
     .then((arr) => console.log(
       '\x1b[32m',
       `\nDatabase (MySQL): Successfully seeded trails with ${arr.length} entries!\n`,
-      '\x1b[37m',
-    ))
-    .then(() => Promise.all(birdsOfLA.map((bird) => BirdList.create(bird))))
-    .then((arr) => console.log(
-      '\x1b[32m',
-      `\nDatabase (MySQL): Successfully seeded birdList with ${arr.length} entries!\n`,
-      '\x1b[37m',
-    ))
-    .then(() => Promise.all(birdsOfLA.map((bird) => BirdList.create(bird))))
-    .then((arr) => console.log(
-      '\x1b[32m',
-      `\nDatabase (MySQL): Successfully seeded birdList with ${arr.length} entries!\n`,
       '\x1b[37m',
     ))
     // .then(() => Promise.all(dummyWeather.map((weather) => WeatherForecast.create(weather))))

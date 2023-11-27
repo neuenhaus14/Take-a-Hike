@@ -1,8 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 
-function FriendsList({ friends, userId, updateFriendList }) {
-  const currentUser = userId;
+const FriendsList = ({ friends, userId, updateFriendList }) => {
+  const currentUser = userId.userId;
 
   const removeFriends = (friend) => {
     console.log('friend', friend);
@@ -27,6 +27,6 @@ function FriendsList({ friends, userId, updateFriendList }) {
       ))}
     </div>
   );
-}
+};
 
 export default FriendsList;

@@ -3,10 +3,12 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable array-callback-return */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy } from 'react';
 import axios from 'axios';
-import NavBar from './NavBar';
-import WeatherForecast from './WeatherForecast';
+// import NavBar from './NavBar';
+// import WeatherForecast from './WeatherForecast';
+const NavBar = lazy(() => import('./NavBar'));
+const WeatherForecast = lazy(() => import('./WeatherForecast'));
 
 const days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 // TODO: weather already saved to db with created trip id => get with Daniel on how we want that rendered on the profile
@@ -71,7 +73,7 @@ const Weather = () => {
               alert(message);
             }
             axios.post('/api/joinWeatherCreateTrips', {
-              userId: userId,
+              userId,
               tripId: singleTripId,
               unique_id: uniqueId,
               weatherId: data.id,
