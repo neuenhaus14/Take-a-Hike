@@ -1,17 +1,19 @@
 // Import Dependencies
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 import FriendsList from './FriendsList';
 
 // Create Functional Component
-function Friends({ userId }) {
+const Friends = () => {
   const [friendSearch, setFriendSearch] = useState('');
   const [friendSearchResults, setFriendSearchResults] = useState(false);
   const [resUsers, setResUsers] = useState([]);
   const [friendList, setFriendList] = useState([]);
   const [commentValue, setCommentValue] = useState('');
-
-  const currentUser = userId;
+  const userId = useParams();
+  console.log('userId in friends', userId);
+  const currentUser = userId.userId;
 
   // automatically loads the friend list if it exists
   useEffect(() => {

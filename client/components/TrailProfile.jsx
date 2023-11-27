@@ -1,7 +1,9 @@
 import React from 'react';
 import { useParams, useLoaderData } from 'react-router-dom';
+
 import Comments from './Comments';
 import NavBar from './NavBar';
+
 
 const TrailProfile = ({ trailList }) => {
   const userData = useLoaderData();
@@ -12,8 +14,10 @@ const TrailProfile = ({ trailList }) => {
   const trailId = parseInt(id);
 
   return (
+
     <div>
       <NavBar />
+
       <div className="trails">
         <figure className="profile-card">
           <img src={`${displayTrail.thumbnail}`} alt={displayTrail.id} />
