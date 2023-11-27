@@ -95,10 +95,14 @@ const UserCreatedTrips = db.define('userCreatedTrips', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  // tripLocation: { commented out but don't know if it should be included
-  //     type: DataTypes.STRING,
-  //     allowNull: true,
-  // },
+  tripLocation: { 
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  tripRating: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
   beginDate: {
     type: DataTypes.STRING,
     allowNull: true,

@@ -11,7 +11,7 @@ const { PackingListItems } = require('./models/packingListItems.js');
 const { Users } = require('./models/users.js');
 const { NationalParks, NationalParkCodes } = require('./models/nationalParks.js');
 const parkCodes = require('./data/parkCodes.json');
-const birdsOfLA = require('./data/eBirdData.js');
+// const birdsOfLA = require('./data/eBirdData.js');
 const { BirdList } = require('./models/birdList.js');
 const { BirdSightings } = require('./models/birdSightings.js');
 //import new models to seed
