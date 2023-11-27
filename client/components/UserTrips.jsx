@@ -3,6 +3,7 @@ import axios from 'axios';
 import {
   Outlet, Link, useLocation, useParams, 
 } from 'react-router-dom';
+import WeatherForecast from './WeatherForecast';
 
 const UserTrips = () => {
   const [savedTrips, setSavedTrips] = useState([]);
@@ -56,9 +57,6 @@ const UserTrips = () => {
           .catch((err) => console.error('something went wrong when fetching weather forecast!', err));
       });
   };
-  useEffect(() => {
-    console.log('weatherForecast', weatherForecast);
-  }, [weatherForecast]);
 
   const searchTrip = () => {
     axios.get(`/profile/savedTrips/${selectedTripId}`)
@@ -79,7 +77,12 @@ const UserTrips = () => {
         setDisplayedTrip(fetchedTrip.data);
       });
   };
-
+  // useEffect(
+  //   () => {
+  //     console.log('weatherForecast', weatherForecast);
+  //   }
+  //   , [weatherForecast],
+  // );
   return (
     <div className="userTrips-main">
       <form className="saved-userTrips-form box">
@@ -120,6 +123,26 @@ const UserTrips = () => {
               <h5 className="trip-description">Trip description: {displayedTrip.tripDescription || 'n/a'}</h5>
               <h5 className="trip-start-date">Trip start date: {displayedTrip.beginDate || 'n/a'}</h5>
               <h5 className="trip-end-date">Trip end date: {displayedTrip.endDate || 'n/a'}</h5>
+            </div>
+            <div className="weather-forecast">
+              <h2 className="weather-forecast-header">Weather Forecast</h2>
+              <div className="weather-forecast-body">
+                <div className="weather-info">
+                  {weatherForecast.map((forecast) => (
+                    <div className="weather-forecast-info">
+                      <div className="weather-conditions">
+                        <div className="info-container-top">
+                          <span className="weather-info"> Average: {Math.floor(forecast.avgTemp)} °F</span>
+                          <span className="weather-info"> High: {Math.floor(forecast.highTemp)} °F</span>
+                          <span className="weather-info"> Low: {Math.floor(forecast.lowTemp)} °F</span>
+                        </div>
+                        <div className="info-container-bottom" />
+                      </div>
+                    </div>
+                    
+                  ))}
+                </div>
+              </div>
             </div>
           </figure>
         )

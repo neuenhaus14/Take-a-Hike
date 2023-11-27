@@ -7,22 +7,6 @@ import {
   Route, createHashRouter, createRoutesFromChildren, RouterProvider, 
 } from 'react-router-dom';
 
-// import './styles/main.css';
-// import TrailsList from './TrailsList.jsx';
-// import Quartermaster from './Quartermaster.jsx';
-// import TrailProfile from './TrailProfile.jsx';
-// import UserProfile from './UserProfile.jsx';
-// import BirdingCheckList from './BirdingCheckList.jsx';
-// import PackingList from './PackingList.jsx';
-// import Login from './Login.jsx';
-// import UserTrips from './UserTrips.jsx';
-// import BirdProfile from './BirdProfile.jsx';
-// import TripCreator from './TripCreator.jsx';
-// import Weather from './Weather.jsx';
-// import NationalParksList from './nationalParksList';
-// import NationalParkProfile from './nationalParksListProfile.jsx';
-// import Friends from './Friends.jsx';
-
 const TrailsList = lazy(() => import('./TrailsList'));
 const Quartermaster = lazy(() => import('./Quartermaster'));
 const TrailProfile = lazy(() => import('./TrailProfile'));
