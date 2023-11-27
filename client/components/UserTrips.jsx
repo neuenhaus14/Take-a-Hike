@@ -138,7 +138,7 @@ const UserTrips = () => {
                           <span className="weather-info"> Low: {Math.floor(forecast.lowTemp)} °F</span>
                           <span className="weather-info"> Chance of Rain: {forecast.rain}% </span>
                           <span className="weather-info"> Condition: {forecast.condition}</span>
-                          <span className="weather-info"> Date: {forecast.date} <span className="weather-info"> Region: {forecast.region}</span></span>
+                          <span className="weather-info"> Date: {forecast.date} </span>
                           <span className="weather-info"> Region: {forecast.region}</span>
                         </div>
                         <div className="info-container-bottom" />

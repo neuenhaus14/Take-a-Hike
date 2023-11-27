@@ -1,14 +1,8 @@
-
-import React, { useState, useEffect, lazy } from 'react';
+import React, { lazy } from 'react';
 import { useParams, useLoaderData } from 'react-router-dom';
-import axios from 'axios';
-import Fab from '@mui/material/Fab';
-import AddIcon from '@mui/icons-material/Add';
 
 const NavBar = lazy(() => import('./NavBar'));
 const Comments = lazy(() => import('./Comments'));
-const PhotoPost = lazy(() => import('./PhotoPost'));
-
 
 
 const TrailProfile = ({ trailList }) => {

@@ -11,9 +11,9 @@ const { Users } = require('../database/models/users.js');
 const { PORT } = process.env;
 
 if (process.env.ENV === 'prod') {
-  const HOST = 'ec2-18-217-195-221.us-east-2.compute.amazonaws.com';
+  var HOST = 'ec2-18-217-195-221.us-east-2.compute.amazonaws.com';
 } else {
-  const HOST = 'localhost';
+  var HOST = 'localhost';
 }
 passport.use(
   new GoogleStrategy(
