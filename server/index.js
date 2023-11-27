@@ -48,13 +48,18 @@ app.use(
   }),
 );
 
+if (process.env.ENV === 'prod') {
+  const HOST = 'ec2-18-217-195-221.us-east-2.compute.amazonaws.com';
+} else {
+  const HOST = 'localhost';
+}
 // Reorder passport.session() to come after session()
 app.use(passport.initialize());
 app.use(passport.session());
 
 // Create API Routes
-const successLoginUrl = `http://localhost:${PORT}/#/trailslist`;
-const errorLoginUrl = `http://localhost${PORT}/login/error`;
+const successLoginUrl = `http://${HOST}:${PORT}/#/trailslist`;
+const errorLoginUrl = `http://${HOST}:${PORT}/login/error`;
 
 // Auth Routes
 app.get(
