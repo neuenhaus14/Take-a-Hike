@@ -364,3 +364,20 @@ body {
   width: 15%;
   height: 15%;
 }
+
+ /* USER PROFILE STYLING */
+
+ .saved-userTrips-form {
+  text-align: center;
+  background-color: #e6e6e6;
+  width: 100%;
+  border: solid black 2px;
+}
+.trips-select {
+  position: relative;
+  width: 165px;
+  margin-top: 5px;
+  border-radius: 7px;
+  border: solid dodgerblue 2px;
+  height: 30px;
+}

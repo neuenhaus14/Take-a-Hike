@@ -63,40 +63,52 @@ const UserTrips = () => {
 
   return (
     <div className="userTrips-main">
-      <div className="premade-trip">
-        <select onChange={handleTripSelect}>
-          <option value="">Select a trip</option>
-          {savedTrips.map((trip) => (
-            <option key={trip.tripId} value={trip.tripId}>
-              {trip.tripName}
-            </option>
-          ))}
-        </select>
-        <button type="button" className="submit-selection" onClick={() => searchTrip(selectedTripId)}>
-          Show trip details
-        </button>
-      </div>
-      <div className="usermade-trip">
-        <select onChange={handleTripSelect}>
-          <option value="">Select a user created trip</option>
-          {myTrips.map((trip) => (
-            <option key={trip.tripId} value={trip.tripId}>
-              {trip.tripName}
-            </option>
-          ))}
-        </select>
-        <button type="button" className="submit-selection" onClick={() => searchUserCreatedTrip(selectedTripId)}>
-          Show trip details
-        </button>
-        <div className="trip-info">
-          {displayState ? (
-            <div>
-              test
-            </div>
-          )
-            : (<div />)}
+      <form className="saved-userTrips-form box">
+        <div className="premade-trip">
+          <select className="trips-select is-info" onChange={handleTripSelect}>
+            <option value="">Select a trip</option>
+            {savedTrips.map((trip) => (
+              <option key={trip.tripId} value={trip.tripId}>
+                {trip.tripName}
+              </option>
+            ))}
+          </select>
+          <button type="button" className="submit-selection" onClick={() => searchTrip(selectedTripId)}>
+            Show trip details
+          </button>
         </div>
-      </div>
+        <div className="usermade-trip">
+          <select className="trips-select is-info" onChange={handleTripSelect}>
+            <option value="">Select a user created trip</option>
+            {myTrips.map((trip) => (
+              <option key={trip.tripId} value={trip.tripId}>
+                {trip.tripName}
+              </option>
+            ))}
+          </select>
+          <button type="button" className="submit-selection" onClick={() => searchUserCreatedTrip(selectedTripId)}>
+            Show trip details
+          </button>
+        </div>
+        <br />
+        <br />
+        {displayState ? (
+          <figure className="displayed-trip-card">
+            <div className="trip-header">
+              <h2 className="trip-name">Trip name: {displayedTrip.tripName}</h2>
+            </div>
+            <div className="trip-body-div">
+              <h5 className="trip-description">Trip description: {displayedTrip.tripDescription || 'n/a'}</h5>
+              <h5 className="trip-start-date">Trip start date: {displayedTrip.beginDate || 'n/a'}</h5>
+              <h5 className="trip-end-date">Trip end date: {displayedTrip.endDate || 'n/a'}</h5>
+            </div>
+          </figure>
+        )
+          : (<div />)}
+      </form>
+      {/* <div className="trip-info">
+        
+      </div> */}
     </div>
   );
 };
