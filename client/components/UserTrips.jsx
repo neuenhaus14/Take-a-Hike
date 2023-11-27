@@ -36,24 +36,30 @@ const UserTrips = () => {
   }, []);
 
   const handleTripSelect = (event) => {
-    const selectedTripId = event.target.value;
+    // const selectedTripId = event.target.value; 
     // Perform any action you want with the selected trip
     console.log('Selected Trip ID:', selectedTripId);
-    setSelectedTripId(selectedTripId);
-    setDisplayState(true);
+    setSelectedTripId(event.target.value);
   };
 
   const searchTrip = () => {
     axios.get(`/profile/savedTrips/${selectedTripId}`)
       .then((trip) => {
         console.log('successfully fetched trip!', trip);
-        setDisplayedTrip(trip.data)
+        setDisplayState(true);
+        setDisplayedTrip(trip.data);
       })
       .catch((err) => console.error('something went wrong when fetching trip!', err));
   };
- 
-  
 
+  const searchUserCreatedTrip = () => {
+    axios.get(`/profile/savedUserCreatedTrips/${selectedTripId}`)
+      .then((fetchedTrip) => {
+        console.log('successfully fetched trip!', fetchedTrip);
+        setDisplayState(true);
+        setDisplayedTrip(fetchedTrip.data);
+      });
+  };
 
   return (
     <div className="userTrips-main">
@@ -66,6 +72,9 @@ const UserTrips = () => {
             </option>
           ))}
         </select>
+        <button type="button" className="submit-selection" onClick={() => searchTrip(selectedTripId)}>
+          Show trip details
+        </button>
       </div>
       <div className="usermade-trip">
         <select onChange={handleTripSelect}>
@@ -76,14 +85,13 @@ const UserTrips = () => {
             </option>
           ))}
         </select>
-        <button type="button" className="submit-selection" onClick={() => searchTrip(selectedTripId)}>
+        <button type="button" className="submit-selection" onClick={() => searchUserCreatedTrip(selectedTripId)}>
           Show trip details
         </button>
         <div className="trip-info">
           {displayState ? (
-           <div>
-            okkk
-
+            <div>
+              test
             </div>
           )
             : (<div />)}

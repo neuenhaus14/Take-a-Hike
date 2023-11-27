@@ -365,7 +365,7 @@ app.post('/api/createTrip', (req, res) => {
       res.sendStatus(500);
     });
 });
-// get request for user created trips
+// get request for all user created trips
 app.get('/profile/userCreatedTrips/:userId', (req, res) => {
   const { userId } = req.params;
 
@@ -385,15 +385,26 @@ app.get('/profile/userCreatedTrips/:userId', (req, res) => {
 });
 //get request for searching specific saved trips
 app.get('/profile/savedTrips/:selectedTripId', (req, res) => {
-  const { selectedTripId } = req.params
+  const { selectedTripId } = req.params;
   console.log('selected trip from abackended', selectedTripId);
-  UserTrips.findOne({ where: { tripId: selectedTripId }})
-  .then((fetchedTrip) => {
-    console.log('successfully fetched saved trip from db')
-    res.status(201).send(fetchedTrip);
-  })
-  .catch((err) => console.error('failed to fetch saved trip from db', err));
-})
+  UserTrips.findOne({ where: { tripId: selectedTripId } })
+    .then((fetchedTrip) => {
+      console.log('successfully fetched saved trip from db');
+      res.status(201).send(fetchedTrip);
+    })
+    .catch((err) => console.error('failed to fetch saved trip from db', err));
+});
+// get request for searching specific userCreated trips 
+app.get('/profile/savedUserCreatedTrips/:selectedTripId', (req, res) => {
+  const { selectedTripId } = req.params;
+  console.log('selected trip from abackended', selectedTripId);
+  UserCreatedTrips.findOne({ where: { tripId: selectedTripId } })
+    .then((fetchedTrip) => {
+      console.log('successfully fetched saved trip from db');
+      res.status(201).send(fetchedTrip);
+    })
+    .catch((err) => console.error('failed to fetch saved trip from db', err));
+});
 
 ////////////////// REQUEST HANDLERS WORKING IN WEATHER COMPONENT ///////////////
 
