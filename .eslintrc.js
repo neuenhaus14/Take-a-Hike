@@ -99,7 +99,8 @@ module.exports = {
 
         "no-underscore-dangle": 0,  
         "no-unused-vars": 0,
-        "no-plusplus": 0
+        "no-plusplus": 0,
+        "line-break-style": 0,
     }
     }
 

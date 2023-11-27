@@ -1,10 +1,13 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, lazy } from 'react';
 import { Outlet, Link, useLoaderData } from 'react-router-dom';
-import TripCreator from './TripCreator.jsx';
-import Friends from './Friends.jsx';
+// import TripCreator from './TripCreator.jsx';
+// import Friends from './Friends.jsx';
 
-import NavBar from './NavBar.jsx';
+// import NavBar from './NavBar.jsx';
+const TripCreator = lazy(() => import('./TripCreator'));
+const Friends = lazy(() => import('./Friends'));
+const NavBar = lazy(() => import('./NavBar'));
 
 const UserProfile = () => {
   const [profileName, setProfileName] = useState('');
@@ -54,6 +57,11 @@ const UserProfile = () => {
           <button type="button" onClick={() => { handleButtonClick(); }}>
             Friends
           </button> 
+        </Link>
+        <Link to={`/profile/bird-checklist/${userId}`}>
+          <button type="button" onClick={() => { handleButtonClick(); }}>
+            Bird Checklist
+          </button>
         </Link>
         {/* conditional outlet render based on clicks */}
         {showOutlet ? (

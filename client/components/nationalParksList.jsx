@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy } from 'react';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import axios from 'axios';
-import NationalParksEntry from './nationalParksEntry';
-import NavBar from './NavBar';
+
+const NationalParksEntry = lazy(() => import('./nationalParksEntry'));
+const NavBar = lazy(() => import('./NavBar'));
 
 const NationalParksList = () => {
   const [location, setLocation] = useState({ lat: '', lon: '' });

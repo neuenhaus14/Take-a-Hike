@@ -1,7 +1,7 @@
 // Import Dependencies
 const { DataTypes } = require('sequelize');
 const { db } = require('../index.js');
-
+//DONT LOOK AT THIS
 // Create Schema
 const BirdList = db.define('birdList', {
   _id: {type: DataTypes.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true},

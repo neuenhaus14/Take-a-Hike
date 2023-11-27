@@ -11,7 +11,7 @@ const { PackingListItems } = require('./models/packingListItems.js');
 const { Users } = require('./models/users.js');
 const { NationalParks, NationalParkCodes } = require('./models/nationalParks.js');
 const parkCodes = require('./data/parkCodes.json');
-const birdsOfLA = require('./data/eBirdData.js');
+// const birdsOfLA = require('./data/eBirdData.js');
 const { BirdList } = require('./models/birdList.js');
 const { BirdSightings } = require('./models/birdSightings.js');
 //import new models to seed
@@ -137,18 +137,6 @@ const seedSqlize = () => {
     .then((arr) => console.log(
       '\x1b[32m',
       `\nDatabase (MySQL): Successfully seeded trails with ${arr.length} entries!\n`,
-      '\x1b[37m',
-    ))
-    .then(() => Promise.all(birdsOfLA.map((bird) => BirdList.create(bird))))
-    .then((arr) => console.log(
-      '\x1b[32m',
-      `\nDatabase (MySQL): Successfully seeded birdList with ${arr.length} entries!\n`,
-      '\x1b[37m',
-    ))
-    .then(() => Promise.all(birdsOfLA.map((bird) => BirdList.create(bird))))
-    .then((arr) => console.log(
-      '\x1b[32m',
-      `\nDatabase (MySQL): Successfully seeded birdList with ${arr.length} entries!\n`,
       '\x1b[37m',
     ))
     // .then(() => Promise.all(dummyWeather.map((weather) => WeatherForecast.create(weather))))

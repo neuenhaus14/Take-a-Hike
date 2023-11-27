@@ -451,7 +451,27 @@ app.post('/api/joinWeatherCreateTrips', (req, res) => {
     .catch((err) => console.error(err));
 });
 
-// using the UserTrips model, create a new entry in the userTrips table
+//get request for the joinWeatherCreateTrips table to get the unique id
+app.get('/api/joinedWeatherCreateTrips/:userId/:tripId', (req, res) => {
+  const { userId, tripId } = req.params;
+  joinWeatherCreateTrips.findAll({ where: { userId: userId, tripId: tripId } })
+    .then((response) => {
+      res.status(200);
+      res.send(response);
+    })
+    .catch((err) => console.error(err));
+});
+
+//get request for weather forecast data related to the trip
+app.get('/api/weatherForecast/:unique_id', (req, res) => {
+  const { unique_id } = req.params;
+  WeatherForecast.findAll({ where: { unique_id: unique_id }, order: [['date', 'ASC']] })
+    .then((response) => {
+      res.status(200);
+      res.send(response);
+    })
+    .catch((err) => console.error(err));
+});
 
 /// ////////////////////////////////////////////////////////////////////////////
 
@@ -649,6 +669,20 @@ app.delete('/api/birdsightings/watchlist', async (req, res) => {
 // GET req for all birdSightings data
 app.get('/api/birdsightings', (req, res) => {
   BirdSightings.findAll()
+    .then((birdSightings) => {
+      res.json(birdSightings);
+    })
+    .catch((err) => {
+      console.error('ERROR: ', err);
+      res.sendStatus(404);
+    });
+});
+
+//GET request to get bird list for specific user
+app.get('/api/birdsightings/:user_id', (req, res) => {
+  const { user_id } = req.params;
+  console.log('user_id', user_id);
+  BirdSightings.findAll({ where: { user_id: user_id } })
     .then((birdSightings) => {
       res.json(birdSightings);
     })
@@ -903,36 +937,32 @@ app.put('/update-like/:commentId/:userId', (req, res) => {
 app.get('/nationalParksGetAndSave', async (req, res) => {
   try {
     const count = await NationalParks.count();
-    if (count >= 1) {
-      await NationalParks.destroy({
-        truncate: true,
-        cascade: false,
-      });
+    if (count < 1) {
+      const response = await axios.get(
+        `https://developer.nps.gov/api/v1/places?q=hiking&limit=1840&api_key=${process.env.NATIONAL_PARKS_API_KEY}`,
+      );
+      const unfilteredData = response.data.data;
+      const mappedParkData = unfilteredData
+        .filter((item) => (item.tags 
+        && item.tags.some((tag) => tag.toLowerCase() === 'trailhead')) 
+        || (item.amenities 
+        && item.amenities.some((amenity) => amenity.toLowerCase() === 'trailhead')))
+        .filter((item) => item.relatedParks?.[0]?.parkCode)
+        .map((item) => ({
+          title: item.title,
+          latitude: item.latitude || null,
+          longitude: item.longitude || null,
+          image: item.images[0].url || null,
+          parkCode: item.relatedParks[0].parkCode || null,
+          description: item.bodyText || null,
+          link: item.url || null,
+        }));
+        
+      await NationalParks.bulkCreate(mappedParkData);
+      console.log('Parks data successfully saved to database');
+  
+      res.sendStatus(200);
     }
-    const response = await axios.get(
-      `https://developer.nps.gov/api/v1/places?q=hiking&limit=1840&api_key=${process.env.NATIONAL_PARKS_API_KEY}`,
-    );
-    const unfilteredData = response.data.data;
-    const mappedParkData = unfilteredData
-      .filter((item) => (item.tags 
-      && item.tags.some((tag) => tag.toLowerCase() === 'trailhead')) 
-      || (item.amenities 
-      && item.amenities.some((amenity) => amenity.toLowerCase() === 'trailhead')))
-      .filter((item) => item.relatedParks?.[0]?.parkCode)
-      .map((item) => ({
-        title: item.title,
-        latitude: item.latitude || null,
-        longitude: item.longitude || null,
-        image: item.images[0].url || null,
-        parkCode: item.relatedParks[0].parkCode || null,
-        description: item.bodyText || null,
-        link: item.url || null,
-      }));
-      
-    await NationalParks.bulkCreate(mappedParkData);
-    console.log('Parks data successfully saved to database');
-
-    res.sendStatus(200);
   } catch (err) {
     console.error('error fetching and saving parks', err);
     res.sendStatus(500);
