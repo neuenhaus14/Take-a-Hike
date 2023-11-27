@@ -7,7 +7,6 @@ import Comments from './Comments';
 const NationalParkProfile = () => {
   const userData = useLoaderData();
   const userId = userData._id;
-  const { id } = useParams();
   const location = useLocation();
   const { nationalPark } = location.state || {};
   const description = he.decode(nationalPark.description);
@@ -16,7 +15,7 @@ const NationalParkProfile = () => {
       <NavBar />
       <div className="trails">
         <figure className="profile-card">
-          <img src={nationalPark.image} alt="nationalPark._id" />
+          <img src={nationalPark.image} alt={nationalPark._id} />
           <div className="post__header">
             <h1>{nationalPark.title}</h1>
           </div>

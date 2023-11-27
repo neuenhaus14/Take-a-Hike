@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useParams, useLoaderData } from 'react-router-dom';
-import Comments from './Comments.jsx';
-import NavBar from './NavBar.jsx';
+import Comments from './Comments';
+import NavBar from './NavBar';
 
 const TrailProfile = ({ trailList }) => {
   const userData = useLoaderData();
