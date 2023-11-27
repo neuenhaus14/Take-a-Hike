@@ -460,7 +460,7 @@ app.get('/api/joinedWeatherCreateTrips/:userId/:tripId', (req, res) => {
 //get request for weather forecast data related to the trip
 app.get('/api/weatherForecast/:unique_id', (req, res) => {
   const { unique_id } = req.params;
-  WeatherForecast.findAll({ where: { unique_id: unique_id } })
+  WeatherForecast.findAll({ where: { unique_id: unique_id }, order: [['date', 'ASC']] })
     .then((response) => {
       res.status(200);
       res.send(response);

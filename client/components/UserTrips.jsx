@@ -126,6 +126,7 @@ const UserTrips = () => {
             </div>
             <div className="weather-forecast">
               <h2 className="weather-forecast-header">Weather Forecast</h2>
+              {!weatherForecast.length ? <h3 className="weather-forecast-header">N/A...</h3> : <div />}
               <div className="weather-forecast-body">
                 <div className="weather-info">
                   {weatherForecast.map((forecast) => (
@@ -135,6 +136,10 @@ const UserTrips = () => {
                           <span className="weather-info"> Average: {Math.floor(forecast.avgTemp)} °F</span>
                           <span className="weather-info"> High: {Math.floor(forecast.highTemp)} °F</span>
                           <span className="weather-info"> Low: {Math.floor(forecast.lowTemp)} °F</span>
+                          <span className="weather-info"> Chance of Rain: {forecast.rain}% </span>
+                          <span className="weather-info"> Condition: {forecast.condition}</span>
+                          <span className="weather-info"> Date: {forecast.date} <span className="weather-info"> Region: {forecast.region}</span></span>
+                          <span className="weather-info"> Region: {forecast.region}</span>
                         </div>
                         <div className="info-container-bottom" />
                       </div>
