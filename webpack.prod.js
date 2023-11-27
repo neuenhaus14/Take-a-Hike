@@ -32,8 +32,8 @@ module.exports = {
         test: /\.gif$/i,
         use: [{
           loader: 'file-loader',
-        }]
-      }
+        }],
+      },
     ],
   },
   plugins: [
@@ -41,14 +41,12 @@ module.exports = {
       template: path.resolve(__dirname, '..', './client/index.html'),
       inject: 'body',
     }),
-    new NodePolyfillPlugin()
+    new NodePolyfillPlugin(),
   ],
   resolve: {
     fallback: {
-      'fs': false,
+      fs: false,
     },
     extensions: ['.js', '.jsx', '.gif'], 
   },  
 };
-
-
