@@ -13,6 +13,7 @@ const UserTrips = () => {
   const [displayState, setDisplayState] = useState(false);
   const [selectedTripId, setSelectedTripId] = useState('');
   const [displayedTrip, setDisplayedTrip] = useState([]);
+  const [weatherForecast, setWeatherForecast] = useState([]);
 
   const getMyTrips = () => {
     axios.get(`/profile/userTrips/${userId}`)
@@ -41,6 +42,23 @@ const UserTrips = () => {
     console.log('Selected Trip ID:', selectedTripId);
     setSelectedTripId(event.target.value);
   };
+  const getWeatherForecast = () => {
+    axios.get(`/api/joinedWeatherCreateTrips/${userId}/${selectedTripId}`)
+      .then((weatherObj) => {
+        console.log('successfully fetched weather forecast :D!', weatherObj);
+        const { unique_id } = weatherObj.data[0];
+        console.log('unique_id', unique_id);
+        axios.get(`/api/weatherForecast/${unique_id}`)
+          .then((forecast) => {
+            console.log('successfully fetched weather forecast!', forecast);
+            setWeatherForecast(forecast.data);
+          })
+          .catch((err) => console.error('something went wrong when fetching weather forecast!', err));
+      });
+  };
+  useEffect(() => {
+    console.log('weatherForecast', weatherForecast);
+  }, [weatherForecast]);
 
   const searchTrip = () => {
     axios.get(`/profile/savedTrips/${selectedTripId}`)
@@ -56,6 +74,7 @@ const UserTrips = () => {
     axios.get(`/profile/savedUserCreatedTrips/${selectedTripId}`)
       .then((fetchedTrip) => {
         console.log('successfully fetched trip!', fetchedTrip);
+        getWeatherForecast();
         setDisplayState(true);
         setDisplayedTrip(fetchedTrip.data);
       });

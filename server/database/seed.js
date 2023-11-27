@@ -139,18 +139,6 @@ const seedSqlize = () => {
       `\nDatabase (MySQL): Successfully seeded trails with ${arr.length} entries!\n`,
       '\x1b[37m',
     ))
-    .then(() => Promise.all(birdsOfLA.map((bird) => BirdList.create(bird))))
-    .then((arr) => console.log(
-      '\x1b[32m',
-      `\nDatabase (MySQL): Successfully seeded birdList with ${arr.length} entries!\n`,
-      '\x1b[37m',
-    ))
-    .then(() => Promise.all(birdsOfLA.map((bird) => BirdList.create(bird))))
-    .then((arr) => console.log(
-      '\x1b[32m',
-      `\nDatabase (MySQL): Successfully seeded birdList with ${arr.length} entries!\n`,
-      '\x1b[37m',
-    ))
     // .then(() => Promise.all(dummyWeather.map((weather) => WeatherForecast.create(weather))))
     // .then((arr) => console.log(
     //   '\x1b[32m',
