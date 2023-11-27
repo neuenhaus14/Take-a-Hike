@@ -5,11 +5,12 @@ import NationalParksEntry from './nationalParksEntry';
 import NavBar from './NavBar';
 
 const NationalParksList = () => {
-  const [location, setLocation] = useState({ lat: '', lon: '' });
+  const [location, setLocation] = useState({ lat: null, lon: null });
   const [address, setAddress] = useState('');
   const [mapsLibraryLoaded, setMapsLibraryLoaded] = useState(false);
   const [nationalParkList, setNationalParkList] = useState([]);
   const [loadingParks, setLoadingParks] = useState(false);
+  const [isMounted, setIsMounted] = useState(true);
   
   useEffect(() => {
     const initMap = () => setMapsLibraryLoaded(true);
@@ -51,7 +52,7 @@ const NationalParksList = () => {
   
   const handleGetNationalParks = () => {
     setLoadingParks(true);
-    updateParksTable();
+    // updateParksTable();
     axios.get('/parksInRadius', {
       params: {
         lat: location.lat,
@@ -79,14 +80,18 @@ const NationalParksList = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setLocation({
-            lat: position.coords.latitude,
-            lon: position.coords.longitude,
-          });
-          handleGetNationalParks({
-            lat: position.coords.latitude,
-            lon: position.coords.longitude,
-          });
+          if (isMounted) {
+            const { latitude } = position.coords;
+            const { longitude } = position.coords;
+            setLocation({
+              lat: latitude,
+              lon: longitude,
+            });
+            handleGetNationalParks({
+              lat: latitude,
+              lon: longitude,
+            });
+          }
         },
         (err) => {
           console.error('error in location grab: ', err);
@@ -121,6 +126,12 @@ const NationalParksList = () => {
       lon: location.lon,
     });
   };
+
+  useEffect(() => {
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
 
   return (
     <div className="trails-list">
