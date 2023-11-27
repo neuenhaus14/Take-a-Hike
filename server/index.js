@@ -673,6 +673,20 @@ app.get('/api/birdsightings', (req, res) => {
     });
 });
 
+//GET request to get bird list for specific user
+app.get('/api/birdsightings/:user_id', (req, res) => {
+  const { user_id } = req.params;
+  console.log('user_id', user_id);
+  BirdSightings.findAll({ where: { user_id: user_id } })
+    .then((birdSightings) => {
+      res.json(birdSightings);
+    })
+    .catch((err) => {
+      console.error('ERROR: ', err);
+      res.sendStatus(404);
+    });
+});
+
 // POST req to birdSightings database
 app.post('/api/birdsightings', (req, res) => {
   // console.log('Line 231 - Back End Bird Sightings Post Request: ', req.body);

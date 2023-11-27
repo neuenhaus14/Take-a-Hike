@@ -21,6 +21,7 @@ const Weather = lazy(() => import('./Weather'));
 const NationalParksList = lazy(() => import('./nationalParksList'));
 const NationalParkProfile = lazy(() => import('./nationalParksListProfile'));
 const Friends = lazy(() => import('./Friends'));
+const UserBirdChecklist = lazy(() => import('./UserBirdChecklist'));
 
 const App = () => {
   const [trailList, setTrailList] = useState([]);
@@ -99,6 +100,7 @@ const App = () => {
             <Route path="packing-list/:userId" element={<PackingList />} />
             <Route path="trails-list/:userId" element={<TrailsList />} />
           </Route>
+          <Route path="bird-checklist/:userId" element={<UserBirdChecklist />} />
           <Route path="friends/:userId" element={<Friends />} />
         </Route>
       </Route>,

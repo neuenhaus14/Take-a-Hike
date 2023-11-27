@@ -381,3 +381,10 @@ body {
   border: solid dodgerblue 2px;
   height: 30px;
 }
+
+.bird-list {
+  text-align: center;
+  background-color: #e6e6e6;
+  width: 100%;
+  border: solid black 2px;
+}

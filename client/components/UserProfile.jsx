@@ -58,6 +58,11 @@ const UserProfile = () => {
             Friends
           </button> 
         </Link>
+        <Link to={`/profile/bird-checklist/${userId}`}>
+          <button type="button" onClick={() => { handleButtonClick(); }}>
+            Bird Checklist
+          </button>
+        </Link>
         {/* conditional outlet render based on clicks */}
         {showOutlet ? (
           <Outlet />)
